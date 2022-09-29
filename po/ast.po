@@ -1,0 +1,80 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the fwupd package.
+#
+# Translators:
+# enolp <enolp@softastur.org>, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: fwupd\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: Asturian (http://www.transifex.com/freedesktop/fwupd/language/ast/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ast\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. TRANSLATORS: this is when a device is hotplugged
+msgid "Added"
+msgstr "Amestóse"
+
+#. TRANSLATORS: this is when a device ctrl+c's a watch
+msgid "Cancelled"
+msgstr "Encaboxóse"
+
+#. TRANSLATORS: this is when a device is hotplugged
+#. TRANSLATORS: this is when the daemon state changes
+msgid "Changed"
+msgstr "Camudóse"
+
+#. TRANSLATORS: this is the encryption method used when writing
+msgid "Cipher"
+msgstr "Cifráu"
+
+#. TRANSLATORS: detected a DFU device
+msgid "Found"
+msgstr "Alcontróse"
+
+#. TRANSLATORS: Appstream ID for the hardware type
+msgid "ID"
+msgstr "ID"
+
+msgid "Mode"
+msgstr "Mou"
+
+#. TRANSLATORS: interface name, e.g. "Flash"
+#. TRANSLATORS: device name, e.g. 'ColorHug2'
+#. TRANSLATORS: section header for the release name
+msgid "Name"
+msgstr "Nome"
+
+#. TRANSLATORS: DFU protocol version, e.g. 1.1
+msgid "Protocol"
+msgstr "Protocolu"
+
+#. TRANSLATORS: these are areas of memory on the chip
+msgid "Region"
+msgstr "Rexón"
+
+#. TRANSLATORS: this is when a device is hotplugged
+msgid "Removed"
+msgstr "Desanicióse"
+
+#. TRANSLATORS: serial number, e.g. '00012345'
+msgid "Serial"
+msgstr "Serial"
+
+#. TRANSLATORS: device state, i.e. appIDLE
+msgid "State"
+msgstr "Estáu"
+
+#. TRANSLATORS: probably not run as root...
+#. TRANSLATORS: device has failed to report status
+#. TRANSLATORS: device status, e.g. "OK"
+msgid "Status"
+msgstr "Estáu"
+
+#. TRANSLATORS: transfer size in bytes
+msgid "Transfer Size"
+msgstr "Tamañu de tresferencia"

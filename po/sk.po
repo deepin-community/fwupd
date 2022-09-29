@@ -1,0 +1,238 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the fwupd package.
+#
+# Translators:
+# Dušan Kazik <prescott66@gmail.com>, 2015-2017
+msgid ""
+msgstr ""
+"Project-Id-Version: fwupd\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: Slovak (http://www.transifex.com/freedesktop/fwupd/language/sk/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sk\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
+
+#. TRANSLATORS: this is a command alias, e.g. 'get-devices'
+#, c-format
+msgid "Alias to %s"
+msgstr "Prezývka príkazu %s"
+
+#. TRANSLATORS: command line option
+msgid "Allow downgrading firmware versions"
+msgstr "Umožní zníženie verzií firmvéru"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to downgrade the firmware on a removable device"
+msgstr "Vyžaduje sa overenie totožnosti na prechod na staršiu verziu firmvéru vymeniteľného zariadenia"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to downgrade the firmware on this machine"
+msgstr "Vyžaduje sa overenie totožnosti na prechod na staršiu verziu firmvéru v tomto počítači"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to unlock a device"
+msgstr "Na odomknutie zariadenia sa vyžaduje overenie totožnosti"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to update the firmware on a removable device"
+msgstr "Vyžaduje sa overenie totožnosti na aktualizovanie firmvéru vymeniteľného zariadenia "
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to update the firmware on this machine"
+msgstr "Na aktualizovanie firmvéru v tomto počítači je potrebné overenie totožnosti"
+
+#. TRANSLATORS: this is when a device ctrl+c's a watch
+msgid "Cancelled"
+msgstr "Zrušené"
+
+#. TRANSLATORS: this is when the daemon state changes
+msgid "Changed"
+msgstr "Zmenené"
+
+#. TRANSLATORS: remote checksum
+msgid "Checksum"
+msgstr "Kontrolný medzisúčet"
+
+#. TRANSLATORS: command description
+msgid "Clears the results from the last update"
+msgstr "Vymaže výsledky z poslednej aktualizácie"
+
+#. TRANSLATORS: error message
+msgid "Command not found"
+msgstr "Príkaz nenájdený"
+
+#. TRANSLATORS: DFU stands for device firmware update
+msgid "DFU Utility"
+msgstr "Nástroj pre DFU"
+
+#. TRANSLATORS: for the --verbose arg
+msgid "Debugging Options"
+msgstr "Voľby ladenia"
+
+#. TRANSLATORS: multiline description of device
+msgid "Description"
+msgstr "Popis"
+
+#. TRANSLATORS: this is when a device is hotplugged
+msgid "Device added:"
+msgstr "Pridané zariadenie:"
+
+#. TRANSLATORS: this is when a device has been updated
+msgid "Device changed:"
+msgstr "Zmenené zariadenie:"
+
+#. TRANSLATORS: this is when a device is hotplugged
+msgid "Device removed:"
+msgstr "Odstránené zariadenie:"
+
+#. TRANSLATORS: success
+#. success
+msgid "Done!"
+msgstr "Hotovo!"
+
+#. TRANSLATORS: the first replacement is a display name
+#. * e.g. "ColorHugALS" and the second and third are
+#. * version numbers e.g. "1.2.3"
+#, c-format
+msgid "Downgrading %s from %s to %s... "
+msgstr "Vracia sa %s z verzie %s na verziu %s... "
+
+#. TRANSLATORS: exit after we've started up, used for user profiling
+msgid "Exit after a small delay"
+msgstr "Skončí po krátkom oneskorení"
+
+#. TRANSLATORS: exit straight away, used for automatic profiling
+msgid "Exit after the engine has loaded"
+msgstr "Skončí po načítaní jadra"
+
+#. TRANSLATORS: the user didn't read the man page
+msgid "Failed to parse arguments"
+msgstr "Zlyhalo analyzovanie parametrov"
+
+#. TRANSLATORS: program summary
+msgid "Firmware Update D-Bus Service"
+msgstr "Služba zbernice D-Bus na aktualizovanie firmvéru"
+
+#. TRANSLATORS: program name
+msgid "Firmware Update Daemon"
+msgstr "Démon aktualizácie firmvéru"
+
+#. TRANSLATORS: program name
+msgid "Firmware Utility"
+msgstr "Nástroj pre firmvéry"
+
+#. TRANSLATORS: Suffix: the HSI result
+msgid "Found"
+msgstr "Nájdené"
+
+#. TRANSLATORS: command argument: uppercase, spaces->dashes
+msgctxt "A single GUID"
+msgid "GUID"
+msgstr "GUID"
+
+#. TRANSLATORS: command description
+msgid "Get all devices that support firmware updates"
+msgstr "Získa všetky zariadenia, ktoré podporujú aktualizovanie firmvéru"
+
+#. TRANSLATORS: command description
+msgid "Gets details about a firmware file"
+msgstr "Získa podrobnosti o súbore firmvéru"
+
+#. TRANSLATORS: command description
+msgid "Gets the list of updates for connected hardware"
+msgstr "Získa zoznam aktualizácií pre pripojený hardvér"
+
+#. TRANSLATORS: command description
+msgid "Gets the results from the last update"
+msgstr "Získa výsledky z poslednej aktualizácie"
+
+#. TRANSLATORS: command description
+msgid "Install a firmware file on this hardware"
+msgstr "Nainštaluje súbor firmvéru do tohoto hardvéru"
+
+msgid "Install old version of system firmware"
+msgstr "Nainštaluje staršiu verziu firmvéru systému"
+
+msgid "Install signed device firmware"
+msgstr "Nainštaluje podpísaný firmvér zariadenia"
+
+msgid "Install signed system firmware"
+msgstr "Nainštaluje podpísaný firmvér systému"
+
+msgid "Install unsigned device firmware"
+msgstr "Nainštaluje nepodpísaný firmvér zariadenia"
+
+msgid "Install unsigned system firmware"
+msgstr "Nainštaluje nepodpísaný firmvér systému"
+
+#. TRANSLATORS: command description
+msgid "Monitor the daemon for events"
+msgstr "Sleduje démona kvôli udalostiam"
+
+#. TRANSLATORS: nothing attached that can be upgraded
+msgid "No hardware detected with firmware update capability"
+msgstr "Nezistil sa žiadny hardvér s možnosťou aktualizácie firmvéru"
+
+#. TRANSLATORS: Suffix: the HSI result
+msgid "OK"
+msgstr "OK"
+
+#. TRANSLATORS: command description
+msgid "Read firmware from device into a file"
+msgstr "Prečíta firmvér zo zariadenia do súboru"
+
+#. TRANSLATORS: command description
+msgid "Read firmware from one partition into a file"
+msgstr "Prečíta firmvér z jedného oddielu do súboru"
+
+#. TRANSLATORS: command description
+msgid "Refresh metadata from remote server"
+msgstr "Obnoví metaúdaje zo vzdialeného servera"
+
+#. TRANSLATORS: the first replacement is a display name
+#. * e.g. "ColorHugALS" and the second is a version number
+#. * e.g. "1.2.3"
+#, c-format
+msgid "Reinstalling %s with %s... "
+msgstr "Preinštalováva sa %s verziou %s... "
+
+#. TRANSLATORS: for the --verbose arg
+msgid "Show debugging options"
+msgstr "Zobrazí voľby ladenia"
+
+#. TRANSLATORS: command line option
+msgid "Show extra debugging information"
+msgstr "Zobrazovať dodatočné ladiace informácie"
+
+msgid "Unlock the device to allow access"
+msgstr "Odomknúť zariadenie na umožnenie prístupu"
+
+#. TRANSLATORS: command description
+msgid "Unlocks the device for firmware access"
+msgstr "Odomkne zariadenie pre prístup k firmvéru"
+
+#. TRANSLATORS: command description
+msgid "Updates all firmware to latest versions available"
+msgstr "Aktualizuje všetok firmvér na najnovšiu dostupnú verziu"
+
+#. TRANSLATORS: the first replacement is a display name
+#. * e.g. "ColorHugALS" and the second and third are
+#. * version numbers e.g. "1.2.3"
+#, c-format
+msgid "Updating %s from %s to %s... "
+msgstr "Aktualizuje sa %s z verzie %s na verziu %s... "
+
+#. TRANSLATORS: the detected version number of the dbx
+msgid "Version"
+msgstr "Verzia"
+
+#. TRANSLATORS: command description
+msgid "Write firmware from file into device"
+msgstr "Zapíše firmvér zo súboru do zariadenia"
+
+#. TRANSLATORS: command description
+msgid "Write firmware from file into one partition"
+msgstr "Zapíše firmvér zo súboru do jedného oddielu"

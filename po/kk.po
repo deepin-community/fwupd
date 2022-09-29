@@ -1,0 +1,49 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the fwupd package.
+#
+# Translators:
+# Baurzhan Muftakhidinov <baurthefirst@gmail.com>, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: fwupd\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: Kazakh (http://www.transifex.com/freedesktop/fwupd/language/kk/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: kk\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. TRANSLATORS: this is when a device is hotplugged
+msgid "Added"
+msgstr "Қосылған"
+
+#. TRANSLATORS: this is when a device ctrl+c's a watch
+msgid "Cancelled"
+msgstr "Бас тартылған"
+
+#. TRANSLATORS: this is when a device is hotplugged
+#. TRANSLATORS: this is when the daemon state changes
+msgid "Changed"
+msgstr "Өзгертілген"
+
+#. TRANSLATORS: read from device to host
+msgid "Erasing"
+msgstr "Өшірілуде"
+
+#. TRANSLATORS: read from device to host
+msgid "Reading"
+msgstr "Оқылуда"
+
+#. TRANSLATORS: this is when a device is hotplugged
+msgid "Removed"
+msgstr "Өшірілген"
+
+#. TRANSLATORS: read from device to host
+msgid "Verifying"
+msgstr "Тексерілуде"
+
+#. TRANSLATORS: write from host to device
+msgid "Writing"
+msgstr "Жазылуда"

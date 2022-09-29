@@ -1,0 +1,205 @@
+version: 2
+jobs:
+  build-ubuntu-x86_64:
+    machine:
+      image: circleci/classic:latest
+    steps:
+      - checkout
+      - run:
+          name: "Build container"
+          command: OS=ubuntu-x86_64 ./contrib/ci/generate_docker.py build
+      - run:
+          name: "Run build script"
+          command: docker run --privileged -e CI=true -t -v `pwd`:/github/workspace fwupd-ubuntu-x86_64
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "dist/docs"
+
+  build-windows:
+    docker:
+      - image: fedora:latest
+    steps:
+      - run:
+          name: "Install deps"
+          command: dnf install -y diffutils
+                                  glib2-devel
+                                  git-core
+                                  gnutls-utils
+                                  jq
+                                  meson
+                                  git
+                                  gcc
+                                  gcab
+                                  mingw32-nsis
+                                  mingw64-brotli
+                                  mingw64-gcc
+                                  mingw64-pkg-config
+                                  mingw64-glib2
+                                  mingw64-gnutls
+                                  mingw64-libgusb
+                                  mingw64-sqlite
+                                  mingw64-libarchive
+                                  mingw64-json-glib
+                                  mingw64-curl
+                                  wine
+      - checkout
+      - run:
+          name: "Build Win32"
+          command: ./contrib/ci/build_windows.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "dist/setup/*.exe"
+            - "dist/VERSION"
+            - "dist/news.txt"
+      - store_artifacts:
+          path: dist/setup
+
+  build-snap:
+    docker:
+      - image: ubuntu:18.04
+    steps:
+      - run:
+          name: "Update apt"
+          command: apt update
+      - run:
+          name: "install snapcraft"
+          command: apt install snapcraft git -y
+      - checkout
+      - run:
+          name: "Build Snap"
+          command: snapcraft
+      - run:
+          command: |
+            mkdir -p /tmp/snaps
+            cp *.snap /tmp/snaps
+      - store_artifacts:
+          path: /tmp/snaps
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "*.snap"
+
+  publish-docs:
+    machine: true
+    steps:
+      - attach_workspace:
+          at: .
+      - add_ssh_keys:
+          fingerprints:
+            - "d8:73:05:1b:7c:93:8c:12:41:78:15:3d:5d:af:b4:c2"
+      - run:
+          name: Clone docs
+          working_directory: dist/docs
+          command: |
+            git clone --depth 1 git@github.com:fwupd/fwupd.github.io.git
+      - deploy:
+          name: Trigger docs deployment
+          working_directory: dist/docs/fwupd.github.io
+          command: |
+            git config credential.helper 'cache --timeout=120'
+            git config user.email "info@fwupd.org"
+            git config user.name "Documentation deployment Bot"
+            rm -rf *
+            cp ../html/* . -R
+            git add .
+            git commit -a --allow-empty -m "Trigger deployment"
+            git push git@github.com:fwupd/fwupd.github.io.git
+
+  publish-edge:
+    docker:
+      - image: cibuilds/snapcraft:stable
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Publish to Store"
+          command: |
+            mkdir .snapcraft
+            echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage > .snapcraft/snapcraft.cfg
+            snapcraft push *.snap --release edge
+
+  publish-stable:
+    docker:
+      - image: cibuilds/snapcraft:stable
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Publish to Store"
+          command: |
+            mkdir .snapcraft
+            echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage > .snapcraft/snapcraft.cfg
+            snapcraft push *.snap --release stable
+
+  publish-github-exe-release:
+    docker:
+      - image: circleci/golang:1.9
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=$(cat dist/VERSION)
+            BODY=$(cat dist/news.txt)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -b "${BODY}" ${VERSION} ./dist/setup/
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build-windows
+      - build-ubuntu-x86_64
+      - build-snap
+      - publish-edge:
+          requires:
+            - build-snap
+          filters:
+            branches:
+              only: master
+  deploy:
+    jobs:
+      - build-ubuntu-x86_64:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - build-windows:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - publish-github-exe-release:
+          requires:
+            - build-windows
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - publish-docs:
+          requires:
+            - build-ubuntu-x86_64
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - build-snap:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - publish-stable:
+          requires:
+            - build-snap
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/

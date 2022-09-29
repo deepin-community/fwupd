@@ -1,0 +1,311 @@
+name: fwupd
+version-script: cat $SNAPCRAFT_STAGE/version
+version: 'daily'
+summary: A standalone version of fwupd to install newer firmware updates
+description: |
+  This is a tool that can be used to install firmware updates on devices
+  not yet supported by the version of fwupd distributed with the OS.
+
+grade: stable
+confinement: classic
+base: core18
+
+architectures:
+  - amd64
+
+apps:
+  dfu-tool:
+    command: dfu-tool.wrapper
+  dbxtool:
+    command: dbxtool.wrapper
+  fwupdtool:
+    command: fwupdtool.wrapper
+    completer:
+      share/bash-completion/completions/fwupdtool
+  fwupd:
+    command: fwupd.wrapper
+    daemon: simple
+  fwupdmgr:
+    command: fwupdmgr.wrapper
+    completer:
+      share/bash-completion/completions/fwupdmgr
+  fwupdtpmevlog:
+    command: fwupdtpmevlog.wrapper
+  fwupdagent:
+    command: fwupdagent.wrapper
+
+parts:
+  curl:
+        source: https://curl.se/download/curl-7.73.0.tar.bz2
+  tpm2-tss:
+    plugin: autotools
+    source: https://github.com/tpm2-software/tpm2-tss/releases/download/2.3.0/tpm2-tss-2.3.0.tar.gz
+    configflags:
+      - --disable-doxygen-doc
+    prime:
+     - -include
+     - -bin
+     - -share/man
+     - -lib/pkgconfig
+    build-packages:
+     - libssl-dev
+  nettle:
+    plugin: autotools
+    source: https://ftp.gnu.org/gnu/nettle/nettle-3.5.tar.gz
+    build-packages:
+     - libgmp-dev
+    prime:
+     - -include
+     - -bin
+     - -share/man
+     - -lib/pkgconfig
+  gnutls:
+    plugin: autotools
+    source: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/gnutls-3.6.12.tar.xz
+    build-packages:
+      - libtasn1-6-dev
+      - libunistring-dev
+      - libidn2-dev
+      - libunbound-dev
+      - libp11-kit-dev
+    prime:
+     - -include
+     - -bin
+     - -share/man
+     - -lib/pkgconfig
+    after: [nettle]
+  meson:
+    plugin: python
+    source: https://github.com/mesonbuild/meson/releases/download/0.54.0/meson-0.54.0.tar.gz
+    build-packages:
+      - ninja-build
+      - python3-distutils-extra
+    prime:
+      - -bin
+      - -etc
+      - -lib
+      - -share
+      - -usr
+  # this is for the library only, we don't care about the daemon "in-snap"
+  modemmanager:
+    plugin: autotools
+    source: https://gitlab.freedesktop.org/mobile-broadband/ModemManager.git
+    source-tag: 1.14.0
+    # build without these; system daemon needs them
+    build-packages:
+      - xsltproc
+      - autoconf-archive
+    configflags:
+      - --without-mbim
+      - --without-qmi
+    prime:
+      - -include
+      - -etc
+      - -sbin
+      - -bin
+      - -share
+      - -lib/*.*a
+      - -lib/pkgconfig
+      - -lib/ModemManager
+      - -lib/systemd
+      - -lib/udev
+      - -lib/girepository-1.0
+  libmbim:
+    plugin: autotools
+    source: https://gitlab.freedesktop.org/mobile-broadband/libmbim.git
+    source-tag: 1.24.0
+    after: [modemmanager]
+    # build without these; system daemon needs them
+    configflags:
+      - --without-udev
+    prime:
+      - -include
+      - -etc
+      - -sbin
+      - -bin
+      - -share
+      - -lib/*.*a
+      - -lib/pkgconfig
+      - -lib/ModemManager
+      - -lib/systemd
+      - -lib/udev
+      - -lib/girepository-1.0
+  libqmi:
+    plugin: autotools
+    source: https://gitlab.freedesktop.org/mobile-broadband/libqmi.git
+    source-tag: 1.26.0
+    after: [modemmanager, libmbim]
+    # build without these; system daemon needs them
+    configflags:
+      - --without-udev
+    prime:
+      - -include
+      - -etc
+      - -sbin
+      - -bin
+      - -share
+      - -lib/*.*a
+      - -lib/pkgconfig
+      - -lib/ModemManager
+      - -lib/systemd
+      - -lib/udev
+      - -lib/girepository-1.0
+  #fetch the latest version of the signed bootloader
+  #this might not match our fwupdx64.efi, but it's better than nothing
+  fwup-efi-signed:
+    build-packages:
+      - python3-apt
+    plugin: make
+    source: contrib/snap/fwup-efi-signed
+  #needed for UEFI plugin to build UX labels
+  build-introspection:
+    plugin: nil
+    stage-packages:
+      - python3-gi
+      - python3-gi-cairo
+      - python3-pil
+    prime:
+      - -etc
+      - -usr
+      - -lib
+      - -var
+  fwupd:
+    plugin: meson
+    meson-parameters: [--prefix=/,
+                       -Dtests=false,
+                       -Dbuild=all,
+                       -Dgtkdoc=false,
+                       -Dintrospection=false,
+                       -Dman=false,
+                       -Dplugin_modem_manager=true,
+                       -Dudevdir=$SNAPCRAFT_STAGE/lib/udev,
+                       "-Dgusb:tests=false",
+                       "-Dgusb:docs=false",
+                       "-Dgusb:introspection=false",
+                       "-Dgusb:vapi=false",
+                       "-Dlibxmlb:gtkdoc=false",
+                       "-Dlibxmlb:introspection=false",
+                       "-Dlibjcat:man=false",
+                       "-Dlibjcat:gtkdoc=false",
+                       "-Dlibjcat:introspection=false",
+                       "-Dlibjcat:tests=false"]
+    source: .
+    source-type: git
+    override-build: |
+      snapcraftctl build
+      echo $(git describe HEAD --always) > $SNAPCRAFT_STAGE/version
+    build-packages:
+      - bash-completion
+      - gcab
+      - gnu-efi
+      - libarchive-dev
+      - libcairo-dev
+      - libelf-dev
+      - libefiboot-dev
+      - libefivar-dev
+      - libftdi1-dev
+      - libgudev-1.0-dev
+      - libgcab-dev
+      - libglib2.0-dev
+      - libgpgme11-dev
+      - libjson-glib-dev
+      - libpango1.0-dev
+      - libpci-dev
+      - libpolkit-gobject-1-dev
+      - libsmbios-dev
+      - libsqlite3-dev
+      - libsystemd-dev
+      - locales
+      - pkg-config
+      - systemd
+      - uuid-dev
+    stage-packages:
+      - libgcab-1.0-0
+      - libarchive13
+      - libassuan0
+      - liblcms2-2
+      - libefivar1
+      - libefiboot1
+      - libelf1
+      - libusb-1.0-0
+      - libgudev-1.0-0
+      - libgpgme11
+      - libjson-glib-1.0-0
+      - libpolkit-gobject-1-0
+      - libsmbios-c2
+      - glib-networking
+      - libglib2.0-bin
+    prime:
+      # we explicitly don't want /usr/bin/gpgconf
+      # this will cause gpgme to error finding it
+      # but that also avoids trying to use non-existent
+      # /usr/bin/gpg2
+      - -usr/bin
+      - -usr/sbin
+      - -usr/share/man
+      - -usr/share/GConf
+      - -etc/X11
+      - -etc/ldap
+      - -etc/logcheck
+      - -usr/lib/dconf
+      - -usr/lib/gcc
+      - -usr/lib/glib-networking
+      - -usr/lib/gnupg2
+      - -usr/lib/sasl2
+      - -usr/lib/systemd
+      - -usr/lib/*/audit
+      - -usr/share/glib-2.0/schemas
+      - -usr/share/X11
+      - -include
+      - -lib/udev
+      - -lib/*/pkgconfig
+      - -usr/share/lintian
+      - -usr/share/pkgconfig
+      - -usr/share/installed-tests
+      - -usr/share/polkit-1
+      - -usr/share/vala
+      - -usr/share/doc
+      - -usr/share/gnupg2
+      - -usr/share/info
+      - -usr/share/gir-1.0
+      - -usr/share/upstart
+      - -usr/lib/*/pkgconfig
+      # we don't want system gnutls leaking in
+      - -usr/lib/*/libgnutls*
+    after: [meson, build-introspection, modemmanager, libmbim, libqmi, tpm2-tss, gnutls, curl]
+  fix-bash-completion:
+    plugin: make
+    source: contrib/snap/fix-bash-completion
+    after: [fwupd]
+  activate-shutdown:
+    plugin: make
+    source: contrib/snap/activate-shutdown
+    after: [fwupd]
+  update-mime:
+    plugin: make
+    source: contrib/snap/update-mime
+    stage-packages:
+      - shared-mime-info
+      - gsettings-desktop-schemas
+      - libxml2
+    prime:
+      - -usr/bin
+      - -usr/share/doc
+      - -usr/share/doc-base
+      - -usr/share/man
+      - -usr/share/lintian
+      - -usr/share/pkgconfig
+      - -usr/share/GConf
+    after: [fwupd]
+  fwupd-wrappers:
+    plugin: dump
+    source: contrib/snap
+    stage:
+    - dfu-tool.wrapper
+    - dbxtool.wrapper
+    - fwupd-command
+    - fwupdtool.wrapper
+    - fwupd.wrapper
+    - fwupdmgr.wrapper
+    - fwupdtpmevlog.wrapper
+    - fwupdagent.wrapper
