@@ -1,14 +1,21 @@
 /*
- * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
+ * Copyright 2017 Richard Hughes <richard@hughsie.com>
+ * Copyright 2021 Daniel Campello <campello@chromium.org>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
-#include "fu-plugin.h"
+#include <fwupdplugin.h>
 
-#define FU_TYPE_FLASHROM_DEVICE (fu_flashrom_device_get_type ())
-G_DECLARE_FINAL_TYPE (FuFlashromDevice, fu_flashrom_device, FU, FLASHROM_DEVICE, FuDevice)
+#define FU_TYPE_FLASHROM_DEVICE (fu_flashrom_device_get_type())
+G_DECLARE_FINAL_TYPE(FuFlashromDevice, fu_flashrom_device, FU, FLASHROM_DEVICE, FuUdevDevice)
 
-FuDevice	*fu_flashrom_device_new			(void);
+struct flashrom_flashctx;
+
+FuDevice *
+fu_flashrom_device_new(FuContext *ctx, struct flashrom_flashctx *flashctx, FuIfdRegion region);
+
+gboolean
+fu_flashrom_device_unlock(FuFlashromDevice *self, GError **error);

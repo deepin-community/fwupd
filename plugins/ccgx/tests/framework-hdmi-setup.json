@@ -1,0 +1,119 @@
+{
+  "UsbDevices": [
+    {
+      "GType": "FuUsbDevice",
+      "PlatformId": "1-5",
+      "Created": "2024-10-24T17:00:14.631829Z",
+      "IdVendor": 12972,
+      "IdProduct": 2,
+      "USB": 513,
+      "Manufacturer": 1,
+      "Product": 2,
+      "SerialNumber": 3,
+      "UsbBosDescriptors": [
+        {
+          "DevCapabilityType": 80,
+          "ExtraData": "AAM="
+        },
+        {
+          "DevCapabilityType": 2,
+          "ExtraData": "AAAAAA=="
+        },
+        {
+          "DevCapabilityType": 4,
+          "ExtraData": "AAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "DevCapabilityType": 13,
+          "ExtraData": "BwEAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABABAAAB/wAI"
+        }
+      ],
+      "UsbConfigDescriptors": [
+        {
+          "Configuration": 4,
+          "ConfigurationValue": 1
+        }
+      ],
+      "UsbHidDescriptors": [
+        "Bu7/CQGhAYXgCQIVACb/AHUIlT+xAoXhCQIVACb/AHUIlQeRAoXiCQIVACb/AHUIlYORAoXjCQIVACb/AHUIlYOxAoXkCQIVACb/AHUIlQexAsA="
+      ],
+      "UsbInterfaces": [
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceClass": 17,
+          "Interface": 5
+        },
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceNumber": 1,
+          "InterfaceClass": 3,
+          "Interface": 6,
+          "UsbEndpoints": [
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 129,
+              "Interval": 255,
+              "MaxPacketSize": 64
+            }
+          ]
+        }
+      ],
+      "UsbEvents": [
+        {
+          "Id": "#4693935e",
+          "Data": "001"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=189\nMINOR=64\nDEVNAME=bus/usb/001/065\nDEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=32ac/2/0\nTYPE=0/0/0\nBUSNUM=001\nDEVNUM=065"
+        },
+        {
+          "Id": "#1ab3ae0a",
+          "Data": "065"
+        },
+        {
+          "Id": "#4693935e",
+          "Data": "001"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=189\nMINOR=64\nDEVNAME=bus/usb/001/065\nDEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=32ac/2/0\nTYPE=0/0/0\nBUSNUM=001\nDEVNUM=065"
+        },
+        {
+          "Id": "#1ab3ae0a",
+          "Data": "065"
+        },
+        {
+          "Id": "#ded9760f",
+          "Data": "RnJhbWV3b3JrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#1fcf122d",
+          "Data": "SERNSSBFeHBhbnNpb24gQ2FyZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#028c3a0e",
+          "Data": "MTFBRDFEMDAwMURCM0UxOTQyMTkwQjAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#b4508d4c",
+          "Data": "5EJDWQAAAAs="
+        },
+        {
+          "Id": "#ef24907d",
+          "Error": -9
+        },
+        {
+          "Id": "#ec40eb22",
+          "Data": "4ABDWQEAAAAAHQAAhAMCMGFhAgBpABAwYWECAGkAEDBhYQIAABgAAAAAAQAB2z4ZQhkLAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "Id": "#c89fe8bd",
+          "Data": "Bu7/CQGhAYXgCQIVACb/AHUIlT+xAoXhCQIVACb/AHUIlQeRAoXiCQIVACb/AHUIlYORAoXjCQIVACb/AHUIlYOxAoXkCQIVACb/AHUIlQexAsA="
+        }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 %global glib2_version 2.45.8
 %global libxmlb_version 0.1.3
-%global libgusb_version 0.3.5
-%global libcurl_version 7.61.0
+%global libusb_version 1.0.9
+%global libcurl_version 7.62.0
 %global libjcat_version 0.1.0
-%global systemd_version 231
+%global systemd_version 249
 %global json_glib_version 1.1.1
 
 # although we ship a few tiny python files these are utilities that 99.99%
@@ -14,16 +14,20 @@
 
 %global enable_ci 0
 %global enable_tests 1
-%global enable_dummy 1
-%global __meson_wrap_mode default
+%global __meson_wrap_mode nodownload
 
 # fwupd.efi is only available on these arches
-%ifarch x86_64 aarch64
+%ifarch x86_64 aarch64 riscv64
 %global have_uefi 1
 %endif
 
+# gpio.h is only available on these arches
+%ifarch x86_64 aarch64
+%global have_gpio 1
+%endif
+
 # flashrom is only available on these arches
-%ifarch i686 x86_64 armv7hl aarch64 ppc64le
+%ifarch i686 x86_64 armv7hl aarch64 ppc64le riscv64
 %global have_flashrom 1
 %endif
 
@@ -31,9 +35,9 @@
 %global have_msr 1
 %endif
 
-# libsmbios is only available on x86
-%ifarch x86_64
-%global have_dell 1
+# Until we actually have seen it outside x86
+%ifarch i686 x86_64
+%global have_thunderbolt 1
 %endif
 
 # only available recently
@@ -41,68 +45,69 @@
 %global have_modem_manager 1
 %endif
 
+%if 0%{?fedora}
+%global have_passim 1
+%endif
+
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   #VERSION#
 Release:   0.#BUILD#%{?alphatag}%{?dist}
-License:   LGPLv2+
+License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: libxmlb-devel >= %{libxmlb_version}
-BuildRequires: libgcab1-devel
-BuildRequires: libgudev1-devel
-BuildRequires: libgusb-devel >= %{libgusb_version}
+BuildRequires: libusb1-devel >= %{libusb_version}
 BuildRequires: libcurl-devel >= %{libcurl_version}
 BuildRequires: libjcat-devel >= %{libjcat_version}
 BuildRequires: polkit-devel >= 0.103
+BuildRequires: protobuf-c-devel
+BuildRequires: python3-packaging
+BuildRequires: python3-jinja2
 BuildRequires: sqlite-devel
 BuildRequires: systemd >= %{systemd_version}
 BuildRequires: systemd-devel
 BuildRequires: libarchive-devel
+BuildRequires: libcbor-devel
+BuildRequires: libblkid-devel
+%if 0%{?have_passim}
+BuildRequires: passim-devel
+%endif
 BuildRequires: gobject-introspection-devel
-BuildRequires: gcab
 %ifarch %{valgrind_arches}
 BuildRequires: valgrind
 BuildRequires: valgrind-devel
 %endif
-BuildRequires: elfutils-libelf-devel
-BuildRequires: gtk-doc
+BuildRequires: gi-docgen
 BuildRequires: gnutls-devel
 BuildRequires: gnutls-utils
 BuildRequires: meson
-BuildRequires: help2man
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: vala
-BuildRequires: bash-completion
+BuildRequires: pkgconfig(bash-completion)
 BuildRequires: git-core
 %if 0%{?have_flashrom}
 BuildRequires: flashrom-devel >= 1.2-2
 %endif
+BuildRequires: libdrm-devel
 
 %if 0%{?have_modem_manager}
 BuildRequires: ModemManager-glib-devel >= 1.10.0
 BuildRequires: libqmi-devel >= 1.22.0
+BuildRequires: libmbim-devel
 %endif
 
 %if 0%{?have_uefi}
-BuildRequires: efivar-devel >= 33
-BuildRequires: python3 python3-cairo python3-gobject python3-pillow
+BuildRequires: python3 python3-cairo python3-gobject
 BuildRequires: pango-devel
 BuildRequires: cairo-devel cairo-gobject-devel
 BuildRequires: freetype
 BuildRequires: fontconfig
 BuildRequires: google-noto-sans-cjk-ttc-fonts
-BuildRequires: gnu-efi-devel
 BuildRequires: tpm2-tss-devel >= 2.2.3
-BuildRequires: pesign
-%endif
-
-%if 0%{?have_dell}
-BuildRequires: efivar-devel >= 33
-BuildRequires: libsmbios-devel >= 2.3.0
 %endif
 
 Requires(post): systemd
@@ -111,18 +116,12 @@ Requires(postun): systemd
 
 Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libxmlb%{?_isa} >= %{libxmlb_version}
-Requires: libgusb%{?_isa} >= %{libgusb_version}
-Requires: bubblewrap
+Requires: libusb1%{?_isa} >= %{libusb_version}
 Requires: shared-mime-info
 
 %if 0%{?rhel} > 7 || 0%{?fedora} > 28
 Recommends: python3
 %endif
-
-Obsoletes: fwupd-sign < 0.1.6
-Obsoletes: libebitdo < 0.7.5-3
-Obsoletes: libdfu < 1.0.0
-Obsoletes: fwupd-labels < 1.1.0-1
 
 Obsoletes: dbxtool < 9
 Provides: dbxtool
@@ -138,6 +137,10 @@ Provides: fwupdate-efi
 # optional, but a really good idea
 Recommends: udisks2
 Recommends: bluez
+Recommends: jq
+%if 0%{?have_passim}
+Recommends: passim
+%endif
 
 %if 0%{?have_modem_manager}
 Recommends: %{name}-plugin-modem-manager
@@ -146,6 +149,7 @@ Recommends: %{name}-plugin-modem-manager
 Recommends: %{name}-plugin-flashrom
 %endif
 %if 0%{?have_uefi}
+Recommends: %{name}-efi
 Recommends: %{name}-plugin-uefi-capsule-data
 %endif
 
@@ -163,6 +167,7 @@ Files for development with %{name}.
 
 %package tests
 Summary: Data files for installed tests
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description tests
 Data files for installed tests.
@@ -170,6 +175,7 @@ Data files for installed tests.
 %if 0%{?have_modem_manager}
 %package plugin-modem-manager
 Summary: fwupd plugin using ModemManger
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description plugin-modem-manager
 This provides the optional package which is only required on hardware that
@@ -179,6 +185,7 @@ might have mobile broadband hardware. It is probably not required on servers.
 %if 0%{?have_flashrom}
 %package plugin-flashrom
 Summary: fwupd plugin using flashrom
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description plugin-flashrom
 This provides the optional package which is only required on hardware that
@@ -188,12 +195,34 @@ can be flashed using flashrom. It is probably not required on servers.
 %if 0%{?have_uefi}
 %package plugin-uefi-capsule-data
 Summary: Localized data for the UEFI UX capsule
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description plugin-uefi-capsule-data
 This provides the pregenerated BMP artwork for the UX capsule, which allows the
 "Installing firmware update…" localized text to be shown during a UEFI firmware
 update operation. This subpackage is probably not required on embedded hardware
 or server machines.
+%endif
+
+%if 0%{?qubes_packages}
+%package qubes-dom0
+Summary: fwupd wrapper for Qubes OS - dom0 scripts
+Requires:   fwupd >= 2.0.0
+Requires:   libjcat >= 0.1.6
+Requires:   python3-packaging
+Requires:   sequoia-sqv
+
+%description qubes-dom0
+fwupd wrapper for Qubes OS
+
+%package qubes-vm
+Summary: fwupd wrapper for Qubes OS - VM scripts
+Requires:   fwupd >= 2.0.0
+Requires:   libjcat >= 0.1.6
+Requires:   python3-packaging
+
+%description qubes-vm
+fwupd wrapper for Qubes OS
 %endif
 
 %prep
@@ -204,58 +233,60 @@ or server machines.
 %meson \
 %if 0%{?enable_ci}
     --werror \
+    -Db_coverage=true \
+    -Db_sanitize=address,undefined \
+%else
+    -Dsupported_build=enabled \
 %endif
-    -Dgtkdoc=true \
+    -Dumockdev_tests=disabled \
+    -Ddocs=enabled \
 %if 0%{?enable_tests}
     -Dtests=true \
 %else
     -Dtests=false \
 %endif
-%if 0%{?enable_dummy}
-    -Dplugin_dummy=true \
-%else
-    -Dplugin_dummy=false \
-%endif
 %if 0%{?have_flashrom}
-    -Dplugin_flashrom=true \
+    -Dplugin_flashrom=enabled \
 %else
-    -Dplugin_flashrom=false \
+    -Dplugin_flashrom=disabled \
 %endif
 %if 0%{?have_msr}
-    -Dplugin_msr=true \
+    -Dplugin_msr=enabled \
 %else
-    -Dplugin_msr=false \
+    -Dplugin_msr=disabled \
 %endif
-    -Dplugin_thunderbolt=true \
+%if 0%{?have_gpio}
+    -Dplugin_gpio=enabled \
+%else
+    -Dplugin_gpio=disabled \
+%endif
 %if 0%{?have_uefi}
-    -Dplugin_uefi_capsule=true \
-    -Dplugin_uefi_pk=true \
-    -Defi_sbat_distro_id="fedora" \
-    -Defi_sbat_distro_summary="The Fedora Project" \
-    -Defi_sbat_distro_pkgname="%{name}" \
-    -Defi_sbat_distro_version="%{version}" \
-    -Defi_sbat_distro_url="https://src.fedoraproject.org/rpms/%{name}" \
-    -Dplugin_tpm=true \
+    -Dplugin_uefi_capsule=enabled \
+    -Dplugin_uefi_pk=enabled \
+    -Dplugin_tpm=enabled \
 %else
-    -Dplugin_uefi_capsule=false \
-    -Dplugin_uefi_pk=false \
-    -Dplugin_tpm=false \
-%endif
-%if 0%{?have_dell}
-    -Dplugin_dell=true \
-    -Dplugin_synaptics_mst=true \
-%else
-    -Dplugin_dell=false \
-    -Dplugin_synaptics_mst=false \
+    -Dplugin_uefi_capsule=disabled \
+    -Dplugin_uefi_pk=disabled \
+    -Dplugin_tpm=disabled \
 %endif
 %if 0%{?have_modem_manager}
-    -Dplugin_modem_manager=true \
+    -Dplugin_modem_manager=enabled \
 %else
-    -Dplugin_modem_manager=false \
+    -Dplugin_modem_manager=disabled \
+%endif
+%if 0%{?have_passim}
+    -Dpassim=enabled \
+%else
+    -Dpassim=disabled \
+%endif
+%if 0%{?qubes_packages}
+    -Dqubes=true \
 %endif
     -Dman=true \
-    -Dbluez=true \
-    -Dsupported_build=true
+    -Dsystemd_unit_user="" \
+    -Dbluez=enabled \
+    -Dplugin_powerd=disabled \
+    -Dlaunchd=disabled
 
 %meson_build
 
@@ -270,21 +301,6 @@ or server machines.
 %install
 %meson_install
 
-# sign fwupd.efi loader
-%if 0%{?have_uefi}
-%ifarch x86_64
-%global efiarch x64
-%endif
-%ifarch aarch64
-%global efiarch aa64
-%endif
-%global fwup_efi_fn $RPM_BUILD_ROOT%{_libexecdir}/fwupd/efi/fwupd%{efiarch}.efi
-%pesign -s -i %{fwup_efi_fn} -o %{fwup_efi_fn}.tmp
-%define __pesign_client_cert fwupd-signer
-%pesign -s -i %{fwup_efi_fn}.tmp -o %{fwup_efi_fn}.signed
-rm -vf %{fwup_efi_fn}.tmp
-%endif
-
 mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 
 # workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1757948
@@ -293,59 +309,36 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %find_lang %{name}
 
 %post
-%systemd_post fwupd.service
-
-# change vendor-installed remotes to use the default keyring type
-for fn in /etc/fwupd/remotes.d/*.conf; do
-    if grep -q "Keyring=gpg" "$fn"; then
-        sed -i 's/Keyring=gpg/#Keyring=pkcs/g' "$fn";
-    fi
-done
+%systemd_post fwupd.service fwupd-refresh.timer
 
 %preun
-%systemd_preun fwupd.service
+%systemd_preun fwupd.service fwupd-refresh.timer
 
 %postun
-%systemd_postun_with_restart fwupd.service
-%systemd_postun_with_restart pesign.service
+%systemd_postun_with_restart fwupd.service fwupd-refresh.timer
+
+%triggerun -- fedora-release-common < 39-0.28
+# For upgrades from versions before fwupd-refresh.timer was enabled by default
+systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 
 %files -f %{name}.lang
-%doc README.md AUTHORS
+%doc README.md
 %license COPYING
-%config(noreplace)%{_sysconfdir}/fwupd/daemon.conf
-%config(noreplace)%{_sysconfdir}/fwupd/upower.conf
-%if 0%{?have_uefi}
-%config(noreplace)%{_sysconfdir}/fwupd/uefi_capsule.conf
-%endif
-%config(noreplace)%{_sysconfdir}/fwupd/redfish.conf
-%config(noreplace)%{_sysconfdir}/fwupd/thunderbolt.conf
+%config(noreplace)%{_sysconfdir}/fwupd/fwupd.conf
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
-%ifarch i686 x86_64
+%ifarch x86_64
 %{_libexecdir}/fwupd/fwupd-detect-cet
 %endif
-%{_libexecdir}/fwupd/fwupdoffline
-%if 0%{?have_uefi}
-%{_libexecdir}/fwupd/efi/*.efi
-%{_libexecdir}/fwupd/efi/*.efi.signed
-%{_bindir}/fwupdate
-%{_bindir}/fwupdtpmevlog
-%endif
-%{_bindir}/dfu-tool
-%if 0%{?have_uefi}
 %{_bindir}/dbxtool
-%endif
 %{_bindir}/fwupdmgr
 %{_bindir}/fwupdtool
-%{_bindir}/fwupdagent
 %dir %{_sysconfdir}/fwupd
+%dir %{_sysconfdir}/fwupd/bios-settings.d
+%{_sysconfdir}/fwupd/bios-settings.d/README.md
 %dir %{_sysconfdir}/fwupd/remotes.d
-%if 0%{?have_dell}
-%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/dell-esrt.conf
-%endif
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/lvfs.conf
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/lvfs-testing.conf
-%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/vendor.conf
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/vendor-directory.conf
 %config(noreplace)%{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
@@ -355,135 +348,54 @@ done
 %{_datadir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/bash-completion/completions/fwupdtool
-%{_datadir}/bash-completion/completions/fwupdagent
 %{_datadir}/fish/vendor_completions.d/fwupdmgr.fish
+%dir %{_datadir}/fwupd
+%dir %{_datadir}/fwupd/metainfo
 %{_datadir}/fwupd/metainfo/org.freedesktop.fwupd*.metainfo.xml
-%if 0%{?have_dell}
-%{_datadir}/fwupd/remotes.d/dell-esrt/metadata.xml
-%endif
+%dir %{_datadir}/fwupd/remotes.d
+%dir %{_datadir}/fwupd/remotes.d/vendor
+%dir %{_datadir}/fwupd/remotes.d/vendor/firmware
 %{_datadir}/fwupd/remotes.d/vendor/firmware/README.md
 %{_datadir}/dbus-1/interfaces/org.freedesktop.fwupd.xml
 %{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
 %{_mandir}/man1/fwupdtool.1*
-%{_mandir}/man1/fwupdagent.1*
-%{_mandir}/man1/dfu-tool.1*
-%if 0%{?have_uefi}
 %{_mandir}/man1/dbxtool.*
-%endif
 %{_mandir}/man1/fwupdmgr.1*
-%if 0%{?have_uefi}
-%{_mandir}/man1/fwupdate.1*
-%{_mandir}/man1/fwupdtpmevlog.1*
-%endif
+%{_mandir}/man5/*
+%{_mandir}/man8/*
 %{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
-%{_datadir}/icons/hicolor/scalable/apps/org.freedesktop.fwupd.svg
+%{_datadir}/icons/hicolor/*/apps/org.freedesktop.fwupd.*
 %{_datadir}/fwupd/firmware_packager.py
 %{_datadir}/fwupd/simple_client.py
 %{_datadir}/fwupd/add_capsule_header.py
 %{_datadir}/fwupd/install_dell_bios_exe.py
-%{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
 %{_unitdir}/fwupd-refresh.service
 %{_unitdir}/fwupd-refresh.timer
-%{_presetdir}/fwupd-refresh.preset
-%{_unitdir}/system-update.target.wants/
 %dir %{_localstatedir}/lib/fwupd
 %dir %{_localstatedir}/cache/fwupd
 %dir %{_datadir}/fwupd/quirks.d
-%{_datadir}/fwupd/quirks.d/*.quirk
-%{_localstatedir}/lib/fwupd/builder/README.md
-%{_libdir}/libfwupd*.so.*
-%{_libdir}/girepository-1.0/Fwupd-2.0.typelib
-%{_libdir}/girepository-1.0/FwupdPlugin-1.0.typelib
-/usr/lib/udev/rules.d/*.rules
-/usr/lib/systemd/system-shutdown/fwupd.shutdown
-%dir %{_libdir}/fwupd-plugins-3
-%{_libdir}/fwupd-plugins-3/libfu_plugin_acpi_dmar.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_acpi_facp.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_altos.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_ata.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_bcm57xx.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_ccgx.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_cros_ec.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_cpu.so
-%if 0%{?have_dell}
-%{_libdir}/fwupd-plugins-3/libfu_plugin_dell.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_dell_esrt.so
-%endif
-%{_libdir}/fwupd-plugins-3/libfu_plugin_dell_dock.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_dfu_csr.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_elantp.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_emmc.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_ep963x.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_fresco_pd.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_hailuck.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_iommu.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_jabra.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_linux_lockdown.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_linux_sleep.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_linux_swap.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_linux_tainted.so
-%if 0%{?have_msr}
-%{_libdir}/fwupd-plugins-3/libfu_plugin_msr.so
-%endif
-%{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_nvme.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_optionrom.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_pci_bcr.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_pci_mei.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_pixart_rf.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hid.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hub.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_solokey.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_steelseries.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_superio.so
-%if 0%{?have_dell}
-%{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_mst.so
-%endif
-%{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_cxaudio.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_prometheus.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_rmi.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_system76_launch.so
-%if 0%{?enable_dummy}
-%{_libdir}/fwupd-plugins-3/libfu_plugin_test.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_test_ble.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_invalid.so
-%endif
-%{_libdir}/fwupd-plugins-3/libfu_plugin_thelio_io.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt.so
+%{_datadir}/fwupd/quirks.d/builtin.quirk.gz
+%{_datadir}/doc/fwupd/*.html
 %if 0%{?have_uefi}
-%{_libdir}/fwupd-plugins-3/libfu_plugin_tpm.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_tpm_eventlog.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_bios.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_capsule.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_dbx.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_pk.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
+%config(noreplace)%{_sysconfdir}/grub.d/35_fwupd
 %endif
-%{_libdir}/fwupd-plugins-3/libfu_plugin_logind.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_logitech_hidpp.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_vli.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_raw.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_usb.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_goodixmoc.so
+%{_libdir}/libfwupd.so.3*
+%{_libdir}/girepository-1.0/Fwupd-2.0.typelib
+/usr/lib/systemd/system-shutdown/fwupd.shutdown
+%dir %{_libdir}/fwupd-%{version}
+%{_libdir}/fwupd-%{version}/libfwupd*.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
 
 %if 0%{?have_modem_manager}
 %files plugin-modem-manager
-%{_libdir}/fwupd-plugins-3/libfu_plugin_modem_manager.so
+%{_libdir}/fwupd-%{version}/libfu_plugin_modem_manager.so
 %endif
 %if 0%{?have_flashrom}
 %files plugin-flashrom
-%{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
+%{_libdir}/fwupd-%{version}/libfu_plugin_flashrom.so
 %endif
 %if 0%{?have_uefi}
 %files plugin-uefi-capsule-data
@@ -492,26 +404,47 @@ done
 
 %files devel
 %{_datadir}/gir-1.0/Fwupd-2.0.gir
-%{_datadir}/gir-1.0/FwupdPlugin-1.0.gir
-%{_datadir}/gtk-doc/html/fwupd
+%{_datadir}/doc/fwupd/libfwupdplugin
+%{_datadir}/doc/fwupd/libfwupd
+%{_datadir}/doc/libfwupdplugin
+%{_datadir}/doc/libfwupd
 %{_datadir}/vala/vapi
-%{_includedir}/fwupd-1
+%{_includedir}/fwupd-3
 %{_libdir}/libfwupd*.so
 %{_libdir}/pkgconfig/fwupd.pc
-%{_libdir}/pkgconfig/fwupdplugin.pc
 
 %files tests
 %if 0%{?enable_tests}
-%dir %{_datadir}/installed-tests/fwupd
-%{_datadir}/installed-tests/fwupd/fwupd-tests.xml
-%{_datadir}/installed-tests/fwupd/*.test
-%{_datadir}/installed-tests/fwupd/*.cab
-%{_datadir}/installed-tests/fwupd/*.sh
-%{_libexecdir}/installed-tests/fwupd/*
-%dir %{_sysconfdir}/fwupd/remotes.d
-%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
+%{_datadir}/fwupd/host-emulate.d/*.json.gz
+%{_datadir}/installed-tests/fwupd
+%{_libexecdir}/installed-tests/fwupd
+%{_datadir}/fwupd/remotes.d/fwupd-tests.conf
+%endif
+
+%if 0%{?qubes_packages}
+%files qubes-vm
+%{_libexecdir}/qubes-fwupd/fwupd_common_vm.py
+%{_libexecdir}/qubes-fwupd/fwupd_download_updates.py
+
+%files qubes-dom0
+%{_datadir}/qubes-fwupd/src/fwupd_receive_updates.py
+%{_sbindir}/qubes-fwupdmgr
+%{_datadir}/qubes-fwupd/src/qubes_fwupdmgr.py
+%{_datadir}/qubes-fwupd/src/qubes_fwupd_common.py
+%{_datadir}/qubes-fwupd/src/qubes_fwupd_heads.py
+%{_datadir}/qubes-fwupd/src/qubes_fwupd_update.py
+%{_datadir}/qubes-fwupd/src/__init__.py
+%{_datadir}/qubes-fwupd/test/fwupd_logs.py
+%{_datadir}/qubes-fwupd/test/test_qubes_fwupdmgr.py
+%{_datadir}/qubes-fwupd/test/test_qubes_fwupd_heads.py
+%{_datadir}/qubes-fwupd/test/__init__.py
+%{_datadir}/qubes-fwupd/test/logs/get_devices.log
+%{_datadir}/qubes-fwupd/test/logs/get_updates.log
+%{_datadir}/qubes-fwupd/test/logs/help.log
+%{_datadir}/qubes-fwupd/test/logs/firmware.metainfo.xml
+%{_datadir}/qubes-fwupd/test/logs/metainfo_name/firmware.metainfo.xml
+%{_datadir}/qubes-fwupd/test/logs/metainfo_version/firmware.metainfo.xml
 %endif
 
 %changelog
-* #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#
-- Update from git
+%autochangelog

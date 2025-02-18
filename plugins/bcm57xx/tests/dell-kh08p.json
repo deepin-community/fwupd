@@ -1,0 +1,28 @@
+{
+  "name": "Dell KH08P [BCM5719]",
+  "interactive": false,
+  "steps": [
+    {
+      "url": "https://fwupd.org/downloads/6cf165037a381eb29c183319e031def6b87e3ce955781ecf73f28751a1365db2-kh08p-bcm5719-0.4.62.cab",
+      "components": [
+        {
+          "version": "0.4.62",
+          "guids": [
+            "ec5b8a9e-973b-58cc-935b-8322fabaebe9"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "https://fwupd.org/downloads/c786be1c525ad062c5af8983474a9412f83f5251efb767fe9cb414a3a124b8ce-kh08p-bcm5719-0.4.64.cab",
+      "components": [
+        {
+          "version": "0.4.64",
+          "guids": [
+            "ec5b8a9e-973b-58cc-935b-8322fabaebe9"
+          ]
+        }
+      ]
+    }
+  ]
+}

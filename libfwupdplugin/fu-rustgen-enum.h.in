@@ -1,0 +1,23 @@
+typedef enum {
+{%- for item in obj.items %}
+{%- if item.default %}
+    {{item.c_define}} = {{item.default}},
+{%- else %}
+    {{item.c_define}},
+{%- endif %}
+{%- endfor %}
+} {{obj.c_type}};
+
+{%- if not obj.items_any_defaults %}
+#define {{obj.c_define_last}} {{obj.items|length}}
+{%- endif %}
+
+{%- if obj.export('ToString') == Export.PUBLIC %}
+const gchar *{{obj.c_method('ToString')}}({{obj.c_type}} val) G_GNUC_CONST;
+{%- endif %}
+{%- if obj.export('ToBitString') == Export.PUBLIC %}
+gchar *{{obj.c_method('ToString')}}({{obj.c_type}} val) G_GNUC_CONST;
+{%- endif %}
+{%- if obj.export('FromString') == Export.PUBLIC %}
+{{obj.c_type}} {{obj.c_method('FromString')}}(const gchar *val) G_GNUC_CONST;
+{%- endif %}

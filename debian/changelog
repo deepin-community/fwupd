@@ -1,3 +1,516 @@
+fwupd (2.0.6-2) unstable; urgency=medium
+
+  * d/control: Add polkitd to b-d.
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 14 Feb 2025 13:05:05 -0600
+
+fwupd (2.0.6-1) unstable; urgency=medium
+
+  * New upstream version (2.0.6)
+  * Drop patch for unneeded file.
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 14 Feb 2025 08:12:59 -0600
+
+fwupd (2.0.5-1) unstable; urgency=medium
+
+  * New upstream version (2.0.5)
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 20 Jan 2025 06:54:06 -0600
+
+fwupd (2.0.3-3) unstable; urgency=medium
+
+  * Revert "Add trivial compile/link/run test for libfwupdplugin-dev"
+
+ -- Mario Limonciello <superm1@gmail.com>  Sat, 07 Dec 2024 10:47:50 -0600
+
+fwupd (2.0.3-2) unstable; urgency=medium
+
+  * Correct a typo in flaky tests patch
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 06 Dec 2024 21:08:22 -0600
+
+fwupd (2.0.3-1) unstable; urgency=medium
+
+  [ Mario Limonciello ]
+  * New upstream version (2.0.3)
+  * Mark fwupdmgr-p2p tests as flaky (Closes: #1070790)
+
+  [ Simon McVittie ]
+  * Add trivial compile/link/run test for libfwupdplugin-dev
+  * d/control, d/control.in: tests depend on a system bus, not dbus-x11
+    (Closes: #1079481)
+  * d/control, d/control.in: Recommend a non-specific D-Bus system bus
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 06 Dec 2024 09:58:30 -0600
+
+fwupd (2.0.2-2) unstable; urgency=medium
+
+  * Backport a patch to fix a crash on newer AMD CPUs.
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 27 Nov 2024 20:04:18 -0600
+
+fwupd (2.0.2-1) unstable; urgency=medium
+
+  * New upstream version (2.0.2)
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 25 Nov 2024 06:49:00 -0600
+
+fwupd (2.0.1-1) experimental; urgency=medium
+
+  * New upstream version (2.0.1)
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 15 Oct 2024 08:38:45 -0500
+
+fwupd (2.0.0-1) experimental; urgency=medium
+
+  * New upstream version (2.0.0)
+  * Breaks ABI, introduce new libfwupd3 library for other software to use.
+  * Adjust build depends for new version.
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 09 Oct 2024 09:34:25 -0500
+
+fwupd (1.9.25-1) unstable; urgency=medium
+
+  * New upstream version (1.9.25)
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 25 Sep 2024 09:54:26 -0500
+
+fwupd (1.9.24-1) unstable; urgency=medium
+
+  * New upstream version (1.9.24)
+    - Improves ESP detection false positives (LP: #2077553)
+    - Adds support for mediatek scalar (LP: #2076151)
+    - Fixes redfish protocol handling (LP: #2077411)
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 21 Aug 2024 13:39:05 -0500
+
+fwupd (1.9.21-1) unstable; urgency=medium
+
+  * New upstream version (1.9.21)
+
+ -- Mario Limonciello <superm1@gmail.com>  Thu, 13 Jun 2024 11:56:56 -0500
+
+fwupd (1.9.20-1) unstable; urgency=medium
+
+  * New upstream version (1.9.20)
+  * Fixes fwupdmgr auto-complete (LP: #2065948)
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 20 May 2024 09:08:59 -0500
+
+fwupd (1.9.19-1) unstable; urgency=medium
+
+  * New upstream version (1.9.19)
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 03 May 2024 07:33:51 -0500
+
+fwupd (1.9.16-1) unstable; urgency=medium
+
+  * New upstream version (1.9.16).
+  * Drop all patches, upstream.
+  * debian/control: 
+    - b-d on libxmlb 0.3.17.
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 05 Apr 2024 06:36:14 -0500
+
+fwupd (1.9.15-2) unstable; urgency=medium
+
+  * Backport patches to improve heuristics in ESP detection with a non
+    GRUB bootloader.
+  * Backport patch to fix cleanup after updates
+  * Backport patch to display CoD/NVRAM/GRUB in UEFI update summary.
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 22 Mar 2024 12:25:50 -0500
+
+fwupd (1.9.15-1) unstable; urgency=medium
+
+  * New upstream version (1.9.15)
+  * Drop patch included upstream
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 11 Mar 2024 12:31:22 -0500
+
+fwupd (1.9.14-2) unstable; urgency=medium
+
+  [ Arnaud Rebillout ]
+  * Call dh_installsysusers explicitly, depend on systemd-sysusers
+    (Closes: #1065466)
+
+  [ Mario Limonciello ]
+  * Backport a patch to avoid probing for BOS descriptor on really old USB devices
+
+ -- Mario Limonciello <superm1@gmail.com>  Thu, 07 Mar 2024 06:37:07 -0600
+
+fwupd (1.9.14-1) unstable; urgency=medium
+
+  * New upstream version (1.9.14)
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 26 Feb 2024 12:52:35 -0600
+
+fwupd (1.9.13-1) unstable; urgency=medium
+
+  * New upstream version (1.9.13)
+  * Fixes conffile migrations from some older versions.
+
+ -- Mario Limonciello <superm1@gmail.com>  Thu, 08 Feb 2024 11:51:17 -0600
+
+fwupd (1.9.12-4) unstable; urgency=medium
+
+  * debian/tests/ci: Put all stderr into stdout.
+    fwupdtool is pretty verbose with messages that happen to go to stderr
+    but aren't errors.
+
+ -- Mario Limonciello <superm1@gmail.com>  Thu, 25 Jan 2024 14:19:28 -0600
+
+fwupd (1.9.12-3) unstable; urgency=medium
+
+  * Try harder to correct the FTBFS so that both libsystemd-dev and
+    systemd-dev get installed.
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 24 Jan 2024 12:32:54 -0600
+
+fwupd (1.9.12-2) unstable; urgency=medium
+
+  * Correct a FTBFS mistake where the systemd-dev was applied to the wrong
+    alternative.  It didn't reproduce locally because my chroot was old.
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 24 Jan 2024 11:25:54 -0600
+
+fwupd (1.9.12-1) unstable; urgency=medium
+
+  * New upstream version (1.9.12)
+  * Adjust build-depends to cover systemd-dev (Closes: #1060577)
+  * Build depends on valgrind-if-available.  Enables for loongarch64
+    too (Closes: #1059606)
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 24 Jan 2024 06:56:42 -0600
+
+fwupd (1.9.11-1) unstable; urgency=medium
+
+  * New upstream version (1.9.11)
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 03 Jan 2024 07:39:33 -0600
+
+fwupd (1.9.10-1) unstable; urgency=medium
+
+  * New upstream version (1.9.10)
+  * Fixes scroll bars from fwupd-refresh (Closes: #1040245)
+  * Stop advertising update support for certain unsupported genesys hubs
+    (LP: #2044022)
+  * Remove extra conffiles with the 1.9.10~ version instead.
+    (Closes: #932617)
+  * Fix FTBFS when udev.pc changes (Closes: #1057241)
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 04 Dec 2023 08:58:30 -0600
+
+fwupd (1.9.9-2) unstable; urgency=medium
+
+  * Backport a patch to fix probing on amd-gpu.
+  * Remove extra confffiles (Closes: #1040350)
+  * Remove extra stuff in /var during purge (Closes: #932617)
+
+ -- Mario Limonciello <superm1@gmail.com>  Sat, 25 Nov 2023 07:36:55 -0600
+
+fwupd (1.9.9-1) unstable; urgency=medium
+
+  * New upstream version (1.9.9)
+  * Handle /usr merge (Closes: #1052993)
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 20 Nov 2023 14:53:56 -0600
+
+fwupd (1.9.8-1) unstable; urgency=medium
+
+  * New upstream version (1.9.8)
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 14 Nov 2023 12:02:51 -0600
+
+fwupd (1.9.7-1) unstable; urgency=medium
+
+  * New upstream version (1.9.7)
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 01 Nov 2023 08:05:20 -0500
+
+fwupd (1.9.6-1) unstable; urgency=medium
+
+  * New upstream version (1.9.6)
+  * Drop unneeded libsmbios-dev and libefiboot-dev build-depends
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 06 Oct 2023 11:38:45 -0500
+
+fwupd (1.9.5-1) unstable; urgency=medium
+
+  * New upstream version (1.9.5)
+  * Add libzstd-dev to build-depends.
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 05 Sep 2023 20:36:39 -0500
+
+fwupd (1.9.4-2) unstable; urgency=medium
+
+  * Fix a FTBFS for package arch-ind builds without systemd directory.
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 22 Aug 2023 12:09:36 -0500
+
+fwupd (1.9.4-1) unstable; urgency=medium
+
+  * New upstream version (1.9.4)
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 22 Aug 2023 07:12:37 -0500
+
+fwupd (1.9.3-1) unstable; urgency=medium
+
+  * New upstream version (1.9.3)
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 11 Jul 2023 11:15:06 -0500
+
+fwupd (1.9.1-1) experimental; urgency=medium
+
+  * New upstream version (1.9.1)
+  * Drop all patches
+
+ -- Mario Limonciello <superm1@gmail.com>  Sat, 13 May 2023 06:53:09 -0500
+
+fwupd (1.8.12-2) unstable; urgency=medium
+
+  * Backport a series of patches to help with autopkgtest failing when
+    compiled against an older gusb.
+
+ -- Mario Limonciello <superm1@gmail.com>  Sun, 26 Feb 2023 11:05:26 -0600
+
+fwupd (1.8.12-1) unstable; urgency=medium
+
+  * New upstream version (1.8.12)
+  * Fixes some regressions with other fwupd clients.
+  * Add pandoc to b-d
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 24 Feb 2023 14:23:01 -0600
+
+fwupd (1.8.11-1) unstable; urgency=medium
+
+  * New upstream version (1.8.11)
+  * Add libjaylink-dev for flashrom
+
+ -- Mario Limonciello <superm1@gmail.com>  Thu, 23 Feb 2023 09:52:25 -0600
+
+fwupd (1.8.10-2) unstable; urgency=medium
+
+  * Backport a patch to hopefully help with autopkgtest failures on !x86
+
+ -- Mario Limonciello <mario.limonciello@amd.com>  Tue, 24 Jan 2023 09:12:43 -0600
+
+fwupd (1.8.10-1) unstable; urgency=medium
+
+  * New upstream version (1.8.10)
+  * Drop patches, upstream
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 23 Jan 2023 08:18:34 -0600
+
+fwupd (1.8.9-3) unstable; urgency=medium
+
+  * Backport a patch to fix the autopkgtest failure on s390x.
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 16 Jan 2023 14:36:18 -0600
+
+fwupd (1.8.9-2) unstable; urgency=medium
+
+  * Backport a patch to fix FTBFS on s390x.
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 04 Jan 2023 10:23:10 -0600
+
+fwupd (1.8.9-1) unstable; urgency=medium
+
+  * New upstream version (1.8.9)
+  * Drop all patches that are now upstream
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 03 Jan 2023 08:35:17 -0600
+
+fwupd (1.8.8-3) unstable; urgency=medium
+
+  * Backport another patch to fix another autopkgtest failure
+
+ -- Mario Limonciello <superm1@gmail.com>  Thu, 22 Dec 2022 09:43:12 -0600
+
+fwupd (1.8.8-2) unstable; urgency=medium
+
+  * Backport a patch for autopkgtest failure found in Ubuntu.
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 19 Dec 2022 23:08:43 -0600
+
+fwupd (1.8.8-1) unstable; urgency=medium
+
+  * New upstream version (1.8.8)
+  * drop symbol upstream.
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 07 Dec 2022 20:03:31 -0600
+
+fwupd (1.8.6-2) unstable; urgency=medium
+
+  * debian/control:
+    - Drop gi-docgen from B-d that was re-added when dependencies
+      regenerated.  This is only supposed to be present in B-d-i
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 07 Oct 2022 16:07:34 -0500
+
+fwupd (1.8.6-1) unstable; urgency=medium
+
+  * New upstream version (1.8.6)
+    - Notable change upstream is that libfwupdplugin is no longer a library
+      that is available for developing out-of-tree plugins.  All plugins are
+      now linked into an internal library distributed in the fwupd package.
+  * debian/control:
+    - Refresh for this upstream change.
+  * Drop all upstream patches.
+  * Add a patch to force rpath to fix a false positive dpkg-shlibdeps check
+    on some binaries.
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 07 Oct 2022 13:42:24 -0500
+
+fwupd (1.8.5-1) unstable; urgency=medium
+
+  * New upstream version (1.8.5)
+
+ -- Mario Limonciello <superm1@gmail.com>  Thu, 22 Sep 2022 10:12:00 -0500
+
+fwupd (1.8.4-2) unstable; urgency=medium
+
+  * debian/control:
+    - Attempt to fix FTBFS related to documentation only building in certain
+      architectures.
+    - Fix valgrind architecture specific dependency.
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 30 Aug 2022 13:33:23 -0500
+
+fwupd (1.8.4-1) unstable; urgency=medium
+
+  * New upstream version (1.8.4)
+  * debian/control: refresh with upstream dependencies
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 30 Aug 2022 11:15:39 -0500
+
+fwupd (1.8.3-1) unstable; urgency=medium
+
+  * New upstream version (1.8.3)
+  * Drop COD patch
+  * Fixes HWIDs for some systems (LP: #1982103)
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 30 Aug 2022 06:46:52 -0500
+
+fwupd (1.8.2-1) unstable; urgency=medium
+
+  [ Mario Limonciello ]
+  * New upstream version (1.8.2)
+  * Backport a patch from upstream to disable capsule on disk by default outside
+    aarch64.  This fixes flashing on HP Dev One and several Insyde boxes.
+  * fix build with newer meson
+
+  [ Lukas MÃ¤rdian ]
+  * d/rules: enable plugin_logitech_bulkcontroller on Ubuntu, as the protobuf-c
+    MIR has been resolved (LP: 1956617)
+
+ -- Mario Limonciello <superm1@gmail.com>  Sat, 16 Jul 2022 08:59:57 -0500
+
+fwupd (1.8.1-2) unstable; urgency=medium
+
+  * Fix mistake in symbols file
+  * Fix gitignore
+
+ -- Mario Limonciello <superm1@gmail.com>  Wed, 29 Jun 2022 20:01:43 -0500
+
+fwupd (1.8.1-1) unstable; urgency=medium
+
+  * New upstream version (1.8.1) (LP: #1979963)
+  * Drop patch for systemd refresh unit, upstream.
+
+ -- Mario Limonciello <superm1@gmail.com>  Thu, 28 Apr 2022 23:56:33 -0500
+
+fwupd (1.7.7-1) unstable; urgency=medium
+
+  * New upstream version (1.7.7)
+    - Fixes some errors with TPM binary measurements. (LP: #1966364)
+  * Backport configuration option for systemd refresh unit user
+  * Run fwupd-refresh under a dedicated fwupd-refresh user (LP: #1969976)
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 25 Apr 2022 20:44:02 -0500
+
+fwupd (1.7.6-1) unstable; urgency=medium
+
+  * New upstream version (1.7.6)
+  * Drop all patches, upstream
+  * Add libqrtr-glib-dev to build depends
+
+ -- Mario Limonciello <superm1@gmail.com>  Sun, 27 Feb 2022 20:59:36 -0600
+
+fwupd (1.7.5-3) unstable; urgency=medium
+
+  * debian/tests:
+    - Disable blocking container virtualization only for autopkgtest
+
+ -- Mario Limonciello <superm1@gmail.com>  Sat, 19 Feb 2022 07:21:22 -0600
+
+fwupd (1.7.5-2) unstable; urgency=medium
+
+  * Backport a series of patches that fix autopkgtest failures in Debian
+    and Ubuntu.
+  * Backport a patch to avoid running fwupd-refresh in containers.
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 18 Feb 2022 11:50:37 -0600
+
+fwupd (1.7.5-1) unstable; urgency=medium
+
+  * New upstream version (1.7.5)
+    - Enable modem manager plugin by default
+  * Drop efivar compatibility patch, upstream
+  * backport a patch to fix dell wd19 TBT updates
+  * backport a patch for community messaging issue
+  * Backport a patch to allow falling back to signed binary if
+    unsigned binary not present
+  * Drop fwupd-unsigned from Recommends
+
+ -- Mario Limonciello <superm1@gmail.com>  Tue, 15 Feb 2022 08:26:21 -0600
+
+fwupd (1.7.4-2) unstable; urgency=medium
+
+  * Add hard dependencies on libfwupd2 and libfwupdplugin5 built with
+    us. Symbols suggest things should work, but maybe not. :-(
+    Closes: #1003664
+
+ -- Steve McIntyre <93sam@debian.org>  Thu, 10 Feb 2022 00:13:57 +0000
+
+fwupd (1.7.4-1) unstable; urgency=medium
+
+  * New upstream version (1.7.4)
+  * Drop manpages section patch, upstream
+  * Add a patch that fixes compilation with newer efivar
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 17 Jan 2022 09:42:56 -0600
+
+fwupd (1.7.3-1) unstable; urgency=medium
+
+  * New upstream version (1.7.3)
+  * ignore subprojects and build directory from upstream builds in same folder
+  * Update symbols and shared library name
+  * drop lintian overrides for EFI binary, gone from the split
+  * use wildcards in lintian override for library-not-linked-against-libc
+  * drop unused debian/source/include-binaries
+  * Add Rules-Requires-Root clause
+  * Fix man page location
+  * disable logitech bulk controller on ubuntu by default
+  * disable logitech bulk controller on ubuntu by default
+  * add dual license nature of dell-dock plugin to debian/copyright
+
+ -- Mario Limonciello <superm1@gmail.com>  Fri, 07 Jan 2022 23:41:05 -0600
+
+fwupd (1.7.1-1) unstable; urgency=medium
+
+  [ Mario Limonciello ]
+  * New upstream version (1.7.1)
+  * Update debian/control and debian/copyright for changes upstream
+  * Drop all patches, upstream
+  * Packaging changes for the split into fwupd/fwupd-efi.
+
+  [ Steve McIntyre ]
+  * Update Mario's email address in debian/control
+  * Move manpages into section 8, fix lintian warnings.
+
+ -- Mario Limonciello <superm1@gmail.com>  Mon, 03 Jan 2022 18:27:46 +0000
+
 fwupd (1.5.7-5) unstable; urgency=medium
 
   * Change dependency versioning strategy for the signed fwupd
@@ -778,7 +1291,7 @@ fwupd (0.9.6-1) unstable; urgency=medium
   * trivial: debian: add missing dh-strip-nondeterminism dependency
   * trivial: debian: update standards version
   * trivial: debian: remove transient items on purge (Closes: #868464, #868465)
-  * trivial: debian: recusively cleanup on purge
+  * trivial: debian: recursively cleanup on purge
   * trivial: fix various spelling errors
   * debian: run lintian as part of CI
   * Add capability to enable test suite via /etc/fwupd.conf

@@ -1,0 +1,3 @@
+# Parade PS175
+[I2C\NAME_1AF80175:00]
+Plugin = parade_lspcon

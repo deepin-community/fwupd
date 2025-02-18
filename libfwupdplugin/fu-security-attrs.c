@@ -1,53 +1,84 @@
 /*
- * Copyright (C) 2020 Richard Hughes <richard@hughsie.com>
+ * Copyright 2020 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
-#define G_LOG_DOMAIN				"FuSecurityAttrs"
+#define G_LOG_DOMAIN "FuSecurityAttrs"
 
 #include "config.h"
 
+#include <fwupd.h>
 #include <glib/gi18n.h>
 
-#include "fu-security-attrs.h"
-#include "fu-security-attrs-private.h"
 #include "fwupd-security-attr-private.h"
 
+#include "fu-security-attrs-private.h"
+#include "fu-security-attrs.h"
+
+/**
+ * FuSecurityAttrs:
+ *
+ * A set of Host Security ID attributes that represents the system state.
+ */
+
 struct _FuSecurityAttrs {
-	GObject			 parent_instance;
-	GPtrArray		*attrs;
+	GObject parent_instance;
+	GPtrArray *attrs;
 };
 
 /* probably sane to *not* make this part of the ABI */
-#define FWUPD_SECURITY_ATTR_ID_DOC_URL		"https://fwupd.github.io/hsi.html"
-
-G_DEFINE_TYPE (FuSecurityAttrs, fu_security_attrs, G_TYPE_OBJECT)
+#define FWUPD_SECURITY_ATTR_ID_DOC_URL "https://fwupd.github.io/libfwupdplugin/hsi.html"
 
 static void
-fu_security_attrs_finalize (GObject *obj)
+fu_security_attrs_codec_iface_init(FwupdCodecInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(FuSecurityAttrs,
+			fu_security_attrs,
+			G_TYPE_OBJECT,
+			G_IMPLEMENT_INTERFACE(FWUPD_TYPE_CODEC, fu_security_attrs_codec_iface_init))
+
+static void
+fu_security_attrs_finalize(GObject *obj)
 {
-	FuSecurityAttrs *self = FU_SECURITY_ATTRS (obj);
-	g_ptr_array_unref (self->attrs);
-	G_OBJECT_CLASS (fu_security_attrs_parent_class)->finalize (obj);
+	FuSecurityAttrs *self = FU_SECURITY_ATTRS(obj);
+	g_ptr_array_unref(self->attrs);
+	G_OBJECT_CLASS(fu_security_attrs_parent_class)->finalize(obj);
 }
 
 static void
-fu_security_attrs_class_init (FuSecurityAttrsClass *klass)
+fu_security_attrs_class_init(FuSecurityAttrsClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GObjectClass *object_class = G_OBJECT_CLASS(klass);
 	object_class->finalize = fu_security_attrs_finalize;
 }
 
 static void
-fu_security_attrs_init (FuSecurityAttrs *self)
+fu_security_attrs_init(FuSecurityAttrs *self)
 {
-	self->attrs = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	self->attrs = g_ptr_array_new_with_free_func((GDestroyNotify)g_object_unref);
+}
+
+/**
+ * fu_security_attrs_append_internal:
+ * @self: a #FuSecurityAttrs
+ * @attr: a #FwupdSecurityAttr
+ *
+ * Adds a #FwupdSecurityAttr to the array with no sanity checks.
+ *
+ * Since: 1.7.1
+ **/
+void
+fu_security_attrs_append_internal(FuSecurityAttrs *self, FwupdSecurityAttr *attr)
+{
+	g_return_if_fail(FU_IS_SECURITY_ATTRS(self));
+	g_return_if_fail(FWUPD_IS_SECURITY_ATTR(attr));
+	g_ptr_array_add(self->attrs, g_object_ref(attr));
 }
 
 /**
  * fu_security_attrs_append:
- * @self: A #FuSecurityAttrs
+ * @self: a #FuSecurityAttrs
  * @attr: a #FwupdSecurityAttr
  *
  * Adds a #FwupdSecurityAttr to the array.
@@ -55,97 +86,139 @@ fu_security_attrs_init (FuSecurityAttrs *self)
  * Since: 1.5.0
  **/
 void
-fu_security_attrs_append (FuSecurityAttrs *self, FwupdSecurityAttr *attr)
+fu_security_attrs_append(FuSecurityAttrs *self, FwupdSecurityAttr *attr)
 {
-	g_return_if_fail (FU_IS_SECURITY_ATTRS (self));
-	g_return_if_fail (FWUPD_IS_SECURITY_ATTR (attr));
+	g_return_if_fail(FU_IS_SECURITY_ATTRS(self));
+	g_return_if_fail(FWUPD_IS_SECURITY_ATTR(attr));
 
 	/* sanity check */
-	if (fwupd_security_attr_get_plugin (attr) == NULL) {
-		g_warning ("%s has no plugin set",
-			   fwupd_security_attr_get_appstream_id (attr));
+	if (fwupd_security_attr_get_plugin(attr) == NULL) {
+		g_warning("%s has no plugin set", fwupd_security_attr_get_appstream_id(attr));
 	}
 
 	/* sanity check, and correctly prefix the URLs with the current mirror */
-	if (fwupd_security_attr_get_url (attr) == NULL) {
+	if (fwupd_security_attr_get_url(attr) == NULL) {
 		g_autofree gchar *url = NULL;
-		url = g_strdup_printf ("%s#%s",
-				       FWUPD_SECURITY_ATTR_ID_DOC_URL,
-				       fwupd_security_attr_get_appstream_id (attr));
-		fwupd_security_attr_set_url (attr, url);
-	} else if (g_str_has_prefix (fwupd_security_attr_get_url (attr), "#")) {
+		url = g_strdup_printf("%s#%s",
+				      FWUPD_SECURITY_ATTR_ID_DOC_URL,
+				      fwupd_security_attr_get_appstream_id(attr));
+		fwupd_security_attr_set_url(attr, url);
+	} else if (g_str_has_prefix(fwupd_security_attr_get_url(attr), "#")) {
 		g_autofree gchar *url = NULL;
-		url = g_strdup_printf ("%s%s",
-				       FWUPD_SECURITY_ATTR_ID_DOC_URL,
-				       fwupd_security_attr_get_url (attr));
-		fwupd_security_attr_set_url (attr, url);
+		url = g_strdup_printf("%s%s",
+				      FWUPD_SECURITY_ATTR_ID_DOC_URL,
+				      fwupd_security_attr_get_url(attr));
+		fwupd_security_attr_set_url(attr, url);
 	}
-	g_ptr_array_add (self->attrs, g_object_ref (attr));
+	fu_security_attrs_append_internal(self, attr);
+}
+
+/**
+ * fu_security_attrs_get_by_appstream_id:
+ * @self: a #FuSecurityAttrs
+ * @appstream_id: an ID, e.g. %FWUPD_SECURITY_ATTR_ID_ENCRYPTED_RAM
+ * @error: (nullable): optional return location for an error
+ *
+ * Gets a specific #FwupdSecurityAttr from the array.
+ *
+ * Returns: (transfer full): a #FwupdSecurityAttr or %NULL
+ *
+ * Since: 1.9.6
+ **/
+FwupdSecurityAttr *
+fu_security_attrs_get_by_appstream_id(FuSecurityAttrs *self,
+				      const gchar *appstream_id,
+				      GError **error)
+{
+	g_return_val_if_fail(FU_IS_SECURITY_ATTRS(self), NULL);
+	if (self->attrs->len == 0) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_NOT_FOUND,
+				    "no attributes are loaded");
+		return NULL;
+	}
+	for (guint i = 0; i < self->attrs->len; i++) {
+		FwupdSecurityAttr *attr = g_ptr_array_index(self->attrs, i);
+		if (g_strcmp0(fwupd_security_attr_get_appstream_id(attr), appstream_id) == 0)
+			return g_object_ref(attr);
+	}
+	g_set_error(error, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND, "no attr with ID %s", appstream_id);
+	return NULL;
 }
 
 /**
  * fu_security_attrs_to_variant:
- * @self: A #FuSecurityAttrs
+ * @self: a #FuSecurityAttrs
  *
- * Converts the #FwupdSecurityAttr objects into a variant array.
+ * Serializes the #FwupdSecurityAttr objects.
  *
  * Returns: a #GVariant or %NULL
  *
  * Since: 1.5.0
  **/
 GVariant *
-fu_security_attrs_to_variant (FuSecurityAttrs *self)
+fu_security_attrs_to_variant(FuSecurityAttrs *self)
 {
 	GVariantBuilder builder;
 
-	g_return_val_if_fail (FU_IS_SECURITY_ATTRS (self), NULL);
-	g_return_val_if_fail (self->attrs->len > 0, NULL);
-	g_variant_builder_init (&builder, G_VARIANT_TYPE_ARRAY);
+	g_return_val_if_fail(FU_IS_SECURITY_ATTRS(self), NULL);
 
+	g_variant_builder_init(&builder, G_VARIANT_TYPE("aa{sv}"));
 	for (guint i = 0; i < self->attrs->len; i++) {
-		FwupdSecurityAttr *security_attr = g_ptr_array_index (self->attrs, i);
-		GVariant *tmp = fwupd_security_attr_to_variant (security_attr);
-		g_variant_builder_add_value (&builder, tmp);
+		FwupdSecurityAttr *attr = g_ptr_array_index(self->attrs, i);
+		if (fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_OBSOLETED))
+			continue;
+		g_variant_builder_add_value(
+		    &builder,
+		    fwupd_codec_to_variant(FWUPD_CODEC(attr), FWUPD_CODEC_FLAG_NONE));
 	}
-	return g_variant_new ("(aa{sv})", &builder);
+	return g_variant_new("(aa{sv})", &builder);
 }
 
 /**
  * fu_security_attrs_get_all:
- * @self: A #FuSecurityAttrs
+ * @self: a #FuSecurityAttrs
  *
- * Gets all the attributes in the object.
+ * Gets all the non-obsoleted attributes in the object.
  *
  * Returns: (transfer container) (element-type FwupdSecurityAttr): attributes
  *
  * Since: 1.5.0
  **/
 GPtrArray *
-fu_security_attrs_get_all (FuSecurityAttrs *self)
+fu_security_attrs_get_all(FuSecurityAttrs *self)
 {
-	g_return_val_if_fail (FU_IS_SECURITY_ATTRS (self), NULL);
-	return g_ptr_array_ref (self->attrs);
+	g_autoptr(GPtrArray) all = g_ptr_array_new_with_free_func((GDestroyNotify)g_object_unref);
+	g_return_val_if_fail(FU_IS_SECURITY_ATTRS(self), NULL);
+	for (guint i = 0; i < self->attrs->len; i++) {
+		FwupdSecurityAttr *attr = g_ptr_array_index(self->attrs, i);
+		if (fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_OBSOLETED))
+			continue;
+		g_ptr_array_add(all, g_object_ref(attr));
+	}
+	return g_steal_pointer(&all);
 }
 
 /**
  * fu_security_attrs_remove_all:
- * @self: A #FuSecurityAttrs
+ * @self: a #FuSecurityAttrs
  *
  * Removes all the attributes in the object.
  *
  * Since: 1.5.0
  **/
 void
-fu_security_attrs_remove_all (FuSecurityAttrs *self)
+fu_security_attrs_remove_all(FuSecurityAttrs *self)
 {
-	g_return_if_fail (FU_IS_SECURITY_ATTRS (self));
-	return g_ptr_array_set_size (self->attrs, 0);
+	g_return_if_fail(FU_IS_SECURITY_ATTRS(self));
+	return g_ptr_array_set_size(self->attrs, 0);
 }
 
 /**
  * fu_security_attrs_calculate_hsi:
- * @self: A #FuSecurityAttrs
- * @flags: Flags to use while calcuating the HSI
+ * @self: a #FuSecurityAttrs
+ * @flags: HSI attribute flags
  *
  * Calculates the HSI string from the appended attributes.
  *
@@ -154,18 +227,17 @@ fu_security_attrs_remove_all (FuSecurityAttrs *self)
  * Since: 1.5.0
  **/
 gchar *
-fu_security_attrs_calculate_hsi (FuSecurityAttrs	*self,
-				 FuSecurityAttrsFlags    flags)
+fu_security_attrs_calculate_hsi(FuSecurityAttrs *self, FuSecurityAttrsFlags flags)
 {
 	guint hsi_number = 0;
 	FwupdSecurityAttrFlags attr_flags = FWUPD_SECURITY_ATTR_FLAG_NONE;
-	GString *str = g_string_new ("HSI:");
+	g_autoptr(GString) str = g_string_new("HSI:");
 	const FwupdSecurityAttrFlags hpi_suffixes[] = {
-		FWUPD_SECURITY_ATTR_FLAG_RUNTIME_ISSUE,
-		FWUPD_SECURITY_ATTR_FLAG_NONE,
+	    FWUPD_SECURITY_ATTR_FLAG_RUNTIME_ISSUE,
+	    FWUPD_SECURITY_ATTR_FLAG_NONE,
 	};
 
-	g_return_val_if_fail (FU_IS_SECURITY_ATTRS (self), NULL);
+	g_return_val_if_fail(FU_IS_SECURITY_ATTRS(self), NULL);
 
 	/* find the highest HSI number where there are no failures and at least
 	 * one success */
@@ -173,20 +245,19 @@ fu_security_attrs_calculate_hsi (FuSecurityAttrs	*self,
 		gboolean success_cnt = 0;
 		gboolean failure_cnt = 0;
 		for (guint i = 0; i < self->attrs->len; i++) {
-			FwupdSecurityAttr *attr = g_ptr_array_index (self->attrs, i);
-			if (fwupd_security_attr_get_level (attr) != j)
+			FwupdSecurityAttr *attr = g_ptr_array_index(self->attrs, i);
+			if (fwupd_security_attr_get_level(attr) != j)
 				continue;
-			if (fwupd_security_attr_has_flag (attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS))
+			if (fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS))
 				success_cnt++;
-			else if (!fwupd_security_attr_has_flag (attr, FWUPD_SECURITY_ATTR_FLAG_OBSOLETED))
+			else if (!fwupd_security_attr_has_flag(attr,
+							       FWUPD_SECURITY_ATTR_FLAG_OBSOLETED))
 				failure_cnt++;
 		}
 
 		/* abort */
-		if (failure_cnt > 0) {
-			hsi_number = j - 1;
+		if (failure_cnt > 0)
 			break;
-		}
 
 		/* we matched at least one thing on this level */
 		if (success_cnt > 0)
@@ -195,73 +266,147 @@ fu_security_attrs_calculate_hsi (FuSecurityAttrs	*self,
 
 	/* get a logical OR of the runtime flags */
 	for (guint i = 0; i < self->attrs->len; i++) {
-		FwupdSecurityAttr *attr = g_ptr_array_index (self->attrs, i);
-		if (fwupd_security_attr_has_flag (attr, FWUPD_SECURITY_ATTR_FLAG_OBSOLETED))
+		FwupdSecurityAttr *attr = g_ptr_array_index(self->attrs, i);
+		if (fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_OBSOLETED))
 			continue;
-		if (fwupd_security_attr_has_flag (attr, FWUPD_SECURITY_ATTR_FLAG_RUNTIME_ISSUE) &&
-		    fwupd_security_attr_has_flag (attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS))
+		if (fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_RUNTIME_ISSUE) &&
+		    fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS))
 			continue;
-		attr_flags |= fwupd_security_attr_get_flags (attr);
+
+		attr_flags |= fwupd_security_attr_get_flags(attr);
 	}
 
-	g_string_append_printf (str, "%u", hsi_number);
+	g_string_append_printf(str, "%u", hsi_number);
 	if (attr_flags & FWUPD_SECURITY_ATTR_FLAG_RUNTIME_ISSUE) {
 		for (guint j = 0; hpi_suffixes[j] != FWUPD_SECURITY_ATTR_FLAG_NONE; j++) {
 			if (attr_flags & hpi_suffixes[j])
-				g_string_append (str, fwupd_security_attr_flag_to_suffix (hpi_suffixes[j]));
+				g_string_append(
+				    str,
+				    fwupd_security_attr_flag_to_suffix(hpi_suffixes[j]));
 		}
 	}
 
 	if (flags & FU_SECURITY_ATTRS_FLAG_ADD_VERSION) {
-		g_string_append_printf (str, " (v%d.%d.%d)",
-					FWUPD_MAJOR_VERSION,
-					FWUPD_MINOR_VERSION,
-					FWUPD_MICRO_VERSION);
+		g_string_append_printf(str,
+				       " (v%d.%d.%d)",
+				       FWUPD_MAJOR_VERSION,
+				       FWUPD_MINOR_VERSION,
+				       FWUPD_MICRO_VERSION);
 	}
 
-	return g_string_free (str, FALSE);
+	return g_string_free(g_steal_pointer(&str), FALSE);
 }
 
 static gchar *
-fu_security_attrs_get_sort_key (FwupdSecurityAttr *attr)
+fu_security_attrs_get_sort_key(FwupdSecurityAttr *attr)
 {
-	GString *str = g_string_new (NULL);
+	GString *str = g_string_new(NULL);
 
 	/* level */
-	g_string_append_printf (str, "%u", fwupd_security_attr_get_level (attr));
+	g_string_append_printf(str, "%u", fwupd_security_attr_get_level(attr));
 
 	/* success -> fail -> obsoletes */
-	if (fwupd_security_attr_has_flag (attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS)) {
-		g_string_append (str, "0");
-	} else if (!fwupd_security_attr_has_flag (attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS) &&
-		   !fwupd_security_attr_has_flag (attr, FWUPD_SECURITY_ATTR_FLAG_OBSOLETED)) {
-		g_string_append (str, "1");
+	if (fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS)) {
+		g_string_append(str, "0");
+	} else if (!fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS) &&
+		   !fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_OBSOLETED)) {
+		g_string_append(str, "1");
 	} else {
-		g_string_append (str, "9");
+		g_string_append(str, "9");
 	}
 
 	/* prefer name, but fallback to appstream-id for tests */
-	if (fwupd_security_attr_get_name (attr) != NULL) {
-		g_string_append (str, fwupd_security_attr_get_name (attr));
+	if (fwupd_security_attr_get_name(attr) != NULL) {
+		g_string_append(str, fwupd_security_attr_get_name(attr));
 	} else {
-		g_string_append (str, fwupd_security_attr_get_appstream_id (attr));
+		g_string_append(str, fwupd_security_attr_get_appstream_id(attr));
 	}
-	return g_string_free (str, FALSE);
+	return g_string_free(str, FALSE);
 }
 
 static gint
-fu_security_attrs_sort_cb (gconstpointer item1, gconstpointer item2)
+fu_security_attrs_sort_cb(gconstpointer item1, gconstpointer item2)
 {
-	FwupdSecurityAttr *attr1 = *((FwupdSecurityAttr **) item1);
-	FwupdSecurityAttr *attr2 = *((FwupdSecurityAttr **) item2);
-	g_autofree gchar *sort1 = fu_security_attrs_get_sort_key (attr1);
-	g_autofree gchar *sort2 = fu_security_attrs_get_sort_key (attr2);
-	return g_strcmp0 (sort1, sort2);
+	FwupdSecurityAttr *attr1 = *((FwupdSecurityAttr **)item1);
+	FwupdSecurityAttr *attr2 = *((FwupdSecurityAttr **)item2);
+	g_autofree gchar *sort1 = fu_security_attrs_get_sort_key(attr1);
+	g_autofree gchar *sort2 = fu_security_attrs_get_sort_key(attr2);
+	return g_strcmp0(sort1, sort2);
+}
+
+static struct {
+	const gchar *appstream_id;
+	FwupdSecurityAttrLevel level;
+} appstream_id_level_map[] = {
+    {FWUPD_SECURITY_ATTR_ID_AMD_ROLLBACK_PROTECTION, FWUPD_SECURITY_ATTR_LEVEL_SYSTEM_PROTECTION},
+    {FWUPD_SECURITY_ATTR_ID_AMD_SPI_REPLAY_PROTECTION, FWUPD_SECURITY_ATTR_LEVEL_THEORETICAL},
+    {FWUPD_SECURITY_ATTR_ID_AMD_SPI_WRITE_PROTECTION, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_ENCRYPTED_RAM, FWUPD_SECURITY_ATTR_LEVEL_SYSTEM_PROTECTION},
+    {FWUPD_SECURITY_ATTR_ID_INTEL_BOOTGUARD_ACM, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_INTEL_BOOTGUARD_ENABLED, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_INTEL_BOOTGUARD_OTP, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_INTEL_BOOTGUARD_POLICY, FWUPD_SECURITY_ATTR_LEVEL_THEORETICAL},
+    {FWUPD_SECURITY_ATTR_ID_INTEL_BOOTGUARD_VERIFIED, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_CET_ACTIVE, FWUPD_SECURITY_ATTR_LEVEL_THEORETICAL},
+    {FWUPD_SECURITY_ATTR_ID_CET_ENABLED, FWUPD_SECURITY_ATTR_LEVEL_THEORETICAL},
+    {FWUPD_SECURITY_ATTR_ID_INTEL_GDS, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_SMAP, FWUPD_SECURITY_ATTR_LEVEL_SYSTEM_PROTECTION},
+    {FWUPD_SECURITY_ATTR_ID_IOMMU, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_MEI_MANUFACTURING_MODE, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_MEI_OVERRIDE_STRAP, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_MEI_KEY_MANIFEST, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_MEI_VERSION, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_PLATFORM_DEBUG_ENABLED, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_PLATFORM_DEBUG_LOCKED, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_PLATFORM_FUSED, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_PREBOOT_DMA_PROTECTION, FWUPD_SECURITY_ATTR_LEVEL_THEORETICAL},
+    {FWUPD_SECURITY_ATTR_ID_SPI_BIOSWE, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_SPI_BLE, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_SPI_DESCRIPTOR, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_SPI_SMM_BWP, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_SUPPORTED_CPU, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_SUSPEND_TO_IDLE, FWUPD_SECURITY_ATTR_LEVEL_THEORETICAL},
+    {FWUPD_SECURITY_ATTR_ID_SUSPEND_TO_RAM, FWUPD_SECURITY_ATTR_LEVEL_THEORETICAL},
+    {FWUPD_SECURITY_ATTR_ID_TPM_EMPTY_PCR, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_TPM_RECONSTRUCTION_PCR0, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_TPM_VERSION_20, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_UEFI_PK, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_UEFI_SECUREBOOT, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_UEFI_BOOTSERVICE_VARS, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_BIOS_ROLLBACK_PROTECTION, FWUPD_SECURITY_ATTR_LEVEL_IMPORTANT},
+    {FWUPD_SECURITY_ATTR_ID_BIOS_CAPSULE_UPDATES, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {FWUPD_SECURITY_ATTR_ID_AMD_SMM_LOCKED, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL},
+    {NULL, FWUPD_SECURITY_ATTR_LEVEL_NONE}};
+
+static void
+fu_security_attrs_ensure_level(FwupdSecurityAttr *attr)
+{
+	const gchar *appstream_id = fwupd_security_attr_get_appstream_id(attr);
+
+	/* already set */
+	if (fwupd_security_attr_get_level(attr) != FWUPD_SECURITY_ATTR_LEVEL_NONE)
+		return;
+
+	/* not required */
+	if (fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_RUNTIME_ISSUE))
+		return;
+
+	/* map ID to level in one place */
+	for (guint i = 0; appstream_id_level_map[i].appstream_id != NULL; i++) {
+		if (g_strcmp0(appstream_id, appstream_id_level_map[i].appstream_id) == 0) {
+			fwupd_security_attr_set_level(attr, appstream_id_level_map[i].level);
+			return;
+		}
+	}
+
+	/* somebody forgot to add to the level map... */
+	g_warning("cannot map %s to a HSI level, assuming critical", appstream_id);
+	fwupd_security_attr_set_level(attr, FWUPD_SECURITY_ATTR_LEVEL_CRITICAL);
 }
 
 /**
  * fu_security_attrs_depsolve:
- * @self: A #FuSecurityAttrs
+ * @self: a #FuSecurityAttrs
  *
  * Marks any attributes with %FWUPD_SECURITY_ATTR_FLAG_OBSOLETED that have been
  * defined as obsoleted by other attributes.
@@ -272,63 +417,272 @@ fu_security_attrs_sort_cb (gconstpointer item1, gconstpointer item2)
  * Since: 1.5.0
  **/
 void
-fu_security_attrs_depsolve (FuSecurityAttrs *self)
+fu_security_attrs_depsolve(FuSecurityAttrs *self)
 {
-	g_autoptr(GHashTable) attrs_by_id = NULL;
+	g_return_if_fail(FU_IS_SECURITY_ATTRS(self));
 
-	g_return_if_fail (FU_IS_SECURITY_ATTRS (self));
-
-	/* make hash of ID -> object */
-	attrs_by_id = g_hash_table_new (g_str_hash, g_str_equal);
+	/* assign HSI levels if not already done */
 	for (guint i = 0; i < self->attrs->len; i++) {
-		FwupdSecurityAttr *attr = g_ptr_array_index (self->attrs, i);
-		g_hash_table_insert (attrs_by_id,
-				     (gpointer) fwupd_security_attr_get_appstream_id (attr),
-				     (gpointer) attr);
+		FwupdSecurityAttr *attr = g_ptr_array_index(self->attrs, i);
+		fu_security_attrs_ensure_level(attr);
 	}
 
 	/* set flat where required */
 	for (guint i = 0; i < self->attrs->len; i++) {
-		FwupdSecurityAttr *attr = g_ptr_array_index (self->attrs, i);
-		GPtrArray *obsoletes = fwupd_security_attr_get_obsoletes (attr);
-		for (guint j = 0; j < obsoletes->len; j++) {
-			const gchar *obsolete = g_ptr_array_index (obsoletes, j);
-			FwupdSecurityAttr *attr_tmp = g_hash_table_lookup (attrs_by_id, obsolete);
+		FwupdSecurityAttr *attr = g_ptr_array_index(self->attrs, i);
+		const gchar *attr_id = fwupd_security_attr_get_appstream_id(attr);
+		const gchar *attr_plugin = fwupd_security_attr_get_plugin(attr);
+		GPtrArray *obsoletes = fwupd_security_attr_get_obsoletes(attr);
 
-			/* by AppStream ID */
-			if (attr_tmp != NULL) {
-				g_debug ("security attr %s obsoleted by %s", obsolete,
-					 fwupd_security_attr_get_appstream_id (attr_tmp));
-				fwupd_security_attr_add_flag (attr_tmp,
-							      FWUPD_SECURITY_ATTR_FLAG_OBSOLETED);
+		for (guint j = 0; j < self->attrs->len; j++) {
+			FwupdSecurityAttr *attr_tmp = g_ptr_array_index(self->attrs, j);
+			const gchar *attr_tmp_id = fwupd_security_attr_get_appstream_id(attr_tmp);
+			const gchar *attr_tmp_plugin = fwupd_security_attr_get_plugin(attr_tmp);
+
+			/* skip self */
+			if (g_strcmp0(attr_plugin, attr_tmp_plugin) == 0 &&
+			    g_strcmp0(attr_id, attr_tmp_id) == 0)
+				continue;
+
+			/* add duplicate (negative) attributes when obsolete not explicitly set
+			 */
+			if (obsoletes->len == 0) {
+				if (g_strcmp0(attr_id, attr_tmp_id) != 0)
+					continue;
+				if (fwupd_security_attr_has_flag(attr,
+								 FWUPD_SECURITY_ATTR_FLAG_SUCCESS))
+					continue;
+				if (fwupd_security_attr_has_flag(attr_tmp,
+								 FWUPD_SECURITY_ATTR_FLAG_SUCCESS))
+					continue;
+
+				if (fwupd_security_attr_has_obsolete(attr, attr_id))
+					continue;
+				if (fwupd_security_attr_has_obsolete(attr_tmp, attr_id))
+					continue;
+				g_debug("duplicate security attr %s from plugin %s implicitly "
+					"obsoleted by plugin %s",
+					attr_id,
+					attr_plugin,
+					attr_tmp_plugin);
+				fwupd_security_attr_add_obsolete(attr, attr_id);
 			}
 
-			/* by plugin name */
-			for (guint k = 0; k < self->attrs->len; k++) {
-				attr_tmp = g_ptr_array_index (self->attrs, k);
-				if (g_strcmp0 (obsolete, fwupd_security_attr_get_plugin (attr_tmp)) == 0) {
-					g_debug ("security attr %s obsoleted by %s", obsolete,
-						 fwupd_security_attr_get_appstream_id (attr_tmp));
-					fwupd_security_attr_add_flag (attr_tmp,
-								      FWUPD_SECURITY_ATTR_FLAG_OBSOLETED);
+			/* walk all the obsoletes for matches appstream ID or plugin */
+			for (guint k = 0; k < obsoletes->len; k++) {
+				const gchar *obsolete = g_ptr_array_index(obsoletes, k);
+
+				if (g_strcmp0(attr_tmp_id, obsolete) == 0 ||
+				    g_strcmp0(attr_tmp_plugin, obsolete) == 0) {
+					g_debug("security attr %s:%s obsoleted by %s:%s",
+						attr_tmp_id,
+						attr_tmp_plugin,
+						attr_id,
+						attr_plugin);
+					fwupd_security_attr_add_flag(
+					    attr_tmp,
+					    FWUPD_SECURITY_ATTR_FLAG_OBSOLETED);
 				}
 			}
 		}
 	}
 
 	/* sort */
-	g_ptr_array_sort (self->attrs, fu_security_attrs_sort_cb);
+	g_ptr_array_sort(self->attrs, fu_security_attrs_sort_cb);
+}
+
+static void
+fu_security_attrs_add_json(FwupdCodec *codec, JsonBuilder *builder, FwupdCodecFlags flags)
+{
+	FuSecurityAttrs *self = FU_SECURITY_ATTRS(codec);
+	g_autoptr(GPtrArray) items = NULL;
+
+	json_builder_set_member_name(builder, "SecurityAttributes");
+	json_builder_begin_array(builder);
+	items = fu_security_attrs_get_all(self);
+	for (guint i = 0; i < items->len; i++) {
+		FwupdSecurityAttr *attr = g_ptr_array_index(items, i);
+		guint64 created = fwupd_security_attr_get_created(attr);
+		if (fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_OBSOLETED))
+			continue;
+		fwupd_security_attr_set_created(attr, 0);
+		json_builder_begin_object(builder);
+		fwupd_codec_to_json(FWUPD_CODEC(attr), builder, FWUPD_CODEC_FLAG_NONE);
+		json_builder_end_object(builder);
+		fwupd_security_attr_set_created(attr, created);
+	}
+	json_builder_end_array(builder);
+}
+
+static gboolean
+fu_security_attrs_from_json(FwupdCodec *codec, JsonNode *json_node, GError **error)
+{
+	FuSecurityAttrs *self = FU_SECURITY_ATTRS(codec);
+	JsonArray *array;
+	JsonObject *obj;
+
+	/* sanity check */
+	if (!JSON_NODE_HOLDS_OBJECT(json_node)) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_DATA,
+				    "not JSON object");
+		return FALSE;
+	}
+	obj = json_node_get_object(json_node);
+
+	/* this has to exist */
+	if (!json_object_has_member(obj, "SecurityAttributes")) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_DATA,
+				    "no SecurityAttributes property in object");
+		return FALSE;
+	}
+	array = json_object_get_array_member(obj, "SecurityAttributes");
+	for (guint i = 0; i < json_array_get_length(array); i++) {
+		JsonNode *node_tmp = json_array_get_element(array, i);
+		g_autoptr(FwupdSecurityAttr) attr = fwupd_security_attr_new(NULL);
+		if (!fwupd_codec_from_json(FWUPD_CODEC(attr), node_tmp, error))
+			return FALSE;
+		if (fwupd_security_attr_has_flag(attr, FWUPD_SECURITY_ATTR_FLAG_OBSOLETED))
+			continue;
+		fu_security_attrs_append(self, attr);
+	}
+
+	/* success */
+	return TRUE;
+}
+
+static void
+fu_security_attrs_codec_iface_init(FwupdCodecInterface *iface)
+{
+	iface->add_json = fu_security_attrs_add_json;
+	iface->from_json = fu_security_attrs_from_json;
+}
+
+/**
+ * fu_security_attrs_compare:
+ * @attrs1: a #FuSecurityAttrs
+ * @attrs2: another #FuSecurityAttrs, perhaps newer in some way
+ *
+ * Compares the two objects, returning the differences.
+ *
+ * If the two sets of attrs are considered the same then an empty array is returned.
+ * Only the AppStream ID results are compared, extra metadata is ignored.
+ *
+ * Returns: (element-type FwupdSecurityAttr) (transfer container): differences
+ *
+ * Since: 1.9.2
+ */
+GPtrArray *
+fu_security_attrs_compare(FuSecurityAttrs *attrs1, FuSecurityAttrs *attrs2)
+{
+	g_autoptr(GHashTable) hash1 = g_hash_table_new(g_str_hash, g_str_equal);
+	g_autoptr(GHashTable) hash2 = g_hash_table_new(g_str_hash, g_str_equal);
+	g_autoptr(GPtrArray) array1 = fu_security_attrs_get_all(attrs1);
+	g_autoptr(GPtrArray) array2 = fu_security_attrs_get_all(attrs2);
+	g_autoptr(GPtrArray) results =
+	    g_ptr_array_new_with_free_func((GDestroyNotify)g_object_unref);
+
+	g_return_val_if_fail(FU_IS_SECURITY_ATTRS(attrs1), NULL);
+	g_return_val_if_fail(FU_IS_SECURITY_ATTRS(attrs2), NULL);
+
+	/* create hash tables of appstream-id -> FwupdSecurityAttr */
+	for (guint i = 0; i < array1->len; i++) {
+		FwupdSecurityAttr *attr1 = g_ptr_array_index(array1, i);
+		g_hash_table_insert(hash1,
+				    (gpointer)fwupd_security_attr_get_appstream_id(attr1),
+				    (gpointer)attr1);
+	}
+	for (guint i = 0; i < array2->len; i++) {
+		FwupdSecurityAttr *attr2 = g_ptr_array_index(array2, i);
+		g_hash_table_insert(hash2,
+				    (gpointer)fwupd_security_attr_get_appstream_id(attr2),
+				    (gpointer)attr2);
+	}
+
+	/* present in attrs2, not present in attrs1 */
+	for (guint i = 0; i < array2->len; i++) {
+		FwupdSecurityAttr *attr1;
+		FwupdSecurityAttr *attr2 = g_ptr_array_index(array2, i);
+		attr1 = g_hash_table_lookup(hash1, fwupd_security_attr_get_appstream_id(attr2));
+		if (attr1 == NULL) {
+			g_autoptr(FwupdSecurityAttr) attr = fwupd_security_attr_copy(attr2);
+			g_ptr_array_add(results, g_steal_pointer(&attr));
+			continue;
+		}
+	}
+
+	/* present in attrs1, not present in attrs2 */
+	for (guint i = 0; i < array1->len; i++) {
+		FwupdSecurityAttr *attr1 = g_ptr_array_index(array1, i);
+		FwupdSecurityAttr *attr2;
+		attr2 = g_hash_table_lookup(hash2, fwupd_security_attr_get_appstream_id(attr1));
+		if (attr2 == NULL) {
+			g_autoptr(FwupdSecurityAttr) attr = fwupd_security_attr_copy(attr1);
+			fwupd_security_attr_set_result(attr, FWUPD_SECURITY_ATTR_RESULT_UNKNOWN);
+			fwupd_security_attr_set_result_fallback(
+			    attr, /* flip these around */
+			    fwupd_security_attr_get_result(attr1));
+			g_ptr_array_add(results, g_steal_pointer(&attr));
+			continue;
+		}
+	}
+
+	/* find any attributes that differ */
+	for (guint i = 0; i < array2->len; i++) {
+		FwupdSecurityAttr *attr1;
+		FwupdSecurityAttr *attr2 = g_ptr_array_index(array2, i);
+		attr1 = g_hash_table_lookup(hash1, fwupd_security_attr_get_appstream_id(attr2));
+		if (attr1 == NULL)
+			continue;
+
+		/* result of specific attr differed */
+		if (fwupd_security_attr_get_result(attr1) !=
+		    fwupd_security_attr_get_result(attr2)) {
+			g_autoptr(FwupdSecurityAttr) attr = fwupd_security_attr_copy(attr1);
+			fwupd_security_attr_set_result(attr, fwupd_security_attr_get_result(attr2));
+			fwupd_security_attr_set_result_fallback(
+			    attr,
+			    fwupd_security_attr_get_result(attr1));
+			fwupd_security_attr_set_flags(attr, fwupd_security_attr_get_flags(attr2));
+			g_ptr_array_add(results, g_steal_pointer(&attr));
+		}
+	}
+
+	/* success */
+	return g_steal_pointer(&results);
+}
+
+/**
+ * fu_security_attrs_equal:
+ * @attrs1: a #FuSecurityAttrs
+ * @attrs2: another #FuSecurityAttrs
+ *
+ * Tests the objects for equality. Only the AppStream ID results are compared, extra metadata
+ * is ignored.
+ *
+ * Returns: %TRUE if the set of attrs can be considered equal
+ *
+ * Since: 1.9.2
+ */
+gboolean
+fu_security_attrs_equal(FuSecurityAttrs *attrs1, FuSecurityAttrs *attrs2)
+{
+	g_autoptr(GPtrArray) compare = fu_security_attrs_compare(attrs1, attrs2);
+	return compare->len == 0;
 }
 
 /**
  * fu_security_attrs_new:
  *
- * Returns: a #FuSecurityAttrs
+ * Returns: a security attribute
  *
  * Since: 1.5.0
  **/
 FuSecurityAttrs *
-fu_security_attrs_new (void)
+fu_security_attrs_new(void)
 {
-	return g_object_new (FU_TYPE_SECURITY_ATTRS, NULL);
+	return g_object_new(FU_TYPE_SECURITY_ATTRS, NULL);
 }
