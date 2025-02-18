@@ -1,0 +1,18 @@
+{
+  "name": "Corsair SABRE PRO Gaming Mouse",
+  "interactive": false,
+  "steps": [
+    {
+      "url": "https://fwupd.org/downloads/5adc54e39596b5b941339d247ac01f6a40377bc58e6b1b87c49d60c8a7509f4e-corsair-tongs-1.15.25.cab",
+      "components": [
+        {
+          "version": "1.15.25",
+          "protocol": "com.corsair.bp",
+          "guids": [
+            "9896f0c3-6682-5392-80f6-0ba462918645"
+          ]
+        }
+      ]
+    }
+  ]
+}

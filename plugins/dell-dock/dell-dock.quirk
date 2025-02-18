@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018 Dell Inc.
+# Copyright 2018 Dell Inc.
 # All rights reserved.
 #
 # This software and associated documentation (if any) is furnished
@@ -10,19 +10,20 @@
 # redistributing this file, you may do so under either license.
 # Dell Chooses the MIT license part of Dual MIT/LGPLv2 license agreement.
 #
-# SPDX-License-Identifier: LGPL-2.1+ OR MIT
+# SPDX-License-Identifier: LGPL-2.1-or-later OR MIT
 #
 
 # Used to make plugin probe the devices
-[DeviceInstanceId=USB\VID_413C&PID_B06F]
+[USB\VID_413C&PID_B06F]
 Name = Unprobed Dell accessory endpoint
 Plugin = dell_dock
-[DeviceInstanceId=USB\VID_413C&PID_B06E]
+[USB\VID_413C&PID_B06E]
 Name = Unprobed Dell accessory endpoint
 Plugin = dell_dock
+Flags = has-bridge
 
 # USB hub1
-[DeviceInstanceId=USB\VID_413C&PID_B06F&hub]
+[USB\VID_413C&PID_B06F&hub]
 Name = RTS5413 in Dell dock
 Summary = USB 3.1 Generation 1 Hub
 ParentGuid = USB\VID_413C&PID_B06E&hub&embedded
@@ -30,14 +31,14 @@ Plugin = dell_dock
 Vendor = Dell Inc.
 Icon = dock-usb
 FirmwareSize = 0x10000
-Flags = require-ac,updatable,dual-image,usable-during-update
+Flags = updatable,dual-image,usable-during-update
 DellDockUnlockTarget = 8
 DellDockBlobMajorOffset = 0x7F6E
 DellDockBlobMinorOffset = 0x7F6F
 InstallDuration = 14
 
 # USB hub2
-[DeviceInstanceId=USB\VID_413C&PID_B06E&hub]
+[USB\VID_413C&PID_B06E&hub]
 Name = RTS5487 in Dell dock
 Summary = USB 3.1 Generation 2 Hub
 ParentGuid = USB\VID_413C&PID_B06E&hub&embedded
@@ -45,7 +46,37 @@ Vendor = Dell Inc.
 Plugin = dell_dock
 Icon = dock-usb
 FirmwareSize = 0x10000
-Flags = require-ac,updatable,has-bridge,dual-image,usable-during-update
+Flags = updatable,has-bridge,dual-image,usable-during-update
+DellDockUnlockTarget = 7
+DellDockBlobMajorOffset = 0x7F52
+DellDockBlobMinorOffset = 0x7F53
+InstallDuration = 3
+
+# Atomic USB hub1
+[USB\VID_413C&PID_B06F&atomic_hub]
+Name = RTS5413 in Dell dock
+Summary = USB 3.1 Generation 1 Hub
+ParentGuid = USB\VID_413C&PID_B06E&hub&atomic_embedded
+Plugin = dell_dock
+Vendor = Dell Inc.
+Icon = dock-usb
+FirmwareSize = 0x10000
+Flags = updatable,dual-image,usable-during-update
+DellDockUnlockTarget = 8
+DellDockBlobMajorOffset = 0x7F6E
+DellDockBlobMinorOffset = 0x7F6F
+InstallDuration = 14
+
+# Atomic USB hub2
+[USB\VID_413C&PID_B06E&atomic_hub]
+Name = RTS5487 in Dell dock
+Summary = USB 3.1 Generation 2 Hub
+ParentGuid = USB\VID_413C&PID_B06E&hub&atomic_embedded
+Vendor = Dell Inc.
+Plugin = dell_dock
+Icon = dock-usb
+FirmwareSize = 0x10000
+Flags = updatable,has-bridge,dual-image,usable-during-update
 DellDockUnlockTarget = 7
 DellDockBlobMajorOffset = 0x7F52
 DellDockBlobMinorOffset = 0x7F53
@@ -53,7 +84,7 @@ InstallDuration = 3
 
 # Embedded Controller
 # Name is intentionally not set (it's queried by dock)
-[Guid=USB\VID_413C&PID_B06E&hub&embedded]
+[USB\VID_413C&PID_B06E&hub&embedded]
 Name = Dell dock
 Summary = High performance dock
 Plugin = dell_dock
@@ -62,16 +93,53 @@ VendorId = USB:0x413C
 Icon = dock-usb
 FirmwareSizeMin = 0x1FFC0
 FirmwareSizeMax = 0x20000
-Flags = require-ac,dual-image,self-recovery,usable-during-update
-Children = FuDellDockStatus|USB\VID_413C&PID_B06E&hub&status,FuDellDockMst|MST-panamera-vmm5331-259
+Flags = dual-image,self-recovery,usable-during-update
 DellDockUnlockTarget = 1
 DellDockBoardMin = 6
-DellDockVersionLowest = 01.00.00.00
+DellDockVersionLowest = 01.01.00.01
+DellDockBlobVersionOffset = 0x1AFC0
+InstallDuration = 60
+
+#Atomic Embedded Controller
+# Name is intentionally not set (it's queried by dock)
+[USB\VID_413C&PID_B06E&hub&atomic_embedded]
+Name = Dell dock
+Summary = High performance dock
+Plugin = dell_dock
+Vendor = Dell Inc.
+VendorId = USB:0x413C
+Icon = dock-usb
+FirmwareSizeMin = 0x1FFC0
+FirmwareSizeMax = 0x20000
+Flags = dual-image,self-recovery,usable-during-update
+DellDockUnlockTarget = 1
 DellDockBlobVersionOffset = 0x1AFC0
 InstallDuration = 60
 
 # Representation of overall dock update
-[DeviceInstanceId=USB\VID_413C&PID_B06E&hub&status]
+[USB\VID_413C&PID_B06E&hub&status]
+Name = Package level of Dell dock
+Summary = A representation of dock update status
+Plugin = dell_dock
+Vendor = Dell Inc.
+Flags = self-recovery,usable-during-update
+FirmwareSize = 24
+InstallDuration = 5
+DellDockBlobVersionOffset = 0x14
+
+# Representation of overall dock update
+[USB\VID_413C&PID_B06E&hub&salomon_mlk_status]
+Name = Package level of Dell dock
+Summary = A representation of dock update status
+Plugin = dell_dock
+Vendor = Dell Inc.
+Flags = self-recovery,usable-during-update
+FirmwareSize = 24
+InstallDuration = 5
+DellDockBlobVersionOffset = 0x14
+
+# Representation of overall dock update
+[USB\VID_413C&PID_B06E&hub&atomic_status]
 Name = Package level of Dell dock
 Summary = A representation of dock update status
 Plugin = dell_dock
@@ -82,32 +150,49 @@ InstallDuration = 5
 DellDockBlobVersionOffset = 0x14
 
 # MST Hub
-[Guid=MST-panamera-vmm5331-259]
+[MST-panamera-vmm5331-259]
 Name = VMM5331 in Dell dock
 Summary = Multi Stream Transport controller
 Vendor = Dell Inc.
 Plugin = dell_dock
 ParentGuid = USB\VID_413C&PID_B06E&hub&embedded
-Flags = skips-restart,require-ac,dual-image,usable-during-update
-FirmwareSize=524288
+Flags = skips-restart,dual-image,usable-during-update
+FirmwareSize = 524288
 DellDockUnlockTarget = 9
 InstallDuration = 95
-DellDockInstallDurationI2C=360
+DellDockInstallDurationI2C = 360
 DellDockBlobMajorOffset = 0x18400
 DellDockBlobMinorOffset = 0x18401
 DellDockBlobBuildOffset = 0x18402
 Icon = video-display
 
+#Atomic MST Hub
+[MST-cayenne-vmm6210-257]
+Name = VMM6210 in Dell dock
+Summary = Multi Stream Transport controller
+Vendor = Dell Inc.
+Plugin = dell_dock
+ParentGuid = USB\VID_413C&PID_B06E&hub&atomic_embedded
+Flags = skips-restart,dual-image,usable-during-update
+FirmwareSize = 1048576
+DellDockUnlockTarget = 9
+InstallDuration = 95
+DellDockInstallDurationI2C = 360
+DellDockBlobMajorOffset = 0x4000
+DellDockBlobMinorOffset = 0x4001
+DellDockBlobBuildOffset = 0x4002
+Icon = video-display
+
 # Thunderbolt controller
-[Guid=TBT-00d4b070]
+[TBT-00d4b070]
 Name = Thunderbolt controller in Dell dock
 Summary = Thunderbolt controller
 Vendor = Dell Inc.
 VendorId = TBT:0x00D4
 ParentGuid = USB\VID_413C&PID_B06E&hub&embedded
-FirmwareSizeMin=0x40000
-FirmwareSizeMax=0x80000
-Flags = skips-restart,require-ac,dual-image
+FirmwareSizeMin = 0x40000
+FirmwareSizeMax = 0x80000
+Flags = dual-image
 Icon = thunderbolt
 InstallDuration = 22
 DellDockInstallDurationI2C = 181
@@ -115,3 +200,16 @@ DellDockUnlockTarget = 10
 DellDockHubVersionLowest = 1.31
 DellDockBlobMajorOffset = 0x400a
 DellDockBlobMinorOffset = 0x4009
+
+# USB4 controller
+[TBT-00d4b071]
+Name = USB4 controller in Dell dock
+Summary = USB4 controller
+Vendor = Dell Inc.
+VendorId = TBT:0x00D4
+ParentGuid = USB\VID_413C&PID_B06E&hub&embedded
+FirmwareSizeMin = 0x40000
+FirmwareSizeMax = 0x80000
+Flags = skips-restart,dual-image,usable-during-update
+Icon = thunderbolt
+InstallDuration = 46

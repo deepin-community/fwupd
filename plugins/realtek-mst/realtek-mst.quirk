@@ -1,0 +1,9 @@
+# Manufacturer + ProductSku -> Google + Hatch
+[I2C\NAME_10EC2141:00&HWID_9c908a5c-090e-5eb4-a7ba-a2ef8845a6b8]
+Plugin = realtek_mst
+Name = RTD2142
+
+# Manufacturer + ProductSku -> Google + Kaisa
+[I2C\NAME_10EC2142:00&HWID_9c908a5c-090e-5eb4-a7ba-a2ef8845a6b8]
+Plugin = realtek_mst
+Name = RTD2142

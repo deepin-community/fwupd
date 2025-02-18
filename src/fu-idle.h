@@ -1,28 +1,30 @@
 /*
- * Copyright (C) 2018 Richard Hughes <richard@hughsie.com>
+ * Copyright 2018 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
-#include <glib-object.h>
-#include <fwupd.h>
+#include <fwupdplugin.h>
 
-#include "fu-device.h"
+#include "fu-engine-struct.h"
 
-#define FU_TYPE_IDLE (fu_idle_get_type ())
-G_DECLARE_FINAL_TYPE (FuIdle, fu_idle, FU, IDLE, GObject)
+#define FU_TYPE_IDLE (fu_idle_get_type())
+G_DECLARE_FINAL_TYPE(FuIdle, fu_idle, FU, IDLE, GObject)
 
-FuIdle		*fu_idle_new			(void);
-guint32		 fu_idle_inhibit		(FuIdle		*self,
-						 const gchar	*reason);
-void		 fu_idle_uninhibit		(FuIdle		*self,
-						 guint32	 token);
-void		 fu_idle_set_timeout		(FuIdle		*self,
-						 guint		 timeout);
-void		 fu_idle_reset			(FuIdle		*self);
-FwupdStatus	 fu_idle_get_status		(FuIdle		*self);
+FuIdle *
+fu_idle_new(void);
+guint32
+fu_idle_inhibit(FuIdle *self, FuIdleInhibit inhibit, const gchar *reason) G_GNUC_NON_NULL(1);
+void
+fu_idle_uninhibit(FuIdle *self, guint32 token) G_GNUC_NON_NULL(1);
+gboolean
+fu_idle_has_inhibit(FuIdle *self, FuIdleInhibit inhibit) G_GNUC_NON_NULL(1);
+void
+fu_idle_set_timeout(FuIdle *self, guint timeout) G_GNUC_NON_NULL(1);
+void
+fu_idle_reset(FuIdle *self) G_GNUC_NON_NULL(1);
 
 /**
  * FuIdleLocker:
@@ -32,12 +34,13 @@ FwupdStatus	 fu_idle_get_status		(FuIdle		*self);
  * A locker to prevent daemon from shutting down on its own
  **/
 typedef struct {
-	FuIdle		*idle;
-	guint32		 token;
+	FuIdle *idle;
+	guint32 token;
 } FuIdleLocker;
 
-FuIdleLocker	*fu_idle_locker_new		(FuIdle		*self,
-						 const gchar	*reason);
-void		 fu_idle_locker_free		(FuIdleLocker	*locker);
+FuIdleLocker *
+fu_idle_locker_new(FuIdle *self, FuIdleInhibit inhibit, const gchar *reason) G_GNUC_NON_NULL(1);
+void
+fu_idle_locker_free(FuIdleLocker *locker) G_GNUC_NON_NULL(1);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(FuIdleLocker, fu_idle_locker_free)

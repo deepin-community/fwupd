@@ -1,66 +1,51 @@
-if get_option('gusb')
 cargs = ['-DG_LOG_DOMAIN="FuPluginSynapticsPrometheus"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 
-install_data(['synaptics-prometheus.quirk'],
-  install_dir: join_paths(datadir, 'fwupd', 'quirks.d')
-)
-
-shared_module('fu_plugin_synaptics_prometheus',
-  fu_hash,
-  sources : [
-    'fu-plugin-synaptics-prometheus.c',
+plugin_quirks += files('synaptics-prometheus.quirk')
+plugin_builtin_synaprom = static_library('fu_plugin_synaprom',
+  rustgen.process(
+    'fu-synaprom.rs',           # fuzzing
+  ),
+  sources: [
+    'fu-synaprom-plugin.c',
     'fu-synaprom-common.c',
     'fu-synaprom-config.c',
     'fu-synaprom-device.c',
     'fu-synaprom-firmware.c',       # fuzzing
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
+plugin_builtins += plugin_builtin_synaprom
 
 if get_option('tests')
-  testdatadirs = environment()
-  testdatadirs.set('G_TEST_SRCDIR', meson.current_source_dir())
-  testdatadirs.set('G_TEST_BUILDDIR', meson.current_build_dir())
+  install_data(['tests/synaptics-prometheus.builder.xml'],
+    install_dir: join_paths(installed_test_datadir, 'tests'))
+  env = environment()
+  env.set('G_TEST_SRCDIR', meson.current_source_dir())
+  env.set('G_TEST_BUILDDIR', meson.current_build_dir())
   e = executable(
     'synaptics-prometheus-self-test',
-    fu_hash,
-    sources : [
+    sources: [
       'fu-self-test.c',
-      'fu-synaprom-common.c',
-      'fu-synaprom-config.c',
-      'fu-synaprom-device.c',
-      'fu-synaprom-firmware.c',
     ],
-    include_directories : [
-      root_incdir,
-      fwupd_incdir,
-      fwupdplugin_incdir,
+    include_directories: plugin_incdirs,
+    dependencies: plugin_deps,
+    link_with: [
+      plugin_libs,
+      plugin_builtin_synaprom,
     ],
-    dependencies : [
-      plugin_deps,
+    install: true,
+    install_rpath: libdir_pkg,
+    install_dir: installed_test_bindir,
+    c_args: [
+      cargs,
+      '-DSRCDIR="' + meson.current_source_dir() + '"',
     ],
-    link_with : [
-      fwupd,
-      fwupdplugin,
-    ],
-    c_args : cargs,
-    install : true,
-    install_dir : installed_test_bindir,
   )
-  test('synaptics-prometheus-self-test', e, env : testdatadirs)  # added to installed-tests
+  test('synaptics-prometheus-self-test', e, env: env)  # added to installed-tests
 endif
-endif
+
+device_tests += files('tests/synaptics-prometheus.json')

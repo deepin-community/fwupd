@@ -1,69 +1,55 @@
-if get_option('plugin_nvme')
-if not get_option('gudev')
-  error('gudev is required for plugin_nvme')
-endif
+nvme_header = cc.has_header('linux/nvme_ioctl.h', required: get_option('plugin_nvme'))
+
+if nvme_header and \
+   get_option('plugin_nvme').require(enable_udev,
+    error_message: 'udev is needed for plugin_nvme').allowed()
 cargs = ['-DG_LOG_DOMAIN="FuPluginNvme"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 
-install_data([
-  'nvme.quirk',
-  ],
-  install_dir: join_paths(datadir, 'fwupd', 'quirks.d')
-)
-
-shared_module('fu_plugin_nvme',
-  fu_hash,
-  sources : [
-    'fu-plugin-nvme.c',
+plugin_quirks += files('nvme.quirk')
+plugin_builtin_nvme = static_library('fu_plugin_nvme',
+  sources: [
+    'fu-nvme-plugin.c',
     'fu-nvme-common.c',
     'fu-nvme-device.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : [
+  include_directories: plugin_incdirs,
+  c_args: [
     cargs,
     '-DLOCALSTATEDIR="' + localstatedir + '"',
   ],
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  dependencies : [
-    plugin_deps,
-  ],
+  link_with: plugin_libs,
+  dependencies: plugin_deps,
+)
+plugin_builtins += plugin_builtin_nvme
+
+device_tests += files(
+  'tests/lenovo-pcsn720.json',
 )
 
 if get_option('tests')
-  testdatadirs = environment()
-  testdatadirs.set('G_TEST_SRCDIR', meson.current_source_dir())
-  testdatadirs.set('G_TEST_BUILDDIR', meson.current_build_dir())
+  env = environment()
+  env.set('G_TEST_SRCDIR', meson.current_source_dir())
+  env.set('G_TEST_BUILDDIR', meson.current_build_dir())
+  env.set('FWUPD_DATADIR_QUIRKS', meson.current_source_dir())
   e = executable(
     'nvme-self-test',
-    fu_hash,
-    sources : [
+    sources: [
       'fu-self-test.c',
-      'fu-nvme-common.c',
-      'fu-nvme-device.c',
     ],
-    include_directories : [
-      root_incdir,
-      fwupd_incdir,
-      fwupdplugin_incdir,
+    include_directories: plugin_incdirs,
+    dependencies: plugin_deps,
+    link_with: [
+      plugin_libs,
+      plugin_builtin_nvme,
     ],
-    dependencies : [
-      plugin_deps,
+    install: true,
+    install_rpath: libdir_pkg,
+    install_dir: installed_test_bindir,
+    c_args: [
+      '-DSRCDIR="' + meson.current_source_dir() + '"',
     ],
-    link_with : [
-      fwupd,
-      fwupdplugin,
-    ],
-    install : true,
-    install_dir : installed_test_bindir,
   )
-  test('nvme-self-test', e, env : testdatadirs)  # added to installed-tests
+  test('nvme-self-test', e, env: env)  # added to installed-tests
 endif
 endif

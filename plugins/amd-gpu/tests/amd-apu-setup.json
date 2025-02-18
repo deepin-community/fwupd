@@ -1,0 +1,119 @@
+{
+  "UsbDevices": [
+    {
+      "GType": "FuUdevDevice",
+      "BackendId": "/sys/devices/pci0000:00/0000:00:08.1/0000:c4:00.0",
+      "DeviceFile": "/dev/dri/card0",
+      "Subsystem": "pci",
+      "Driver": "amdgpu",
+      "BindId": "0000:c4:00.0",
+      "Vendor": 4098,
+      "Model": 5390,
+      "Created": "2024-11-01T17:27:45.279095Z",
+      "Events": [
+        {
+          "Id": "#d5a801ad",
+          "Data": "pci"
+        },
+        {
+          "Id": "#ad8c58d3",
+          "Data": "amdgpu"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "DRIVER=amdgpu\nPCI_CLASS=38000\nPCI_ID=1002:150E\nPCI_SUBSYS_ID=1043:1DF3\nPCI_SLOT_NAME=0000:c4:00.0\nMODALIAS=pci:v00001002d0000150Esv00001043sd00001DF3bc03sc80i00"
+        },
+        {
+          "Id": "#d432c663"
+        },
+        {
+          "Id": "#9b895db2",
+          "Data": "0x1002"
+        },
+        {
+          "Id": "#66f3e150",
+          "Data": "0x150e"
+        },
+        {
+          "Id": "#d410b6c7",
+          "Data": "0x038000"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "DRIVER=amdgpu\nPCI_CLASS=38000\nPCI_ID=1002:150E\nPCI_SUBSYS_ID=1043:1DF3\nPCI_SLOT_NAME=0000:c4:00.0\nMODALIAS=pci:v00001002d0000150Esv00001043sd00001DF3bc03sc80i00"
+        },
+        {
+          "Id": "#d432c663"
+        },
+        {
+          "Id": "#9b895db2",
+          "Data": "0x1002"
+        },
+        {
+          "Id": "#66f3e150",
+          "Data": "0x150e"
+        },
+        {
+          "Id": "#d410b6c7",
+          "Data": "0x038000"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#d410b6c7",
+          "Data": "0x038000"
+        },
+        {
+          "Id": "#41bc32d8",
+          "Data": "113-STRIXEMU-001"
+        },
+        {
+          "Id": "#bf29d2f6",
+          "Data": "0xc1"
+        },
+        {
+          "Id": "#269abd81",
+          "Data": "0x1043"
+        },
+        {
+          "Id": "#360cec38",
+          "Data": "0x1df3"
+        },
+        {
+          "Id": "#d2629d83",
+          "Data": "0000:c4:00.0"
+        },
+        {
+          "Id": "#7305decd",
+          "Filename": "/dev/dri/card0"
+        },
+        {
+          "Id": "#c0ff063f",
+          "Exists": 0
+        },
+        {
+          "Id": "#1b923827",
+          "Exists": 0
+        },
+        {
+          "Id": "#cdb78a8a",
+          "Exists": 0
+        },
+        {
+          "Id": "#9747b377",
+          "DataOut": "QU1EIFNUUklYX0VNVQAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgADExMy1TVFJJWEVNVS0wMDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARAQoXAAAAADAyMy4wMTAuMDAxLjAxNy4wMDAwMDEAU1RSSVguYmluMjAyNC8wNi8xNCAxNzo0MQAAAAAAAAAAAAAAAAAAAAA="
+        }
+      ]
+    }
+  ]
+}

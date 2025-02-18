@@ -1,0 +1,55 @@
+{
+  "UsbDevices": [
+    {
+      "GType": "FuUdevDevice",
+      "BackendId": "/sys/devices/platform/AMDI0009:00",
+      "Subsystem": "platform",
+      "Driver": "amd_pmc",
+      "Created": "2024-11-02T01:12:31.404404Z",
+      "Events": [
+        {
+          "Id": "#d5a801ad",
+          "Data": "platform"
+        },
+        {
+          "Id": "#ad8c58d3",
+          "Data": "amd_pmc"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "DRIVER=amd_pmc\nMODALIAS=acpi:AMDI0009:PNP0D80:"
+        },
+        {
+          "Id": "#0d176430",
+          "Data": "acpi:AMDI0009:PNP0D80:"
+        },
+        {
+          "Id": "#d432c663"
+        },
+        {
+          "Id": "#9b895db2"
+        },
+        {
+          "Id": "#66f3e150"
+        },
+        {
+          "Id": "#d410b6c7"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#1e802949",
+          "Data": "76.87.0"
+        },
+        {
+          "Id": "#a7d0bb1a",
+          "Data": "0"
+        }
+      ]
+    }
+  ]
+}

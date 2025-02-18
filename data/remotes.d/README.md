@@ -1,8 +1,10 @@
-Vendor Firmware
-===============
+# Remotes
+
+## Vendor Firmware
 
 These are the steps to add vendor firmware that is installed as part of an embedded image such as an OSTree or ChromeOS image:
 
+* Compile with `-Dvendor_metadata=true` to install `/etc/fwupd/remotes.d/vendor.conf`
 * Change `/etc/fwupd/remotes.d/vendor.conf` to have `Enabled=true`
 * Change `/etc/fwupd/remotes.d/vendor.conf` to have the correct `Title`
 * Deploy the firmware to `/usr/share/fwupd/remotes.d/vendor/firmware`
@@ -34,47 +36,30 @@ The metadata should be of the form:
       </component>
     </components>
 
-Ideally, the metadata and firmware should be signed by either GPG or a PKCS7
-certificate. If this is the case also change `Keyring=gpg` or `Keyring=pkcs7`
-in `/etc/fwupd/remotes.d/vendor.conf` and ensure the correct public key or
+The metadata and firmware should be signed using Jcat, ensuring the
 signing certificate is installed in the `/etc/pki/fwupd` location.
 
-Automatic metadata generation
-=============================
+## Automatic metadata generation
+
 `fwupd` and `fwupdtool` support automatically generating metadata for a remote
 by configuring it to be a *directory* type. This is very convenient if you want to dynamically add firmware from multiple packages while generating the image but there are a few deficiencies:
+
 * There will be a performance impact of starting the daemon or tool measured by O(# CAB files)
 * It's not possible to verify metadata signature and any file validation should be part of the image validation.
 
 To enable this:
+
 * Change `/etc/fwupd/remotes.d/vendor-directory.conf` to have `Enabled=true`
-* Change `/etc/fwupd/remotes.d/vendor.conf-directory` to have the correct `Title`
+* Change `/etc/fwupd/remotes.d/vendor-directory.conf` to have the correct `Title`
 * Deploy the firmware to `/usr/share/fwupd/remotes.d/vendor/firmware`
 * Change `MetadataURI` to that of the directory (Eg `/usr/share/fwupd/remotes.d/vendor/`)
 
+## Mirroring a Repository
 
-Mirroring a Repository
-======================
+The upstream LVFS instance will output a relative URL for firmware files, e.g.
+`<location>bar.cab</location>` instead of an absolute URI location, e.g.
+`<location>http://foo/bar.cab</location>`.
 
-The LVFS currently outputs XML with absolute URI locations, e.g.
-`<location>http://foo/bar.cab</location>` rather than `<location>bar.cab</location>`
-
-This makes mirroring the master LVFS (or other private instance) somewhat tricky.
-To work around this issue client remotes can specify `FirmwareBaseURI` to
-replace the URI of the firmware before it is downloaded.
-
-For mirroring the LVFS content to a new CDN, you could use:
-
-    [fwupd Remote]
-    Enabled=true
-    Type=download
-    Keyring=gpg
-    MetadataURI=https://my.new.cdn/mirror/firmware.xml.gz
-    FirmwareBaseURI=https://my.new.cdn/mirror
-
-New instances of the LVFS can actually output a relative URL for firmware files,
-e.g. `<location>bar.cab</location>` and when downloading the `MetadataURI` name
-and path prefix is used in this case.
-This is not enabled for the "upstream" LVFS instance as versions of fwupd older
-than 1.0.3 are unable to automatically use the `MetadataURI` value for firmware
-downloads.
+When setting up a mirror of the LVFS onto another CDN you just need to change
+the `MetadataURI` to your local mirror and firmware downloads will use the
+relative URI.

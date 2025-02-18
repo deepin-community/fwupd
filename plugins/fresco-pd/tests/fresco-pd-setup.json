@@ -1,0 +1,92 @@
+{
+  "UsbDevices": [
+    {
+      "GType": "FuUsbDevice",
+      "PlatformId": "1-5.2",
+      "Created": "2024-10-25T09:33:39.966550Z",
+      "IdVendor": 7516,
+      "IdProduct": 28930,
+      "Device": 256,
+      "USB": 513,
+      "Manufacturer": 1,
+      "DeviceClass": 17,
+      "Product": 2,
+      "UsbBosDescriptors": [
+        {
+          "DevCapabilityType": 80,
+          "ExtraData": "AAM="
+        },
+        {
+          "DevCapabilityType": 2,
+          "ExtraData": "BgAAAA=="
+        },
+        {
+          "DevCapabilityType": 4,
+          "ExtraData": "AAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "DevCapabilityType": 13,
+          "ExtraData": "BAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABABAAAAAAAA"
+        }
+      ],
+      "UsbConfigDescriptors": [
+        {
+          "ConfigurationValue": 1
+        }
+      ],
+      "UsbInterfaces": [
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceClass": 17
+        }
+      ],
+      "UsbEvents": [
+        {
+          "Id": "#4693935e",
+          "Data": "001"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=189\nMINOR=92\nDEVNAME=bus/usb/001/093\nDEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=1d5c/7102/100\nTYPE=17/0/0\nBUSNUM=001\nDEVNUM=093"
+        },
+        {
+          "Id": "#1ab3ae0a",
+          "Data": "093"
+        },
+        {
+          "Id": "#4693935e",
+          "Data": "001"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=189\nMINOR=92\nDEVNAME=bus/usb/001/093\nDEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=1d5c/7102/100\nTYPE=17/0/0\nBUSNUM=001\nDEVNUM=093"
+        },
+        {
+          "Id": "#1ab3ae0a",
+          "Data": "093"
+        },
+        {
+          "Id": "#1fcf122d",
+          "Data": "R2VuZXJpYyBCaWxsYm9hcmQgRGV2aWNlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#933f091c",
+          "Data": "AA=="
+        },
+        {
+          "Id": "#8e7dabc5",
+          "Data": "Yw=="
+        },
+        {
+          "Id": "#de7b3dbb",
+          "Data": "Eg=="
+        },
+        {
+          "Id": "#b4a87976",
+          "Data": "Bw=="
+        }
+      ]
+    }
+  ]
+}

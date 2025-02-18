@@ -1,81 +1,73 @@
 /*
- * Copyright (C) 2020 Richard Hughes <richard@hughsie.com>
+ * Copyright 2020 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #include "config.h"
 
-#include <string.h>
-
-#include "fu-common.h"
 #include "fu-acpi-dmar.h"
 
 struct _FuAcpiDmar {
-	GObject		 parent_instance;
-	gboolean	 opt_in;
+	FuAcpiTable parent_instance;
+	gboolean opt_in;
 };
 
-G_DEFINE_TYPE (FuAcpiDmar, fu_acpi_dmar, G_TYPE_OBJECT)
+G_DEFINE_TYPE(FuAcpiDmar, fu_acpi_dmar, FU_TYPE_ACPI_TABLE)
 
-#define DMAR_DMA_CTRL_PLATFORM_OPT_IN_FLAG	0x4
+#define DMAR_DMA_CTRL_PLATFORM_OPT_IN_FLAG 0x4
+
+static gboolean
+fu_acpi_dmar_parse(FuFirmware *firmware,
+		   GInputStream *stream,
+		   FwupdInstallFlags flags,
+		   GError **error)
+{
+	FuAcpiDmar *self = FU_ACPI_DMAR(firmware);
+	guint8 dma_flags = 0;
+
+	/* FuAcpiTable->parse */
+	if (!FU_FIRMWARE_CLASS(fu_acpi_dmar_parent_class)
+		 ->parse(FU_FIRMWARE(self), stream, FWUPD_INSTALL_FLAG_NONE, error))
+		return FALSE;
+
+	/* check signature and read flags */
+	if (g_strcmp0(fu_firmware_get_id(FU_FIRMWARE(self)), "DMAR") != 0) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_NOT_SUPPORTED,
+			    "Not a DMAR table, got %s",
+			    fu_firmware_get_id(FU_FIRMWARE(self)));
+		return FALSE;
+	}
+	if (!fu_input_stream_read_u8(stream, 0x25, &dma_flags, error))
+		return FALSE;
+	g_debug("Flags: 0x%02x", dma_flags);
+	self->opt_in = (dma_flags & DMAR_DMA_CTRL_PLATFORM_OPT_IN_FLAG) > 0;
+	return TRUE;
+}
 
 FuAcpiDmar *
-fu_acpi_dmar_new (GBytes *blob, GError **error)
+fu_acpi_dmar_new(void)
 {
-	FuAcpiDmar *self = g_object_new (FU_TYPE_ACPI_DMAR, NULL);
-	gchar creator_id[5] = { '\0' };
-	gchar oem_table_id[9] = { '\0' };
-	gchar signature[5] = { '\0' };
-	gsize bufsz = 0;
-	guint8 flags = 0;
-	const guint8 *buf = g_bytes_get_data (blob, &bufsz);
-
-	/* parse table */
-	if (!fu_memcpy_safe ((guint8 *) signature, sizeof(signature), 0x0,	/* dst */
-			     buf, bufsz, 0x00,					/* src */
-			     sizeof(signature) - 1, error))
-		return NULL;
-	if (strcmp (signature, "DMAR") != 0) {
-		g_set_error (error,
-			     G_IO_ERROR,
-			     G_IO_ERROR_NOT_SUPPORTED,
-			     "Not a DMAR table, got %s",
-			     signature);
-		return NULL;
-	}
-	if (!fu_memcpy_safe ((guint8 *) oem_table_id, sizeof(oem_table_id), 0x0,/* dst */
-			     buf, bufsz, 0x10,					/* src */
-			     sizeof(oem_table_id) - 1, error))
-		return NULL;
-	g_debug ("OemTableId: %s", oem_table_id);
-	if (!fu_memcpy_safe ((guint8 *) creator_id, sizeof(creator_id), 0x0,	/* dst */
-			     buf, bufsz, 0x1c,					/* src */
-			     sizeof(creator_id) - 1, error))
-		return NULL;
-	g_debug ("CreatorId: %s", creator_id);
-	if (!fu_memcpy_safe (&flags, sizeof(flags), 0x0,			/* dst */
-			     buf, bufsz, 0x25,					/* src */
-			     sizeof(flags), error))
-		return NULL;
-	g_debug ("Flags: 0x%02x", flags);
-	self->opt_in = (flags & DMAR_DMA_CTRL_PLATFORM_OPT_IN_FLAG) > 0;
-	return self;
+	return g_object_new(FU_TYPE_ACPI_DMAR, NULL);
 }
 
 gboolean
-fu_acpi_dmar_get_opt_in (FuAcpiDmar *self)
+fu_acpi_dmar_get_opt_in(FuAcpiDmar *self)
 {
-	g_return_val_if_fail (FU_IS_ACPI_DMAR (self), FALSE);
+	g_return_val_if_fail(FU_IS_ACPI_DMAR(self), FALSE);
 	return self->opt_in;
 }
 
 static void
-fu_acpi_dmar_class_init (FuAcpiDmarClass *klass)
+fu_acpi_dmar_class_init(FuAcpiDmarClass *klass)
 {
+	FuFirmwareClass *firmware_class = FU_FIRMWARE_CLASS(klass);
+	firmware_class->parse = fu_acpi_dmar_parse;
 }
 
 static void
-fu_acpi_dmar_init (FuAcpiDmar *self)
+fu_acpi_dmar_init(FuAcpiDmar *self)
 {
 }

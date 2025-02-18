@@ -1,33 +1,20 @@
-if get_option('gusb')
 cargs = ['-DG_LOG_DOMAIN="FuPluginColorHug"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 
-install_data([
-  'colorhug.quirk',
-  ],
-  install_dir: join_paths(datadir, 'fwupd', 'quirks.d')
-)
-
-shared_module('fu_plugin_colorhug',
-  fu_hash,
-  sources : [
-    'fu-colorhug-common.c',
+plugin_quirks += files('colorhug.quirk')
+plugin_builtins += static_library('fu_plugin_colorhug',
+  rustgen.process('fu-colorhug.rs'),
+  sources: [
     'fu-colorhug-device.c',
-    'fu-plugin-colorhug.c',
+    'fu-colorhug-plugin.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
-endif
+
+device_tests += files('tests/hughski-colorhug.json',
+                      'tests/hughski-colorhug2.json',
+                      'tests/hughski-colorhug-plus.json',
+)

@@ -1,2 +1,2 @@
-[DeviceInstanceId=TPM]
-Plugin = tpm
+[TPM\VEN_MSFT&MOD_Pluton.TPM.A]
+Flags = host-cpu-child
