@@ -1,28 +1,14 @@
-if get_option('systemd')
-if host_machine.system() != 'linux'
-  error('linux is required for systemd')
-endif
+if libsystemd.found() or elogind.found()
 cargs = ['-DG_LOG_DOMAIN="FuPluginLogind"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 
-shared_module('fu_plugin_logind',
-  fu_hash,
-  sources : [
-    'fu-plugin-logind.c',
+plugin_builtins += static_library('fu_plugin_logind',
+  sources: [
+    'fu-logind-plugin.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
 endif

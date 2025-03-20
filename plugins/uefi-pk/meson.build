@@ -1,26 +1,21 @@
-if get_option('plugin_uefi_pk')
+if hsi and \
+   get_option('plugin_uefi_pk').require(gnutls.found(),
+   error_message: 'gnutls is needed for plugin_uefi_pk').allowed()
 cargs = ['-DG_LOG_DOMAIN="FuPluginUefiPk"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 
-shared_module('fu_plugin_uefi_pk',
-  fu_hash,
-  sources : [
-    'fu-plugin-uefi-pk.c',
+plugin_quirks += files('uefi-pk.quirk')
+plugin_builtins += static_library('fu_plugin_uefi_pk',
+  sources: [
+    'fu-uefi-pk-device.c',
+    'fu-uefi-pk-plugin.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-    gnutls,
-  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
+enumeration_data += files('tests/uefi-pk-setup.json')
+device_tests += files('tests/uefi-pk.json')
+
 endif

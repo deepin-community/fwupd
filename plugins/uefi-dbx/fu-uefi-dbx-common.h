@@ -1,16 +1,17 @@
 /*
- * Copyright (C) 2020 Richard Hughes <richard@hughsie.com>
+ * Copyright 2020 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
-#include <gio/gio.h>
+#include <fwupdplugin.h>
 
-#include "fu-efi-signature-list.h"
-
-gchar		*fu_uefi_dbx_get_authenticode_hash	(const gchar	*fn,
-							 GError		**error);
-gboolean	 fu_uefi_dbx_signature_list_validate	(FuEfiSignatureList	*siglist,
-							 GError		**error);
+const gchar *
+fu_uefi_dbx_get_efi_arch(void);
+gboolean
+fu_uefi_dbx_signature_list_validate(FuContext *ctx,
+				    FuEfiSignatureList *siglist,
+				    FwupdInstallFlags flags,
+				    GError **error);

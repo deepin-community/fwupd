@@ -1,16 +1,25 @@
 /*
- * Copyright (C) 2020 Richard Hughes <richard@hughsie.com>
+ * Copyright 2020 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
-#include "fu-firmware.h"
+#include <fwupdplugin.h>
 
-#define FU_TYPE_ELANTP_FIRMWARE (fu_elantp_firmware_get_type ())
-G_DECLARE_FINAL_TYPE (FuElantpFirmware, fu_elantp_firmware, FU, ELANTP_FIRMWARE, FuFirmware)
+#define FU_TYPE_ELANTP_FIRMWARE (fu_elantp_firmware_get_type())
+G_DECLARE_FINAL_TYPE(FuElantpFirmware, fu_elantp_firmware, FU, ELANTP_FIRMWARE, FuFirmware)
 
-FuFirmware	*fu_elantp_firmware_new			(void);
-guint16		 fu_elantp_firmware_get_module_id	(FuElantpFirmware	*self);
-guint16		 fu_elantp_firmware_get_iap_addr	(FuElantpFirmware	*self);
+FuFirmware *
+fu_elantp_firmware_new(void);
+guint16
+fu_elantp_firmware_get_module_id(FuElantpFirmware *self);
+guint16
+fu_elantp_firmware_get_ic_type(FuElantpFirmware *self);
+guint16
+fu_elantp_firmware_get_iap_addr(FuElantpFirmware *self);
+gboolean
+fu_elantp_firmware_get_forcetable_support(FuElantpFirmware *self);
+guint32
+fu_elantp_firmware_get_forcetable_addr(FuElantpFirmware *self);

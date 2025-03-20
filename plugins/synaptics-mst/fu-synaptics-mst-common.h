@@ -1,42 +1,25 @@
 /*
- * Copyright (C) 2016 Mario Limonciello <mario.limonciello@dell.com>
- * Copyright (C) 2017 Peichen Huang <peichenhuang@tw.synaptics.com>
- * Copyright (C) 2019 Richard Hughes <richard@hughsie.com>
+ * Copyright 2016 Mario Limonciello <mario.limonciello@dell.com>
+ * Copyright 2017 Peichen Huang <peichenhuang@tw.synaptics.com>
+ * Copyright 2019 Richard Hughes <richard@hughsie.com>
+ * Copyright 2021 Apollo Ling <apollo.ling@synaptics.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
 #include <glib.h>
 
-#define SYNAPTICS_FLASH_MODE_DELAY	3	/* seconds */
+#include "fu-synaptics-mst-struct.h"
 
-/**
- * FuSynapticsMstMode:
- * @FU_SYNAPTICS_MST_MODE_UNKNOWN:		Type invalid or not known
- * @FU_SYNAPTICS_MST_MODE_DIRECT:		Directly addressable
- * @FU_SYNAPTICS_MST_MODE_REMOTE:		Requires remote register work
- *
- * The device type.
- **/
-typedef enum {
-	FU_SYNAPTICS_MST_MODE_UNKNOWN,
-	FU_SYNAPTICS_MST_MODE_DIRECT,
-	FU_SYNAPTICS_MST_MODE_REMOTE,
-	/*< private >*/
-	FU_SYNAPTICS_MST_MODE_LAST
-} FuSynapticsMstMode;
+#define SYNAPTICS_FLASH_MODE_DELAY 3 /* seconds */
 
-typedef enum {
-	FU_SYNAPTICS_MST_FAMILY_UNKNOWN,
-	FU_SYNAPTICS_MST_FAMILY_TESLA,
-	FU_SYNAPTICS_MST_FAMILY_LEAF,
-	FU_SYNAPTICS_MST_FAMILY_PANAMERA,
-	/*<private >*/
-	FU_SYNAPTICS_MST_FAMILY_LAST
-} FuSynapticsMstFamily;
+#define SYNAPTICS_IEEE_OUI 0x90CC24
 
-const gchar		*fu_synaptics_mst_mode_to_string		(FuSynapticsMstMode	 mode);
-const gchar		*fu_synaptics_mst_family_to_string	(FuSynapticsMstFamily	 family);
-FuSynapticsMstFamily	 fu_synaptics_mst_family_from_chip_id	(guint16		 chip_id);
+FuSynapticsMstFamily
+fu_synaptics_mst_family_from_chip_id(guint16 chip_id);
+guint8
+fu_synaptics_mst_calculate_crc8(guint8 crc, const guint8 *buf, gsize bufsz);
+guint16
+fu_synaptics_mst_calculate_crc16(guint16 crc, const guint8 *buf, gsize bufsz);

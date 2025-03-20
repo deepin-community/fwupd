@@ -1,0 +1,306 @@
+name: fwupd
+adopt-info: fwupd
+summary: A standalone version of fwupd to install newer firmware updates
+description: |
+  This is a tool that can be used to install firmware updates on devices
+  not yet supported by the version of fwupd distributed with the OS.
+
+grade: stable
+confinement: strict
+base: core24
+license: LGPL-2.1-or-later
+
+platforms:
+  amd64:
+
+slots:
+  fwupd:
+    interface: fwupd
+  fwupd-dbus:
+    interface: dbus
+    bus: system
+    name: org.freedesktop.fwupd
+
+plugs:
+  fwupdmgr:
+    interface: fwupd
+  polkit:
+    interface: polkit
+    action-prefix: org.freedesktop.fwupd
+
+apps:
+  fwupdtool:
+    command: fwupdtool.wrapper
+    plugs: [bluez, udisks2, modem-manager, upower-observe, network, hardware-observe, home, opengl, raw-usb]
+    slots: [fwupd]
+    completer:
+      share/bash-completion/completions/fwupdtool
+    environment:
+      FWUPD_HOSTDIR: /var/lib/snapd/hostfs
+  fwupd:
+    command: fwupd.wrapper
+    daemon: dbus
+    slots: [fwupd]
+    plugs: [bluez, udisks2, modem-manager, upower-observe, polkit, network, hardware-observe, home, opengl, raw-usb]
+    daemon-scope: system
+    activates-on:
+      - fwupd-dbus
+    environment:
+      FWUPD_HOSTDIR: /var/lib/snapd/hostfs
+  fwupdmgr:
+    command: fwupdmgr.wrapper
+    plugs: [fwupdmgr, home, network, polkit, shutdown]
+    completer:
+      share/bash-completion/completions/fwupdmgr
+  refresh:
+    command: fwupdmgr.wrapper refresh
+    daemon: oneshot
+    plugs: [fwupdmgr, network]
+    timer: "00:00-24:00/24"
+
+parts:
+  #needed for UEFI plugin to build UX labels
+  build-introspection:
+    plugin: nil
+    stage-packages:
+      - python3-gi-cairo
+    override-stage: |
+      craftctl default
+    prime:
+      - -etc
+      - -usr
+      - -var
+
+  pkttyagent:
+    plugin: nil
+    stage-packages:
+      - polkitd
+      - libpolkit-agent-1-0
+    prime:
+      - usr/bin/pkttyagent
+      - usr/lib/*/libpolkit-agent-1.so*
+
+  fwupd:
+    plugin: meson
+    meson-parameters: [--prefix=/,
+                       -Defi_binary=false,
+                       -Ddocs=disabled,
+                       -Dbuild=all,
+                       -Dintrospection=disabled,
+                       -Dman=false,
+                       -Dpython=/usr/bin/python3,
+                       -Dplugin_flashrom=disabled,
+                       -Dplugin_powerd=disabled,
+                       -Defi_os_dir=fwupd,
+                       "-Dlibxmlb:gtkdoc=false",
+                       "-Dlibxmlb:introspection=false",
+                       "-Dlibjcat:man=false",
+                       "-Dlibjcat:gtkdoc=false",
+                       "-Dlibjcat:introspection=false",
+                       "-Dlibjcat:tests=false"]
+    source: .
+    source-type: git
+    override-build: |
+      ${CRAFT_PART_SRC}/contrib/ci/fwupd_setup_helpers.py test-meson
+      craftctl default
+      for name in ${CRAFT_PART_INSTALL}/lib/*/fwupd-*/libfwupd*; do
+        mv ${name} `dirname ${name}`/.. ;\
+      done
+      # fixes up commands like fwupdtool -> fwupd.fwupdtool
+      sed -i "s,\(complete -F _fwupd[a-z]*\) \(fwupd.*\),\1 fwupd.\2,;          \
+              s,\(command.*\)\(fwupdtool\),\1fwupd.\2,;                         \
+              s,\(command.*\)\(fwupdmgr\),\1fwupd.\2,"                          \
+              ${CRAFT_PART_INSTALL}/share/bash-completion/completions/*
+      # make installed tests runnable
+      sed -i "s,\(fwupdmgr\),fwupd.\1,; \
+              s,\(fwupdtool\),fwupd.\1," \
+              ${CRAFT_PART_INSTALL}/share/installed-tests/fwupd/*.sh
+      sed -i "s,\(/share\),/snap/fwupd/current/\1," \
+              ${CRAFT_PART_INSTALL}/share/installed-tests/fwupd/fwupdtool.sh
+      sed -i "s,\(/libexec\),/snap/fwupd/current/\1," \
+              ${CRAFT_PART_INSTALL}/share/installed-tests/fwupd/fwupd.sh
+      sed -i 's,^MetadataURI=.*$,MetadataURI=file:///snap/fwupd/current/share/installed-tests/fwupd/fwupd-tests.xml,' "${CRAFT_PART_INSTALL}/share/fwupd/remotes.d/fwupd-tests.conf"
+      # fixes up dbus service for classic snap
+      sed -i 's!SystemdService=\(.*\)!SystemdService=snap.fwupd.fwupd.service!' \
+              ${CRAFT_PART_INSTALL}/share/dbus-1/system-services/org.freedesktop.fwupd.service
+      cp -R /usr/libexec/fwupd/efi ${CRAFT_PART_INSTALL}/libexec/fwupd
+      cp /usr/lib/shim/shimx64.efi.signed ${CRAFT_PART_INSTALL}/libexec/fwupd/efi/
+      sed -i 's,^MetadataURI=.*$,MetadataURI=file:///var/snap/fwupd/common/share/fwupd/remotes.d/vendor/firmware,' "${CRAFT_PART_INSTALL}/etc/fwupd/remotes.d/vendor-directory.conf"
+      rm -rf ${CRAFT_PART_INSTALL}/share/installed-tests/fwupd/tests/bios-attrs
+    override-pull: |
+      craftctl default
+      craftctl set version=$(git describe HEAD --always)
+    build-packages:
+      - bash-completion
+      - curl
+      - fwupd-signed
+      - fwupd-unsigned
+      - git
+      - gettext
+      - gnu-efi
+      - fwupd-unsigned-dev
+      - hwdata
+      - libcurl4-openssl-dev
+      - libarchive-dev
+      - libcbor-dev
+      - libcairo-dev
+      - libglib2.0-dev
+      - libgnutls28-dev
+      - libgpgme11-dev
+      - libusb-1.0-0-dev
+      - libjson-glib-dev
+      - libjcat-dev
+      - liblzma-dev
+      - libpango1.0-dev
+      - libpolkit-gobject-1-dev
+      - libprotobuf-c-dev
+      - libsqlite3-dev
+      - libsystemd-dev
+      - libtss2-dev
+      - libmm-glib-dev
+      - libqmi-glib-dev
+      - libmbim-glib-dev
+      - locales
+      - meson
+      - modemmanager
+      - pkg-config
+      - python3-pip
+      - python3-cairo
+      - python3-gi
+      - python3-jinja2
+      - python3-dbusmock
+      - protobuf-c-compiler
+      - shim-signed
+      - systemd
+      - umockdev
+      - uuid-dev
+    stage-packages:
+      - libnghttp2-14
+      - libpsl5
+      - librtmp1
+      - libarchive13
+      - libcurl4
+      - libcbor0.10
+      - libassuan0
+      - libffi8
+      - libjcat1
+      - liblzma5
+      - libusb-1.0-0
+      - libgpgme11
+      - libprotobuf-c1
+      - libpolkit-gobject-1-0
+      - libtss2-esys-3.0.2-0
+      - libtss2-fapi1
+      - libtss2-mu-4.0.1-0t64
+      - libtss2-rc0
+      - libtss2-sys1
+      - libtss2-tcti-cmd0
+      - libtss2-tcti-device0
+      - libtss2-tcti-mssim0
+      - libtss2-tcti-swtpm0
+      - libtss2-tctildr0
+      - glib-networking
+      - libglib2.0-bin
+      - libglib2.0-0
+      - libmm-glib0
+      - libqmi-glib5
+      - libmbim-glib4
+      - libduktape207
+    prime:
+      # we explicitly don't want /usr/bin/gpgconf
+      # this will cause gpgme to error finding it
+      # but that also avoids trying to use nonexistent
+      # /usr/bin/gpg2
+      - -etc/dconf/db
+      - -etc/grub.d
+      - -etc/systemd/system
+      - -libexec/installed-tests
+      - -share/fwupd/*.py
+      - -share/fish
+      - -root
+      - -usr/bin
+      - -usr/sbin
+      - -usr/libexec
+      - -usr/share/man
+      - -usr/share/GConf
+      - -etc/X11
+      - -etc/ldap
+      - -etc/logcheck
+      - -usr/lib/dconf
+      - -usr/lib/gcc
+      - -usr/lib/glib-networking
+      - -usr/lib/gnupg
+      - -usr/lib/gnupg2
+      - -usr/lib/sasl2
+      - -usr/lib/systemd
+      - -usr/lib/*/audit
+      - -usr/share/bash-completion
+      - -usr/share/dbus-1
+      - -usr/share/gnupg
+      - -usr/share/glib-2.0/schemas
+      - -usr/share/session-migration
+      - -usr/share/upstart
+      - -usr/share/X11
+      - -include
+      - -lib/systemd
+      - -lib/udev
+      - -lib/*/pkgconfig
+      - -usr/share/lintian
+      - -usr/share/pkgconfig
+      - -usr/share/polkit-1
+      - -usr/share/vala
+      - -usr/share/doc
+      - -usr/share/gnupg2
+      - -usr/share/info
+      - -usr/share/gir-1.0
+      - -usr/share/upstart
+      - -usr/lib/*/libicu*
+      - -usr/lib/*/pkgconfig
+      - -usr/lib/*/libnpth*
+      - -usr/lib/*/libgthread*
+      - -usr/lib/*/libksba*
+      - -usr/lib/*/gio/modules/libdconfsettings.so
+      - -usr/lib/systemd/user/dconf.service
+      - -usr/share/dbus-1/services/ca.desrt.dconf.service
+      - -usr/lib/*/libdconf.so.1.0.0
+    after: [build-introspection]
+    build-environment:
+      - PYTHONPATH: "${CRAFT_STAGE}/usr/lib/python3/dist-packages"
+  update-mime:
+    plugin: make
+    source: contrib/snap/update-mime
+    stage-packages:
+      - shared-mime-info
+      - gsettings-desktop-schemas
+      - libxml2
+    prime:
+      - -usr/bin
+      - -usr/share/doc
+      - -usr/share/doc-base
+      - -usr/share/man
+      - -usr/share/lintian
+      - -usr/share/pkgconfig
+      - -usr/share/GConf
+      - -usr/lib/dconf
+      - -usr/lib/*/gio/modules/libdconfsettings.so
+      - -usr/lib/systemd/user/dconf.service
+      - -usr/share/dbus-1/services/ca.desrt.dconf.service
+      - -usr/lib/*/libdconf.so.1.0.0
+    after: [fwupd]
+  fwupd-wrappers:
+    plugin: dump
+    source: contrib/snap
+    stage:
+    - fwupd-command
+    - fwupdtool.wrapper
+    - fwupd.wrapper
+    - fwupdmgr.wrapper
+
+  policy:
+    plugin: nil
+    after:
+      - fwupd
+    override-build: |
+      mkdir -p "${CRAFT_PART_INSTALL}/meta/polkit/polkit.fwupd/"
+      cp "${CRAFT_STAGE}/share/polkit-1/actions/org.freedesktop.fwupd.policy" \
+         "${CRAFT_PART_INSTALL}/meta/polkit/polkit.org.freedesktop.fwupd.policy"

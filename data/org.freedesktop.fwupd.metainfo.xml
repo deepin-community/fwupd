@@ -14,7 +14,7 @@
       apply updates, the command-line tool or the D-Bus interface directly.
     </p>
     <p>
-      The fwupd process is a simple daemon to allow session software to update
+      The fwupd process is a system daemon to allow session software to update
       device firmware on your local machine.
       It is designed for desktops, but this project is also usable on phones,
       tablets and on headless servers.
@@ -23,18 +23,2024 @@
   <url type="bugtracker">https://github.com/fwupd/fwupd/issues</url>
   <url type="homepage">https://fwupd.org/</url>
   <url type="translate">https://www.transifex.com/freedesktop/fwupd/</url>
+  <url type="vcs-browser">https://github.com/fwupd/fwupd</url>
   <update_contact>richard_at_hughsie.com</update_contact>
+  <developer_name>The fwupd authors</developer_name>
+  <developer id="org.fwupd">
+    <name translate="no">The fwupd authors</name>
+  </developer>
   <translation type="gettext">fwupd</translation>
-  <content_rating type="oars-1.0">
+  <content_rating type="oars-1.1">
     <content_attribute id="social-info">moderate</content_attribute>
   </content_rating>
   <provides>
     <binary>fwupdmgr</binary>
     <binary>fwupdtool</binary>
-    <binary>fwupdtpmevlog</binary>
-    <binary>fwupdagent</binary>
   </provides>
   <releases>
+    <release version="2.0.6" date="2025-02-14">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add 'fwupdtool efiboot-hive' to allow setting the nmbl cmdline</li>
+          <li>Allow setting the inhibit reason from fwupdmgr</li>
+          <li>Allow USB-provided hidraw devices to use DS-20 descriptors</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Correctly deploy the dbx on MSI hardware</li>
+          <li>Correctly extract the milestone from Lenovo version numbers</li>
+          <li>Do not add invalid CoSWID entities to fix a fuzzing hang</li>
+          <li>Fix Logitech HID++ child device detection</li>
+          <li>Get the correct internal network VID and PID from Redfish</li>
+          <li>Include the payload length in the Wacom scaler update start command</li>
+          <li>Only use emulated devices when using device-emulate</li>
+          <li>Reload the thunderbolt retimer version after the payload is deployed</li>
+          <li>Speed up startup by ~1% by limiting the precision of percentage updates</li>
+          <li>Support new version formats for future Huddly devices</li>
+          <li>Updating the Logitech Rallybar in a more reliable way</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>HPE Gen10/Gen10+ devices using Redfish</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.5" date="2025-02-03">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Allow emulating devices reading EFI keys</li>
+          <li>Allow skipping device tests by CPU architecture</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Cleanup Dell kestrel devices when disconnected</li>
+          <li>Correctly build binary EFI_SIGNATURE_LIST objects</li>
+          <li>Do not allow dbx updates when no ESP was found</li>
+          <li>Ignore BootXXXX entries that do not exist when checking the dbx</li>
+          <li>Ignore EFI binaries that are zero-sized, or not well formed</li>
+          <li>Inhibit dbx updates if snapd is not available when using Ubuntu-style FDE</li>
+          <li>Only match the device checksum if the protocol matches</li>
+          <li>Raise authentication requirements for emulation-load</li>
+          <li>Request to upload failed reports for install/downgrade too</li>
+          <li>Use the kernel architecture when building the dbx instance ID</li>
+          <li>Write sbatlevel to PE/COFF files correctly</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>More ELAN Fingerprint readers</li>
+          <li>Star Labs StarLite Magnetic Keyboard</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.4" date="2025-01-20">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Record the entire USB descriptor in the emulation data</li>
+          <li>Return defined return code when network metadata refresh fails</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add a new private flag of 'delayed-removal' to remove a footgun</li>
+          <li>Added a more specific instance ID for qc-s5gen2 USB devices</li>
+          <li>Add fadvise64 to the systemd syscall allowlist</li>
+          <li>Add the Unifying bootloader VID/PID as a full instance ID</li>
+          <li>Allow disabling zero-length packet for modem-manager devices</li>
+          <li>Allow recovering Logitech Bolt receiver in bootloader mode</li>
+          <li>Correctly parse CSV streams without trailing NULs</li>
+          <li>Detect if network is reachable before downloading metadata</li>
+          <li>Disabling reading the OptionROM device after dumping</li>
+          <li>Do not claim kernel interface to avoid Parade downstream port resets</li>
+          <li>Do not save BootOrder when measuring system integrity</li>
+          <li>Enumerate child nordic-hid devices correctly</li>
+          <li>Fix a possible critical warning for Mediatek scaler devices</li>
+          <li>Fix Firehose padding for some modem-manager devices</li>
+          <li>Fix UEFI capsule updates when using 4096 byte NVME blocksize</li>
+          <li>Get the Dell dock update package version correctly</li>
+          <li>Never read more of the composite stream from a partial stream</li>
+          <li>Notify snapd about DBX updates</li>
+          <li>Probe sd_mod before starting</li>
+          <li>Properly handle FU_DEVICE_PRIVATE_FLAG_NO_GENERIC_GUIDS</li>
+          <li>Remove the test for CSME 18 manufacturing lock</li>
+          <li>Restore the Logitech compatibility UFY instance IDs</li>
+          <li>Show the correct version when installing a same-device composite update</li>
+          <li>Show updates with problems when using 'fwupdmgr get-releases'</li>
+          <li>Split up the AMD GPU VBIOS P/N for the version</li>
+          <li>Use attr USB4_TYPE rather than guessing from thunderbolt_domain</li>
+          <li>Use the ISO date as a dbx version number for the Microsoft KEK</li>
+          <li>Use the KEK to set the dbx vendor ID</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Fibocom NL668-EAU</li>
+          <li>HP 400/405 Peripheral</li>
+          <li>Lenovo USB-C 7-in-1 Dock</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.3" date="2024-12-06">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a power quirk for Framework systems</li>
+          <li>Speed up writing firmware to the new Dell dock</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Deinitialize DRM after getting GPU marketing name to fix Xorg startup</li>
+          <li>Do not show 'Device has been removed' as a dock device error</li>
+          <li>Fix a warning about legion-hid2 progress going backwards</li>
+          <li>Fix some small memory leaks in realtek-mst and dell-kestrel</li>
+          <li>Only mark supported Logitech devices as updatable</li>
+          <li>Parse FDTs with missing END tokens to work on more ChromeBooks</li>
+          <li>Reduce the device emulation RSS requirement by ~40%</li>
+          <li>Skip checking BootXXXX entries when the partition does not exist</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Primax Ryder Mouse</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.2" date="2024-11-25">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add fwupdtool 'get-version-formats' and 'vercmp' commands</li>
+          <li>Add support for checking AMD HW configuration MSR</li>
+          <li>Add support for enumerate-only device emulation to increase test coverage</li>
+          <li>Add support for passing a JSON file for emulation instead of ZIP</li>
+          <li>Remove support for now-obsolete CSR DFU and Nitrokey devices</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add additional version checks for AMD Sinkclose</li>
+          <li>Check that getpid() returned a sensible value to detect minijail failure</li>
+          <li>Check the VLI USB3 firmware size before erasing</li>
+          <li>Correctly parse the ThunderBolt controller NVM</li>
+          <li>Disallow DBX updates on the Samsung Galaxy Book2 360</li>
+          <li>Do not create zero-sized archive entries when loading some ZIP files</li>
+          <li>Fix a critical warning when parsing a corrupt ELF file</li>
+          <li>Fix a small memory leak when checking algoltek-usb status</li>
+          <li>Fix a small memory leak when writing telink-dfu firmware</li>
+          <li>Fix eMMC probing regression in 2.0.x</li>
+          <li>Fix endianness parsing of msgpack float64</li>
+          <li>Fix failure to load the EFI DEVICE_PATH when there is no payload</li>
+          <li>Fix polkit message for emulation data collection</li>
+          <li>Fix sector erasing on Algoltek AG941x</li>
+          <li>Fix type confusion when saving emulation data</li>
+          <li>Fix UFS device feature discovery</li>
+          <li>Fix various device enumerations on s390x</li>
+          <li>Ignore LIBUSB_ERROR_NO_DEVICE when rebooting VIA VL103</li>
+          <li>Improve the algorithm for detecting multiple device-id matches</li>
+          <li>Mark all UEFI dbx updates as FWUPD_DEVICE_FLAG_AFFECTS_FDE</li>
+          <li>Only check for fwupdx64.efi when not using capsule-on-disk</li>
+          <li>Only set can-verify-image when CURRENT.UF2 exists</li>
+          <li>Parse install flags from apps compiled against old libfwupd versions</li>
+          <li>Repair the cros-ec device after flush failure</li>
+          <li>Reset the SteelSeries device only for certain models</li>
+          <li>Save the usb.ids and pci.ids name in the quirk database</li>
+          <li>Speed up decompressing large cab archives by 30%</li>
+          <li>Use a much more efficient method to calculate chunk sizes</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>ASUS ROG ally and ROG ally X (initial support, community provided)</li>
+          <li>Google GID8 headset</li>
+          <li>j5create USB-C JCD373</li>
+          <li>Logitech Sight (as standalone device)</li>
+          <li>MNT Pocket Reform</li>
+          <li>Netprisma LCUR57 and FCUN69</li>
+          <li>Parade PS188</li>
+          <li>Quectel DFOTA devices</li>
+          <li>Raspberry Pi Pico</li>
+          <li>SteelSeries Nova 5</li>
+          <li>Telink DFU-HID devices</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.1" date="2024-10-15">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add API so that gnome-firmware can record devices for emulation</li>
+          <li>Save the emulation-tag devices to the database rather than the config file</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow controlling the libdrm dependency when building</li>
+          <li>Check the logitech-bulkcontroller response packet length correctly</li>
+          <li>Convert the wacom-raw device command buffers to Rust format</li>
+          <li>Convert the wacom-usb descriptor to Rust format</li>
+          <li>Fix a kinetic-dp enumeration regression</li>
+          <li>Fix compiling on Android</li>
+          <li>Fix compiling without git installed</li>
+          <li>Fix FU_PLUGIN_RULE_BETTER_THAN to ignore lower priority devices</li>
+          <li>Ignore needs-reboot and needs-shutdown for emulated devices</li>
+          <li>Read the Intel Thunderbot NVM firmware in a more efficient way</li>
+          <li>Simplify firmware loading from a specific offset</li>
+          <li>Skip the serio self tests if gnutls support was disabled</li>
+          <li>Speed up fwupdtool by only loading engine features when required</li>
+          <li>Speed up getting details about local firmware archives</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0.0" date="2024-10-04">
+      <description>
+        <p>
+          This new major release beaks the libfwupd ABI to make the following changes:
+        </p>
+        <ul>
+          <li>Drop legacy signing formats for verification of metadata and firmware</li>
+          <li>Reduce the runtime memory usage and CPU startup cost significantly</li>
+          <li>Remove all the long-deprecated legacy CLI tools</li>
+          <li>Remove libgusb and GUdev from plugins and use libusb and sysfs instead</li>
+          <li>Stream firmware binaries over a file descriptor rather than into memory</li>
+        </ul>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a config option to ignore firmware requirements for development</li>
+          <li>Add a device problem when the device needs a reboot</li>
+          <li>Add API to allow uploading reports in gnome-firmware</li>
+          <li>Add Darwin support to the build helper</li>
+          <li>Add HSI tests for Arrow and Meteor Lake CSME</li>
+          <li>Add support for fwupdtool esp-list --json</li>
+          <li>Add support for more modify-config options</li>
+          <li>Add the privacy policy URL in the remote config</li>
+          <li>Allow device flags to be loaded from the local cab archive</li>
+          <li>Allow overriding the detected EFI framebuffer size in the config file</li>
+          <li>Allow specifying devices to emulate in the config file</li>
+          <li>Apply revocations to SbatLevelRT when required</li>
+          <li>Choose the ESP correctly in more cases when using UEFI capsule updates</li>
+          <li>Detect BlueTooth devices by GATT service UUID</li>
+          <li>Drop the SuperIO plugin as it will not work without rawio</li>
+          <li>Listen to the netlink udev socket rather than using GUdev</li>
+          <li>Parse EFI LZ77 compressed sections when required</li>
+          <li>Support large sections in EFI FFS3 volumes</li>
+          <li>Support more CRC-32 and CRC-16 types</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Abstract out the D-Bus IPC layer to allow using Android Binder in the future</li>
+          <li>Apply systemd hardening to the service files</li>
+          <li>Coldplug udev devices with a predictable order</li>
+          <li>Completely deallocate devices when physically removed</li>
+          <li>Create the fuzzing corpus at build time to avoid shipping binary test blobs</li>
+          <li>Do not add counterpart IDs as visible firmware-matchable GUIDs</li>
+          <li>Do not allow system suspend during a composite update</li>
+          <li>Do not assume all block devices are backed by USB devices</li>
+          <li>Do not create a FuSynapticsMstDevice for every DPAUX device</li>
+          <li>Do not read OptionROM on Apple hardware</li>
+          <li>Do not run the quirk query multiple times on the same device</li>
+          <li>Do not set a zero-length device name when matching the vendor name</li>
+          <li>Do not skip closing the USB device if the HID interface is not found</li>
+          <li>Do not skip the first EFI_FILE in the EFI_FILESYSTEM</li>
+          <li>Do not verify the SSL hostname when using DISABLE_SSL_STRICT=1</li>
+          <li>Do SG_IO INQUIRY_CMD directly rather than relying on the udev prober</li>
+          <li>Emit a signal when a request is no longer valid</li>
+          <li>Fix several 'underflowed constants' found using Coverity</li>
+          <li>Get the DT-provided 'BIOS version' correctly</li>
+          <li>Get the new bluetooth revision after deploying the update</li>
+          <li>Keep polling Redfish even when encountering task errors</li>
+          <li>Only generate the client certificate when required</li>
+          <li>Only read back the thunderbolt firmware if we can parse the NVM</li>
+          <li>Pass emulation data using a file descriptor</li>
+          <li>Recalculate the device supported flag when reparenting devices</li>
+          <li>Reduce memory allocations by ~2Mb when loading the BGRT image</li>
+          <li>Remove the polling for Logitech Unifying receivers to improve battery life</li>
+          <li>Require a DPCD OUI to match DPAUX devices</li>
+          <li>Respect the device priority when matching in the device list</li>
+          <li>Respect the interface retry count when using an auto-detected FuHidDevice</li>
+          <li>Retry the post-update NVMe open action to fix BC901 reload</li>
+          <li>Save the metadata with a more predictable name so we can use jcat-tool</li>
+          <li>Upload reports from fwupd-refresh if AutomaticReports is true</li>
+          <li>Use a more standard ATA OUI vendor name match</li>
+          <li>Use the first preferred CRTC screen resolution if not using efifb</li>
+          <li>Use /usr/bin/env for wider Python compatibility</li>
+          <li>Warn users needing to fwupdmgr activate before uploading signed reports</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Algoltek USB card readers</li>
+          <li>AMD Kria SoM</li>
+          <li>Cable Matters USB Hub</li>
+          <li>Cinterion fdl-based devices</li>
+          <li>CY6611 EZ-USB HX3PD</li>
+          <li>Dell K2 Dock</li>
+          <li>Elan 0C9F fingerprint devices</li>
+          <li>HP TBT4 100W G6 Dock</li>
+          <li>HP TBT4 Ultra 180W/280W G6 Dock</li>
+          <li>Huddly L1, S1 and Crew</li>
+          <li>Jabra PanaCast</li>
+          <li>Lenovo Legion HID2 devices</li>
+          <li>Lenovo ThinkSmart Bar</li>
+          <li>Logitech Lemmy</li>
+          <li>Logitech Sight</li>
+          <li>Logitech Tap Touch Screen</li>
+          <li>MediaTek scaler devices</li>
+          <li>Parade PS185</li>
+          <li>Qualcomm S5gen2 BLE devices</li>
+          <li>Telink Dual Keyboard</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.24" date="2024-08-21">
+      <description>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add support for capsule on disk for Dell systems</li>
+          <li>Do not re-use the connection cache to fix Redfish BMC restart</li>
+          <li>Exclude known recovery partitions when choosing an ESP volume</li>
+          <li>Fix the VLI usb3 private flag registration</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>More Mediatek scaler devices</li>
+          <li>Parade USB hubs</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.23" date="2024-08-05">
+      <description>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Fix a regression in 1.9.22 that caused some devices not to probe correctly</li>
+          <li>Try harder to get a valid response when flashing usi-dock devices</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.22" date="2024-07-26">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a device test for the Acer D501 dock</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add a PCB tag in the usi-dock GUID to distinguish different revisions</li>
+          <li>Add explicit hidraw permission to fwupd.service to fix several devices</li>
+          <li>Always load the flashrom plugin when using coreboot</li>
+          <li>Be explicit with the rts54hub detach retry delay to fix the Acer D501</li>
+          <li>Be more careful when setting thelio-io version strings</li>
+          <li>Fix a critical warning if a device returns unexpected data from DFU upload</li>
+          <li>Fix a critical warning if the DMI manufacturer is an empty string</li>
+          <li>Fix several reported integer overflows from Coverity</li>
+          <li>Fix the Blackbird and Talos II baseboard details</li>
+          <li>Fix transient version number issue after flashing wacom-usb devices</li>
+          <li>Increase the cros_ec acquiesce delay to manage additional reboots</li>
+          <li>Only accept valid ASCII cabinet filenames</li>
+          <li>Only require udevdir when gudev support is enabled</li>
+          <li>Only show one PixArt receiver device per physical device</li>
+          <li>Set the rts54hub version in more cases</li>
+          <li>Speed up the daemon self tests by ~60%</li>
+          <li>Use the bootloader build-timestamp as the fallback HWID BIOS version</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Framework SD</li>
+          <li>Raspberry Pi 5 (unofficial)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.21" date="2024-06-13">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a fwupd.conf option to ignore CHID requirements for development</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow loading Wacom device flags from metadata</li>
+          <li>Check for needs-shutdown like we do needs-reboot</li>
+          <li>Fix updating the Aerox 3 Wireless Mouse</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Synaptics Carrera devices</li>
+          <li>Wacom Movink devices</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.20" date="2024-05-20">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add some API to allow uploading reports for use in gnome-firmware</li>
+          <li>Allow the user to upload the entire devicelist to the LVFS</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Correctly detect Synaptics Cayenne and Spyder firmware</li>
+          <li>Do not offer the UEFI DBX update on Lenovo ideacentre 300-20ISH</li>
+          <li>Explicitly enable shadow stack support in fwupd.service</li>
+          <li>Fix a potential buffer overread when reading the algoltek-usb version number</li>
+          <li>Fix the CET HSI test by rewriting it in assembly</li>
+          <li>Fix using --verbose in fwupdmgr</li>
+          <li>Ignore --p2p when downloading the metadata signature</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>FPC FF2 fingerprint devices</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.19" date="2024-05-03">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Drop heap as part of a housekeeping action</li>
+          <li>Retry downloads to workaround flaky network connections</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Assume new ME versions are called CSME</li>
+          <li>Fix a buffer-overread when parsing invalid CoSWID entity data</li>
+          <li>Fix a logic thinko when parsing GUID strings</li>
+          <li>Fix downloading files on Windows with libcurl >= 7.77.0</li>
+          <li>Revert back to a simpler syscall blocklist-based filter</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Acer U32 dock</li>
+          <li>Luxshare 7-in-1 dock</li>
+          <li>Pixart models 2404, 4206, 2440, 2418, 2752, 2840 and 2818</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.18" date="2024-04-23">
+      <description>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Fix a small memory leak in fwupdmgr</li>
+          <li>Use simple allow-listing for the syscall filter</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.17" date="2024-04-22">
+      <description>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Capture device status changes when in bootloader mode</li>
+          <li>Change the systemd SystemCallFilter to an allowlist</li>
+          <li>Detect when a CCGX dock forbids downgrade</li>
+          <li>Do not add an overly-generic instance ID to CrosEC devices</li>
+          <li>Do not read OptionROM verification data on Apple hardware</li>
+          <li>Emit a signal when a user-request is no longer valid</li>
+          <li>Fix a potential crash when parsing invalid CBOR data</li>
+          <li>Properly show SPDX project licenses with AND as a delimiter</li>
+          <li>Verify that syscalls are being filtered correctly at startup</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Asus DC201</li>
+          <li>Realtek Gen1 RTS541x</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.16" date="2024-04-05">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Prefer zstd over xz for metadata</li>
+          <li>Relicense a few remaining plugin files to LGPL-2.1+</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Correctly record UEFI success if adding ESRT nodes</li>
+          <li>Defer the DP Aux MST scanning on hotplug to workaround a kernel bug</li>
+          <li>Do not do the post-update version check if the device needs-reboot</li>
+          <li>Fix a fastboot warning when loading device</li>
+          <li>Fix a possible warning in fwupdmgr when excluding releases</li>
+          <li>Fix a qsi-dock warning when writing chunks</li>
+          <li>Ignore attribute-changed to work around a regression in macOS</li>
+          <li>Ignore ZFS zvols when finding the default ESP</li>
+          <li>Mark Pluton TPMs as part of the main CPU</li>
+          <li>Put the fwupd-efi verbose debugging in the journal</li>
+          <li>Recognize zfsbootmenu in ESP detection heuristic</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Acer T34 and U33 docks</li>
+          <li>Qualcomm Series 5 Gen 1 and Gen 2 and Series 3 Gen 1 and Gen 2 devices</li>
+          <li>Several Puya SPI chips</li>
+          <li>VIA VL822 C0</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.15" date="2024-03-11">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Allow loading in parameters for the test device from fwupd.conf</li>
+          <li>Ensure LVFS remotes are changed from .gz to .xz</li>
+          <li>Store the install duration in the history database</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Drop OverrideESPMountPoint references in uefi-capsule</li>
+          <li>Fix a potential double-free when writing AVer firmware</li>
+          <li>Only request the BOS descriptor when bcdUSB > 0x0200</li>
+          <li>Use the root device order when sorting device children</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.14" date="2024-02-26">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Allow plugins to opt-into a default device GType</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Correctly detect ARM32 and RISC-V UEFI binaries</li>
+          <li>Correctly migrate the database schema from very old fwupd versions</li>
+          <li>Fix critical warnings when using FWUPD_DBUS_SOCKET= on macOS</li>
+          <li>Fix DS-20 descriptors by opening the GUsbDevice earlier</li>
+          <li>Fix updating the fingerprint reader on the Framework 13 and 16 laptop</li>
+          <li>Fix warning when probing devices using the metadata allowlist</li>
+          <li>Only recover the version format for specific devices</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Poly Studio V52</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.13" date="2024-02-08">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a timer inhibit if the daemon took a long time to startup</li>
+          <li>Add a concept of 'Test Mode' rather than enabling specific plugins</li>
+          <li>Do not idle-quit the daemon if there is a connected D-Bus client</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow plugins to opt-out of the child-device first depsolve</li>
+          <li>Allow setting multiple flags in LVFS::DeviceFlags</li>
+          <li>Do not migrate config comments for removed keys</li>
+          <li>Do not request the Advantech BMC to reboot</li>
+          <li>Do not warn the user about ESP when using MBR</li>
+          <li>Fix a critical warning when adding a PixArt wireless device</li>
+          <li>Fix migration of legacy config files</li>
+          <li>Only save config values to the mutable config file</li>
+          <li>Parse DS-20 descriptors earlier in device setup</li>
+          <li>Store the version format in the history database to fix offline reports</li>
+          <li>Use the correct GUID for matching realtek-mst and parade-lspcon</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>GoodWay Acer Dock</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.12" date="2024-01-23">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add remote modification support to fwupdtool</li>
+          <li>Add support for more modify-config options</li>
+          <li>Generate HTML pages for all man pages</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Assume the legacy LVFS::UpdateRequestId tag is non-generic</li>
+          <li>Avoid crashing the daemon if not using udisks</li>
+          <li>Correctly mark the CPU as supported</li>
+          <li>Correctly match invalid EFI partitions</li>
+          <li>Do not change the device status until the action has completed</li>
+          <li>Do not require systemd for fwupdtool modify-config</li>
+          <li>Enable access to the home interface for snap</li>
+          <li>Fix an assertion when enabling lvfs-testing for the first time</li>
+          <li>Fix a possible crash in fwupdtool build-cabinet</li>
+          <li>Handle systems with more than one ccp device</li>
+          <li>Only check AMD CPUs for SHSTK, not IBT</li>
+          <li>Only write the mutable fwupd.conf with the current values</li>
+          <li>Re-evaluate supported every time pci-psp attributes are refreshed</li>
+          <li>Show "CET OS support" on AMD systems too</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>AVer CAM340plus</li>
+          <li>AVer VB342 Pro</li>
+          <li>More Algoltek devices</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.11" date="2024-01-03">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Allow exporting 'offline' reports for manual upload</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add some recovery partition names to ignore for ESP selection</li>
+          <li>Check for CET and SMAP on non-Intel x86 processors too</li>
+          <li>Correctly mark the CPU as supported in the HSI tests</li>
+          <li>Do not fail on probing downstream Synaptics MST ports</li>
+          <li>Do not offer to change BIOS settings that are already set</li>
+          <li>Do not prefer msftdata when choosing the default ESP</li>
+          <li>Do not show spurious device request flags</li>
+          <li>Fix a missing build dependency to fwupdplugin-self-test</li>
+          <li>Fix a segfault when using zlib-ng instead of zlib</li>
+          <li>Fix updating Jabra 410, 510, 710 and 810 devices</li>
+          <li>Match more community-supported branches</li>
+          <li>Remove the Intel SPIBAR proxy support as the mtd module works</li>
+          <li>Show a better error when the ESP is missing</li>
+          <li>Show an error if the post-update version does not match exactly</li>
+          <li>Speed up Synaptics MST device enumeration</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Algoltek USB devices</li>
+          <li>Luxshare Quad USB4 Dock</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.10" date="2023-12-04">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add support for not_hardware requirements</li>
+          <li>Add support for loongarch64</li>
+          <li>Add support for per-release priority attributes</li>
+          <li>Make USB claim retry count configurable across devices</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Compare the HID report value when checking for duplicates</li>
+          <li>Consider the component priority when installing composite updates</li>
+          <li>Deploy the CCGX firmware correctly the first time</li>
+          <li>Do not export the 'main-system-firmware' and 'cpu' GUIDs</li>
+          <li>Enforce fwupd version requirements client side</li>
+          <li>Fix Genesys 'failed to get static tool info from device' error</li>
+          <li>Fix potential 'dereference before null check' in ccmx-dmc</li>
+          <li>Fix the 'already registered private FuMmDevice flag with value' warning</li>
+          <li>Fix the 'assertion backend_id != NULL failed' runtime warning</li>
+          <li>Fix Wacom USB device emulation by recording the composite phases</li>
+          <li>Generate generic request message text where possible</li>
+          <li>Hide HTTP passwords in fwupd debugging logs</li>
+          <li>Let the client know what interaction is expected</li>
+          <li>Make all critical warnings into backtraces for non-release builds</li>
+          <li>Never obsolete the wrong HSI attribute</li>
+          <li>Never show a HSI index that is impossible</li>
+          <li>Only apply fastboot plugin to modem devices supporting fastboot</li>
+          <li>Only send interactive requests when the sender is alive</li>
+          <li>Remove the now-obsolete Synaptics MST cascade device scanning</li>
+          <li>Replace the Redfish KCS user if required</li>
+          <li>Restrict mediatek-scaler devices on specific hardware only</li>
+          <li>Skip any recovery partitions when detecting ESP</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>AVer CAM520 Pro3</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.9" date="2023-11-20">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a new generic request for the device power cable</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Disable scanning for synaptics-mst cascade devices until it is more stable</li>
+          <li>Disable the mediatek-scaler plugin by default until we do VCP probing</li>
+          <li>Do not enforce additional requires on emulated devices</li>
+          <li>Fix a potential critical warning when listing the contents of the ESP</li>
+          <li>Fix 'fwupdmgr get-devices' with deeply nested devices</li>
+          <li>Make the Kinetic DP GUID specific to the customer</li>
+          <li>Only use the USB open-retry behavior when required</li>
+          <li>Remove obsoleted HSI attributes earlier</li>
+          <li>Remove the timestamp from gzip to achieve a reproducible build</li>
+          <li>Support cabinet archives produced using 'makecab.exe'</li>
+          <li>Use metadata authentication when using 'fwupdtool refresh'</li>
+          <li>Use the generic ti-tps6598x GUID and instead enforce requirements</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Lenovo X1 Yoga Gen7 530E</li>
+          <li>Advantech BMC devices</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.8" date="2023-11-14">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a DP AUX device subclass and port the Synaptics MST plugin to it</li>
+          <li>Add a feature flag for non-generic requests where translations are required</li>
+          <li>Hide generic VID/PIDs to avoid accidental firmware matches</li>
+          <li>Optionally set the modem carrier configuration as the branch name</li>
+          <li>Rename 'fwupdmgr sync-bkc' to 'fwupdmgr sync' and also consider the branch</li>
+          <li>Require additional requirements for devices using non-OEM USB VIDs</li>
+          <li>Set the waiting-for-user status when sending a request</li>
+          <li>Support uSWID SBOM data with LZMA compressed payloads</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Accept any registry versions when parsing Redfish message IDs</li>
+          <li>Do not read the AMDGPU DM DPCD on broken firmware versions</li>
+          <li>Do not save obsoleted HSI attributes into the history database</li>
+          <li>Fix a crash when some DRM devices are hotplugged</li>
+          <li>Fix a possible crash in fu_io_channel_read_raw()</li>
+          <li>Fix parsing LZMA-compressed EFI sections</li>
+          <li>Only use the architecture-specific GUID for UEFI dbx quirk matching</li>
+          <li>Parse all the type 42 SMBIOS tables</li>
+          <li>Prompt the user to reboot after applying internal Wacom firmware</li>
+          <li>Respect no-serial-number flags when using GUID matches</li>
+          <li>Use the etag when patching Redfish resources</li>
+          <li>Use the username and password to get metadata when set</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Kinetic SST/MST DisplayPort converters</li>
+          <li>Wacom Cintiq Pros (DTH172, DTH227)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.7" date="2023-11-01">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add support for child device requirements in metadata</li>
+          <li>Allow to have more than one host BKC</li>
+          <li>Delete BootNext as a post-reboot action to work around broken firmware</li>
+          <li>Parse cabinet archives internally without libgcab</li>
+          <li>Use close-ended mode for eMMC FFU to speed up firmware updates</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Do not abort 'fwupdmgr update' when one updatable device has a problem</li>
+          <li>Do not call unimplemented functions when running under Wine</li>
+          <li>Do not modify the BootOrder by default to work around broken firmware</li>
+          <li>Do not treat an immutable buffer as mutable in the vli plugin</li>
+          <li>Drop the concept of HSI:INVALID:missing-data and just show HSI-0</li>
+          <li>Fix a small memory leak in bulkcontroller when getting the device info</li>
+          <li>Inhibit the Nordic HID dongle when there are peripheral updates pending</li>
+          <li>Retry claiming the interface if the USB device returns BUSY</li>
+          <li>Send the Olson location to bulkcontroller rather than the timezone</li>
+          <li>Use a longer timeout for the post-erase STM32 GetStatus</li>
+          <li>Wait 60 seconds for the bulkcontroller device after writing firmware</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Logitech Rally System devices</li>
+          <li>More PixartRF HPAC devices</li>
+          <li>More Synaptics Prometheus fingerprint readers</li>
+          <li>Some Western Digital eMMC devices</li>
+          <li>VIA VL830 and VL832</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.6" date="2023-10-06">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a launchd agent for macOS</li>
+          <li>Add a new security attribute for BIOS capsule updates to be enabled</li>
+          <li>Add functionality to fix specific host security attributes</li>
+          <li>Add global information from the context into the report data</li>
+          <li>Add support for coSWID payload sections</li>
+          <li>Add support for parsing the EDID</li>
+          <li>Allow adding only-quirk instance IDs from quirk files</li>
+          <li>Install a sysusers.d systemd file when using -Dsystemd_unit_user</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow devices to require a connected display</li>
+          <li>Allow Wacom modules to specify a status polling interval</li>
+          <li>Do not show Intel CET unsupported as success</li>
+          <li>Do not show multiple Genesys GL32xx devices for the same physical device</li>
+          <li>Fix a fuzzing timeout in the HID descriptor parser</li>
+          <li>Recalculate the SUPPORTED flag after adopting a child device</li>
+          <li>Reduce the amount of memory used when chunking large firmware</li>
+          <li>Speed up logitech-bulkcontroller firmware updates</li>
+          <li>Stop reading ownership and TPM flashes left in Dell plugin</li>
+          <li>Try to use the LVFS when using report-history --force</li>
+          <li>Write the coSWID TAG_ID as a bytestring when possible</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>AMD dGPUs, Navi3x and above</li>
+          <li>Foxconn SDX12, SDX55 and SDX6X devices</li>
+          <li>Google Rex Intel USB-4 retimers</li>
+          <li>MediaTek DP AUX Scalers</li>
+          <li>Quectel EM160 module</li>
+          <li>Star Labs StarBook Mk VIr2</li>
+          <li>VLI VL105-VL109</li>
+          <li>Wacom DTH134 and DTC121 Tablets</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.5" date="2023-09-04">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add optional support for Passim, a local caching server</li>
+          <li>Allow using fwupdtool get-devices --json</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow adding UF2 devices without a filesystem UUID</li>
+          <li>Correctly read the size of Synaptics Panamera MST firmware</li>
+          <li>Do not return historical results with no AppStream ID</li>
+          <li>Fix parallel build when using a machine with a lot of cores</li>
+          <li>Fix uninhibiting ModemManager after the fastboot flash has completed</li>
+          <li>Make firmware USI dock flashing more reliable</li>
+          <li>Record the update state of success when the device is returned to runtime</li>
+          <li>Remove the default-installed fwupd-refresh systemd preset</li>
+          <li>Sort composite updates by the device order when required</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>EPOS ADAPT 1x5</li>
+          <li>Fibocom FM101</li>
+          <li>Foxconn T99W373</li>
+          <li>Genesys GL3525S USB Hub</li>
+          <li>HP Rata/Remi BLE Mice</li>
+          <li>Luxshare Quad USB4 Dock</li>
+          <li>System76 Launch 3, Launch Heavy 3 and Thelio IO 2</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.4" date="2023-08-14">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a new HSI attribute that detects any missing Intel GDS mitigation</li>
+          <li>Allow configuring the refresh interval per-remote rather than per-system</li>
+          <li>Remove the libsoup-2.4 compatibility code</li>
+          <li>Show the firmware release checksum in CLI tools</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Correctly query the Steelseries Fizz version on reconnect</li>
+          <li>Correctly wait for USB replug on macOS</li>
+          <li>Do not add gl32xx disk partitions as extra devices</li>
+          <li>Do not assume the logical block size is always 0x200</li>
+          <li>Ensure the AppStream ID is set on historical releases</li>
+          <li>Enumerate Synaptics MST devices correctly</li>
+          <li>Fix a possible CFU crash when adding modules</li>
+          <li>Fix 'fwupdmgr get-history --json' output to only show one release</li>
+          <li>Fix 'fwupdmgr modify-remote' on ChromeOS</li>
+          <li>Fix incorrect OEM trusted reports flags being set when not matching</li>
+          <li>Fix regression in returning device history with libxmlb 0.3.12</li>
+          <li>Fix some Wacom hardware by only attempting retries for the busy error state</li>
+          <li>Fix transaction timed out issue for T99W373 QDU device</li>
+          <li>Handle cros-ec boards with '_v' in their name</li>
+          <li>Ignore the authentication when username and password are both empty</li>
+          <li>Load the effective size of a PE section instead of raw size</li>
+          <li>Set some feature flags when non-interactive</li>
+          <li>Set the HWIDs correctly when running macOS</li>
+          <li>Use a much larger USB timeout for STM32 erase operations</li>
+          <li>Use the correct offsets when checking Synaptics MST Spyder devices</li>
+          <li>Use the correct URI when downloading from authenticated remotes</li>
+          <li>Use /var/run when /run/lock does not exist</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Genesys GL352350 and GL3590</li>
+          <li>Logitech Huddle</li>
+          <li>Microsoft USB-C Travel Hub</li>
+          <li>PixArt BLE HPAC OTA</li>
+          <li>Quectel RM520</li>
+          <li>Synaptics Triton devices</li>
+          <li>VIA VL122, VL817S and VL822T</li>
+          <li>Wacom One 13 and One 12 Tablets</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.3" date="2023-07-11">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add the expected result to each HSI test attribute</li>
+          <li>Allow autodetection when using fwupdtool firmware-parse</li>
+          <li>Allow devices to only accept explicitly specified release versions</li>
+          <li>Allow filtering by release flags from fwupdtool and fwupdmgr</li>
+          <li>Allow filtering by remote when looking for trusted reports</li>
+          <li>Drop the libefiboot dependency and generate UEFI DPs directly</li>
+          <li>Ensure that BootService-only variables cannot be read in runtime mode</li>
+          <li>Parse the various SBAT sections from PE firmware</li>
+          <li>Record the NVRAM space used as report metadata</li>
+          <li>Show the user a warning when the ESP may not be valid</li>
+          <li>Speed up the daemon startup by 35% and reduce RSS by 12%</li>
+          <li>Support reading and writing EFI variables on Windows</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Check only the EFI executables from the boot menu when using --force</li>
+          <li>Correctly obtain the Thunderbolt is_native controller attribute</li>
+          <li>Deduplicate the remotes as required</li>
+          <li>Do not accidentally depend on python 3.9</li>
+          <li>Do not misuse the offset as an address in the SREC parser</li>
+          <li>Do not truncate feature reports to fix Wacom ID6 update</li>
+          <li>Fix parsing of IGSC code firmware</li>
+          <li>Get the Jabra GNP device name from the device</li>
+          <li>Ignore small ESP block devices if there are multiple choices</li>
+          <li>Never install a shim too new for the system</li>
+          <li>Only add the little-used _REV instance IDs by request</li>
+          <li>Use a CapsuleOnDisk filename supported by InsydeH2O</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Belkin Thunderbolt 4 Core Hub dock</li>
+          <li>CE-LINK TB4 Docks</li>
+          <li>Genesys GL32XX SD readers</li>
+          <li>Genesys GL352350 USB 3.1 hub</li>
+          <li>Nordic HID devices without DFU support</li>
+          <li>TUXEDO InfinityBook Pro 13 v3</li>
+          <li>Wacom tablets with ID9 Bluetooth chipsets</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.2" date="2023-06-12">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Beep the console when CLI programs are waiting for user input</li>
+          <li>Bump requirements of various dependencies to remove a lot of fallback code</li>
+          <li>Show devices with problems in fwupdmgr get-upgrades</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Auto-detect the BCM57xx OEM PCI cards with double the expected EEPROM</li>
+          <li>Disable ThunderBolt retimer offline mode for some hardware</li>
+          <li>Do not assume a file descriptor of 0 is invalid when updating NVMe hardware</li>
+          <li>Fix discovery of Nordic peripherals connected via the dongle</li>
+          <li>Fix high memory usage when writing some EFI filesystem images</li>
+          <li>Fix USI dock devices with an incorrect factory-set firmware version</li>
+          <li>Ignore a client refresh on a non-download remote to fix old versions of KDE</li>
+          <li>Ignore the immutable flatpak config file file permission being incorrect</li>
+          <li>Limit the number of possible file objects in the EFI filesystem</li>
+          <li>Make the installed size smaller by deduping and filtering assets</li>
+          <li>Only expose --force for security attributes for unsupported builds</li>
+          <li>Require the user to manually replug the USI dock after update has completed</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>AVer FONE540</li>
+          <li>Genesys GL3525 USB hubs</li>
+          <li>Goodix Touch controllers</li>
+          <li>Jabra Evolve 65e/t and SE, Evolve2, Speak2 and Link devices</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.1" date="2023-05-13">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a new device-wait command to fwupdmgr for use in boot-time scripts</li>
+          <li>Add a report flag if generated by the OEM which can be used for policy</li>
+          <li>Add CCID decoding support to pcap2emulation</li>
+          <li>Add fwuptool build-archive cmd to allow building firmware without gcab CLI</li>
+          <li>Add support for NVMe CA3 activation</li>
+          <li>Allow setting device flags and version numbers from the metadata</li>
+          <li>Allow specifying the MTD metadata offset and size</li>
+          <li>Allow using basic auth when uploading a report</li>
+          <li>Autogenerate enums and structures (with default values) from Rust format</li>
+          <li>Delete the obsolete .gz files if the remote is now using .xz</li>
+          <li>Read the AGESA Bootloader and TEE versions from the kernel</li>
+          <li>Tag releases with an extra flag if they have a report we trust</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add the latest dbx fixups for BlackLotus</li>
+          <li>Allow setting the remote username and password on the CLI</li>
+          <li>Be more careful parsing the kernel cmdline</li>
+          <li>Convert the man pages to MarkDown format and use a built-in converter</li>
+          <li>Enable the vendor-directory remote by default</li>
+          <li>De-duplicate releases by the container checksum</li>
+          <li>Enable the retimer offline mode depending on HWIDs</li>
+          <li>Escape the username and password when using basic authentication</li>
+          <li>Fix a pci-mei crash by more carefully converting enums to strings</li>
+          <li>Fix Dell dock by triggering passive flow for USB4 subcomponents</li>
+          <li>Fix the version detection for SteelSeries Bluetooth mode</li>
+          <li>Have fwupd-refresh.timer trigger once per hour on average</li>
+          <li>Implement enough of the CFI specification to be able to update a device</li>
+          <li>Allow the firmware time to process commands to avoid a Wacom device crash</li>
+          <li>Invalidate the XMLb cache when installing new fwupd versions</li>
+          <li>Make the config file be called fwupd.conf and add a useful manpage</li>
+          <li>Move the expected default plugin config value to the code</li>
+          <li>Prefer local remotes when deduplicating releases with the same version</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>CH347 SPI programmer</li>
+          <li>Logitech Tap devices</li>
+          <li>More Logitech Unifying receivers</li>
+          <li>Nordic HID MCUboot direct-xip</li>
+          <li>nRF52 Desktop Keyboard</li>
+          <li>Wacom Cintiq Pro 27</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.13" date="2023-03-28">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add pcap converter which allows emulating devices from a Wireshark dump</li>
+          <li>Add the ability to dump TPM firmware for future use</li>
+          <li>Optionally retain firmware in a backup remote</li>
+          <li>Record the ESP type in the firmware report sent to the LVFS</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Accept application/octet-stream for archives when the mime database is missing</li>
+          <li>Add the latest dbx version version fixups as Microsoft removed another entry</li>
+          <li>Assume DFU appIDLE if GetStatus is not implemented</li>
+          <li>Do not require signatures for local or directory remotes</li>
+          <li>Do not use pandoc to build the man pages</li>
+          <li>Enhance Qubes functionality to use JCat</li>
+          <li>Fix a CCGX 'usbfs: process did not claim interface 1 before use' warning</li>
+          <li>Fix a compile warning when using a new libqmi version</li>
+          <li>Fix a critical warning when parsing an empty kernel cmdline</li>
+          <li>Fix a synaptics-cape regression where the firmware pauses for INTR</li>
+          <li>Fix the defines for HFSTS6 enforcement policy</li>
+          <li>Fix the i2c name properly for ElanTP hardware</li>
+          <li>Fix the name of the MTD Intel SPI controller</li>
+          <li>Set the release remote when installing archives</li>
+          <li>Use the powerd power type information to better set AC levels</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Framework Audio Card</li>
+          <li>Lenovo ThinkPad TBT3-TR Gen 2</li>
+          <li>Wacom Intuos BT S Gen 3</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.12" date="2023-02-24">
+      <description>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow setting the package user agent before the client has connected</li>
+          <li>Fix a small memory leak when refreshing metadata</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.11" date="2023-02-23">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add support for replaying USB devices so they can be emulated in CI</li>
+          <li>Allow desktop software to inhibit the system to prevent updates</li>
+          <li>Allow using requirements with depth=0 and no parent</li>
+          <li>Auto-set the CCGX remove-delay now we parse DMC subcomponents</li>
+          <li>Detect and warn users with the broken NVMe firmware 3B2QGXA7</li>
+          <li>Print errors as JSON objects when using fwupdmgr --json</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow installing battery firmware updates even when the power is too low</li>
+          <li>Correctly fall back to the compatible vendor when FDT vendor is missing</li>
+          <li>Detect CCGX factory mode and set a non-zero version</li>
+          <li>Detect fixed Insyde firmware that can actually use Capsule-on-Disk</li>
+          <li>Do not make any of the HWIDs setup failures fatal</li>
+          <li>Fix a critical warning when parsing an empty kernel cmdline</li>
+          <li>Fix a small memory leak when installing TPS6598x firmware</li>
+          <li>Fix compiling with -Dbuild=library for Flathub</li>
+          <li>Fix fwupdtool firmware-convert to work with image-less formats</li>
+          <li>Fix regression in downloading files in fwupdtool</li>
+          <li>Fix SMBIOS struct parsing when the tag section ends with NUL</li>
+          <li>Indicate HSI attributes that will only be returned for specific CPU vendors</li>
+          <li>Only accept application/x-xz compression for the metadata payload</li>
+          <li>Only offset the IPMI user ID when using Lenovo XCC</li>
+          <li>Prefer the Intel USB4 plugin over the Thunderbolt plugin when required</li>
+          <li>Require at least twice the capsule size in the ESP when updating</li>
+          <li>Save all the device flags in the pending database correctly</li>
+          <li>Set the device percentage and status for the duration of the update</li>
+          <li>Show the 4XX download failure in the CLI error output</li>
+          <li>Speed up regenerating the MOTD when installing composite devices</li>
+          <li>Use an updated shim if provided during for capsule update</li>
+          <li>Use strict snap confinement</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>CalDigit Element Hub</li>
+          <li>CalDigit TS4 Dock</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.10" date="2023-01-23">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a PE/COFF firmware parser to allow reading coSWID SBOM data</li>
+          <li>Allow dumping CFI SPI chips using devices like CH341a</li>
+          <li>Refactor the HWIDs functionality to include FDT data</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add back a legacy eMMC GUID to fix a regression</li>
+          <li>Always search for uSWID SBOM data in the image</li>
+          <li>Do not allow LZX compressed cabinet archives</li>
+          <li>Fallback to the checksum if the metadata artifact is invalid</li>
+          <li>Improve FDT parsing compatibility with new OpenBMC images</li>
+          <li>Never call grub2-probe without arguments</li>
+          <li>Respect user requested paths for the ESP even if they are not volumes</li>
+          <li>Speed up ChromeOS startup by a huge amount when using directory remotes</li>
+          <li>Verify the Synaptics RMI signature in more cases</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Quectel RM520</li>
+          <li>StarBook Mk VI</li>
+          <li>System76 launch_heavy_1</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.9" date="2023-01-03">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add an interactive request for re-inserting the USB cable</li>
+          <li>Add SHA384 support for TPM hashes</li>
+          <li>Add X-FingerprintReader, X-GraphicsTablet, X-Dock and X-UsbDock categories</li>
+          <li>Allow specifying OR parent requirements in metadata</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add the fwupd version to the HSI result if the chassis is invalid</li>
+          <li>Allow getting the ESP when there is a block device with no filesystem</li>
+          <li>Allow reinstalling on devices with only-version-upgrade set</li>
+          <li>Do not require the TPM event log to have all reconstructions</li>
+          <li>Fix a tiny memory leak when parsing signed reports</li>
+          <li>Ignore failure to mount the ESP if unsupported</li>
+          <li>Never allow using SHA-1 for checksum validation</li>
+          <li>Return a more useful error if USB recovery failed</li>
+          <li>Skip the fwupdx64.efi BootXXXX entry when measuring system integrity</li>
+          <li>Speed up daemon startup using prepared XPath queries</li>
+          <li>Suggest to turn on ThunderboltAccess for Lenovo systems</li>
+          <li>Use better defaults if the config file is missing</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>More Solidigm NVMe devices</li>
+          <li>More Synaptics Cape devices</li>
+          <li>More Synaptics Prometheus devices</li>
+          <li>Most Texas Instruments USB-4 docks</li>
+          <li>Scaler support for Wacom USB devices</li>
+          <li>Several new Wistron USB-C docks</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.8" date="2022-12-07">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add BIOS rollback protection support for Dell and Lenovo systems</li>
+          <li>Generate OVAL rules for openSCAP evaluation</li>
+          <li>Show the signed reports from QA teams in client tools</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add a X-Gpu category for new hardware support</li>
+          <li>Add more ChromeOS metadata to the report attributes</li>
+          <li>Ensure the device name is set for Intel USB4 devices</li>
+          <li>Fix a critical DFU CSR warning when deploying firmware</li>
+          <li>Fix a Synaptics RMI issue when updating non-secure devices</li>
+          <li>Match more device properties when using GetDetails</li>
+          <li>Move AMD platform rollback protection to level 4</li>
+          <li>Use the correct AppStream ID for the Key Manifest failure</li>
+          <li>Wait for the Intel GPU to come back after updating</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Logitech Whiteboard cameras</li>
+          <li>More Goodix MoC devices</li>
+          <li>Several QSI Docks</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.7" date="2022-11-09">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a new HSI check for the leaked Lenovo 'Key Manifest' hashes</li>
+          <li>Measure system integrity when installing UEFI updates</li>
+          <li>Record more host DMI data when submitting a report for dbx failures</li>
+          <li>Use xz-compressed metadata to reduce bandwidth used by ~25%</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add documentation for three existing HSI attributes</li>
+          <li>Add re-insert requirement for Analogix devices</li>
+          <li>Allow parsing metadata more than 1MB in size</li>
+          <li>Do not follow symlinks when searching for ESP devices</li>
+          <li>Ensure the config file permission is correct for built-in plugins</li>
+          <li>Fix a compile failure when compiling without efiboot</li>
+          <li>Fix a regression when using fwuptool install-blob with FMAP firmware</li>
+          <li>Only count the Microsoft hashes when getting the dbx version</li>
+          <li>Only use the IFD when the system is Intel-based</li>
+          <li>Support loading CoSWID when only one role has been set</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Anker Thunderbolt 4 Mini Hub</li>
+          <li>ELAN haptic hardware</li>
+          <li>Fingerprint lenfy devices</li>
+          <li>Goodix GF3258WNC</li>
+          <li>Intel discrete GPUs (experimental)</li>
+          <li>More Star Labs laptops</li>
+          <li>QSI Godzilla Creek Reference Hub</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.6" date="2022-10-07">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Reduce the installed package size by more than 30%</li>
+          <li>Translate more interactive messages</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow disabling a DFU device when required</li>
+          <li>Fix a regression when getting the i2c bus number</li>
+          <li>Fix a small memory leak when reloading the parade-lspcon device</li>
+          <li>Fix installing the dbx update when using fwupdtool</li>
+          <li>Improve writing CoSWID and uSWID metadata</li>
+          <li>Only include the last 5 releases in the installed metainfo file</li>
+          <li>Only request the BOS descriptor for newer libgusb versions</li>
+          <li>Prevent high memory usage when loading corrupt SREC files</li>
+          <li>Try harder when trying to find the default ESP volume</li>
+          <li>Use a higher compression preset for the UEFI splash images</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Focaltech touchpads</li>
+          <li>FPC fingerprint readers</li>
+          <li>Supermicro machines using Redfish</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.5" date="2022-09-22">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a new android-boot plugin to update specific block devices</li>
+          <li>Add new plugin to display SMU firmware version on AMD APU/CPU</li>
+          <li>Add support for platform capability descriptors so devices can set quirks</li>
+          <li>Move the generic Intel Goshen Ridge code out to a new plugin</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow specifying the ESP when applying the dbx update</li>
+          <li>Always check the BDP partitions when getting all the possible ESPs</li>
+          <li>Correctly update Wacom AES devices</li>
+          <li>Disable changing sleep mode on Ryzen 6000 systems</li>
+          <li>Do not show the 'may not be usable while updating' message for DBX updates</li>
+          <li>Expose Pine64 PinePhone Pro MTD as Tow-Boot</li>
+          <li>Fix a critical warning when issuing Secure Boot modem AT commands</li>
+          <li>Fix a fuzzing crash when parsing malicious FDT data</li>
+          <li>Fix aligning up addresses greater than 4GB</li>
+          <li>Fix a possible crash when dumping VBE firmware</li>
+          <li>Fix a possible critical warning when parsing cabinet archives</li>
+          <li>Fix a regression when parsing pixart-rf firmware</li>
+          <li>Fix a small memory leak when parsing UF2 files</li>
+          <li>Fix checking for invalid depth requirements</li>
+          <li>Fix parsing the coSWID firmware ID when encoded as a UUID</li>
+          <li>Fix parsing uSWID uncompressed metadata</li>
+          <li>Fix uploading to DFU-CSR devices</li>
+          <li>Limit the archive size to 25% of the RAM, or 4G</li>
+          <li>Load coSWID metadata from a uSWID MTD block device</li>
+          <li>Never save the Redfish auto-generated password to a user-readable file</li>
+          <li>Only create users using IPMI when we know it's going to work</li>
+          <li>Write all the CCGX metadata block as intended</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Corsair SABRE RGB PRO Gaming mouse</li>
+          <li>More Sonix CAM devices</li>
+          <li>More Intel Goshen Ridge USB-4 docks</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.4" date="2022-08-30">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a translated title and long description for HSI security attributes</li>
+          <li>Add support for loading a machine-default BIOS settings policy</li>
+          <li>Add support for reading and writing BIOS settings</li>
+          <li>Allow loading BIOS settings for host emulation</li>
+          <li>Prompt users to fix some BIOS configuration issues</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Actually show provided AppStream security issues</li>
+          <li>Add Quectel secure boot status AT commands</li>
+          <li>Correctly detect CET IBT</li>
+          <li>Do not assert when running with no plugins</li>
+          <li>Do not require UEFI capsule updates for checking TPM PCR0</li>
+          <li>Do not show HSI events where we changed the spec result value</li>
+          <li>Fix applying the latest DBX update</li>
+          <li>Include vfat in the list of possible BDP partition types</li>
+          <li>Install all devices with the same composite id in fwupdtool</li>
+          <li>Only fail the kernel HSI test for specific taint reasons</li>
+          <li>Only show changed events in fwupdmgr security</li>
+          <li>Update vulnerable CMSE versions from CSMEVDT data</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Elan non-HID touchpads</li>
+          <li>Google Prism</li>
+          <li>LabTop Mk III</li>
+          <li>ThinkPad Thunderbolt 4 Dock</li>
+          <li>ThinkPad Universal Smart Dock</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.3" date="2022-07-22">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add resolution flags to each security attribute failures for the user</li>
+          <li>Allow loading in emulated host profiles for debugging</li>
+          <li>Check if Intel TME has been disabled by the firmware or platform</li>
+          <li>Wait for the system to acquiesce after doing each update</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Do not use CoD even when advertised on non-aarch64 platforms</li>
+          <li>Fix a crash when updating the Logitech Bolt radio device</li>
+          <li>Fix a critical warning when parsing an invalid PHAT record</li>
+          <li>Fix a critical warning when parsing invalid FDT firmware</li>
+          <li>Fix fwupdmgr security when plugins are added to the blocklist</li>
+          <li>Fix parsing SMBIOS data to correct the device hardware IDs</li>
+          <li>Fix uploading signed reports by sending the correct checksum</li>
+          <li>Use the correct protocol attribute name when exporting to JSON</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Additional Startech devices</li>
+          <li>Additional Elan fingerprint readers</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.2" date="2022-07-11">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add startup profiling which allowed us to speed up daemon startup considerably</li>
+          <li>Add support for OptionROM, CPD and FPT firmware formats for future hardware</li>
+          <li>Add the HostVendor to the D-Bus interface</li>
+          <li>Break some internal ABI and add a conversion helper for out-of-tree plugins</li>
+          <li>Optionally build the quirk files into the daemon binary to reduce installed size</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow front-end clients to read the percentage property</li>
+          <li>Allow more quirk entries to add multiple items</li>
+          <li>Allow to force install Genesys firmware even if the public-key does not match</li>
+          <li>Allow UFS disks to define the signed status in metadata</li>
+          <li>Autoconnect the Redfish network device when rebooting the BMC</li>
+          <li>Copy the instance ID strings when incorporating devices</li>
+          <li>Do not generate a capsule header for the FMP GUID</li>
+          <li>Ensure more firmware formats can round-trip to and from XML</li>
+          <li>Fix a regression for devices using the Atmel FLIP Bootloader</li>
+          <li>Fix running fwupdtool security with a user-specified plugin allowlist</li>
+          <li>Handle ENOTTY with the correct error code for ioctl calls</li>
+          <li>Increase the self tests coverage substantially</li>
+          <li>Modernize the AMT plugin and split out common MEI functionality</li>
+          <li>Only move the logitech-bulkcontroller progressbar forwards when writing</li>
+          <li>Set the device ID on the FwupdRequest to allow better UX</li>
+          <li>Show the get-details output when the device requirements fail</li>
+          <li>Simply quirk matching for i2c devices to speed up daemon startup</li>
+          <li>Support SHA256 fastboot hashes if specified</li>
+          <li>Use force-detach to bypass the DFU streaming check for camera devices</li>
+          <li>Use the SCSI target to correctly set the physical ID</li>
+          <li>Wait for the System76 launch device to re-enumerate if already unlocked</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Corsair HARPOON RGB Wireless mouse</li>
+          <li>U-Boot devices writing simple FIT images</li>
+          <li>Genesys M27fd AIM101</li>
+          <li>More PixArt wireless devices</li>
+          <li>More Steelseries HID, Sonic and Fizz devices</li>
+          <li>System76 launch_2</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.1" date="2022-05-27">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add archive writing support for devices with composite firmware</li>
+          <li>Add a way to read device composite firmware in fwupdtool</li>
+          <li>Allow clients to opt-in to showing updates with user-solvable problems</li>
+          <li>Allow the device to pause polling when writing firmware</li>
+          <li>Export the system and device battery levels on the D-Bus interface</li>
+          <li>Log errors and warnings to the win32 eventlog when required</li>
+          <li>Add X-UsbReceiver as an update category with icon usb-receiver</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Accurately return the last-set status to client tools</li>
+          <li>Allow dumping flashrom firmware using fwupdtool</li>
+          <li>Allow specifying a non-file D-Bus transport</li>
+          <li>Allow to request post actions from fwupdtool</li>
+          <li>Always be arch-explicit when installing OS deps</li>
+          <li>Be more resilient when restarting the Redfish BMC</li>
+          <li>Do not mark all Redfish updates as UPDATABLE</li>
+          <li>Do not use 'dongle' to describe USB receiver hardware</li>
+          <li>Download in-process when using fwupdtool</li>
+          <li>Fix a critical warning on failed modem update</li>
+          <li>Fix regression when probing PS175 devices</li>
+          <li>Hardcode the Redfish filedata name to firmware.bin</li>
+          <li>Set the Bluetooth version if REV has been set</li>
+          <li>Switch the Windows installer from NSIS to MSI</li>
+          <li>Use StartServiceCtrlDispatcherA for the daemon on Windows</li>
+          <li>Use the native certificate store on Windows</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Corsair KATAR PRO XT, SABRE PRO and KATAR PRO Wireless</li>
+          <li>HP Thunderbolt Dock G4</li>
+          <li>Lenovo ThinkPad Universal USB-C Dock</li>
+          <li>More PixArt wireless devices</li>
+          <li>More SunplusIT USB cameras</li>
+          <li>Some UFS devices</li>
+          <li>Steelseries Aerox 3 Wireless and Rival 3 Wireless</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.0" date="2022-04-30">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a new attribute for CPUs supported by HSI</li>
+          <li>Add coSWID and uSWID parsers to libfwupdplugin for initial SBOM support</li>
+          <li>Add new HSI attributes for the AMD PSP and various other system protections</li>
+          <li>Add the runtime fwupd-efi version as a firmware requirement</li>
+          <li>Allow 'fwupdmgr install' to install a specified firmware version</li>
+          <li>Allow overriding the detected machine type for debugging and development</li>
+          <li>Restart the BMC after installing BCM updates</li>
+          <li>Show the device serial number and instance IDs by default</li>
+          <li>Support dumping the MTD image to a firmware blob</li>
+          <li>Take a device inhibit when updating a device</li>
+          <li>Use the CFI manufacturer ID to set the vendor</li>
+          <li>Use the correct icon automatically for more hardware</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add signed-payload metadata for more devices</li>
+          <li>Allow Capsule-on-Disk to work in more cases</li>
+          <li>Allow quirking the detected flashrom flash size</li>
+          <li>Check for os-release on FWUPD_SYSCONFDIR</li>
+          <li>Check the alignment when parsing raw firmware</li>
+          <li>Check the update protocol exists when checking requirements</li>
+          <li>Convert the build system to use meson tristate features</li>
+          <li>Correctly probe USB-2 hubs with more than 7 ports</li>
+          <li>Do not add the Windows compatibility ID to capsule devices</li>
+          <li>Do not allow the DBX update for specific motherboards</li>
+          <li>Do not expect KernelCmdline on Windows</li>
+          <li>Do not export USB4 host controllers as updatable if they don't have unique GUIDs</li>
+          <li>Do not fallback to audio-card and use a more suitable icon for USB hubs</li>
+          <li>Do not hardcode the libexecdir to /usr/libexec</li>
+          <li>Do not leak child processes when canceling</li>
+          <li>Do not show unconnected or unreachable devices in the client tools</li>
+          <li>Do not throw away the TPM eventlog when uploading to the LVFS</li>
+          <li>Do not use /var/run for the socket</li>
+          <li>Export the version_lowest_raw value correctly</li>
+          <li>Fix build for MacOS and add to the CI matrix</li>
+          <li>Fix eventlog replay for Intel TXT machines</li>
+          <li>Fix several small memory leaks</li>
+          <li>Fix writing large mtd images than 10kb</li>
+          <li>Ignore MTD devices that report EPERM on open</li>
+          <li>Mark the ME region device locked if it is read only</li>
+          <li>Never send the DeviceChanged signal with old data</li>
+          <li>Only show the CLI time remaining for predictable status phases</li>
+          <li>Respect the NO_COLOR env variable</li>
+          <li>Return the correct error when there is no GPIO device to open</li>
+          <li>Support the new UPower PENDING device states</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>CH341A SPI programmer</li>
+          <li>Corsair Sabre RGB PRO and Slipstream USB receiver</li>
+          <li>Genesys GL3521 and GL3590 hubs</li>
+          <li>Google Servo Dock</li>
+          <li>Logitech M550, M650 and K650</li>
+          <li>More ELAN fingerprint readers</li>
+          <li>More integrated Wacom panels</li>
+          <li>More NovaCustom machines</li>
+          <li>More StaLabs StarLite machines</li>
+          <li>More Tuxedo laptops</li>
+          <li>Quectel EM05</li>
+          <li>FlatFrog devices</li>
+          <li>System76 launch_lite_1</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.7.6" date="2022-02-25">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a flag for UEFI devices that never want a capsule header auto-added</li>
+          <li>Add a flag to indicate the device has a signed or unsigned payload</li>
+          <li>Add a plugin to set a GPIO pin for the duration of an update</li>
+          <li>Add a simple plugin to enumerate (but not update) SCSI hardware</li>
+          <li>Add two more instance IDs to the MTD devices</li>
+          <li>Add X-BaseboardManagementController as an update category</li>
+          <li>Allow assigning issues to devices for known high priority problems</li>
+          <li>Parse the MTD firmware version using the defined GType</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Check the IFD sections have non-zero data length to fix a critical warning</li>
+          <li>Modify the AT retry behavior to fix getting the firmware branch</li>
+          <li>Do not run fwupd-refresh automatically in containers</li>
+          <li>Do not show a warning if the TPM eventlog does not exist</li>
+          <li>Do not show TSS2 warning messages by default</li>
+          <li>Fix a critical warning when loading an empty TPM eventlog item</li>
+          <li>Fix a logic error when adding the community warning in fwupdmgr</li>
+          <li>Fix loading flashrom devices in coreboot mode</li>
+          <li>Fix the error handling when updating USB4 retimers</li>
+          <li>Show the user when devices are not updatable due to inhibits</li>
+          <li>Skip probing the Dell DA300 device to avoid a warning</li>
+          <li>Try harder to convert to a version into a correct semver</li>
+          <li>Use multiple checksums when there are no provided artifacts</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>HP M2xfd monitors</li>
+          <li>Star Lite Mk III</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.7.5" date="2022-02-07">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a flag to indicate the firmware is not provided by the vendor</li>
+          <li>Add support for showing dependency versions in JSON format</li>
+          <li>Allow fwupd to operate in socket mode without a D-Bus daemon</li>
+          <li>Allow marking a device as End-of-Life by the OEM vendor</li>
+          <li>Allow specifying the machine Best Known Configuration locally</li>
+          <li>Fall back to the ARM Device Tree 'compatible' data when required</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Be more robust by retrying IPMI transactions on servers</li>
+          <li>Change the expired Redfish password when required</li>
+          <li>Fix a ModemManager segfault on startup for some MBIM-QDU devices</li>
+          <li>Fix a possible dell-dock segfault at startup</li>
+          <li>Fix compiling with new versions of efivar</li>
+          <li>Fix the Nordic bootloader type detection</li>
+          <li>Fix USB4 retimer enumeration</li>
+          <li>Get the SMBIOS table and host machine ID when running on Windows</li>
+          <li>Show results when calling get-details if failing requirements</li>
+          <li>Uninhibit the modem using ModemManager after upgrade</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Future Analogix devices</li>
+          <li>NovaCustom NV4x</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.7.4" date="2022-01-13">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add firmware branch support for ModemManager devices</li>
+          <li>Allow firmware engineers to patch files at known offsets</li>
+          <li>Show why more devices are not marked as updatable</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Allow fwupdtool to be run as the non-root user in more cases</li>
+          <li>Assign the Logitech bulkcontroller update interface correctly</li>
+          <li>Do not allow UEFI updates when the laptop lid is closed</li>
+          <li>Do not autoload ipmi-si to avoid warning on non-server hardware</li>
+          <li>Do not show a critical warning for a weird TPM event log</li>
+          <li>Fix waiting for USB devices when using Windows</li>
+          <li>Ignore non-PCI NVMe devices</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>HP USB-C G2 Dock</li>
+          <li>Many UF2 devices, experimentally</li>
+          <li>More PixArt devices</li>
+          <li>Nordic HID devices using MCUBoot</li>
+          <li>Quectel EG25-G LTE Modem</li>
+          <li>ThinkPad Thunderbolt 4 Dock</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.7.3" date="2021-12-13">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a sync-bkc subcommand to ensure a known set of firmware versions</li>
+          <li>Add FuArchiveFirmware for plugins that use archives as firmware files</li>
+          <li>Add quirkable page and sector size properties to FuCfiDevice</li>
+          <li>Make Upower and powerd support optional</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add some sanity checks to the elanfp firmware parser</li>
+          <li>Add the CFI JEDEC instance ID if using the vendor-extended version</li>
+          <li>Check the value range when parsing the quirk keys</li>
+          <li>Do not wait for a USB runtime if will-disappear is set</li>
+          <li>Enable the MOTD integration when using pam_motd</li>
+          <li>Fix DFU regression when merging the FuProgress work</li>
+          <li>Fix running the tests when fwupd is not installed</li>
+          <li>Fix the GLib error message when inotify max_user_instances is too low</li>
+          <li>Fix VLI VL820Q7 detection to fix flashing of the Lenovo TBT3 dock</li>
+          <li>Ignore a USB error for STM32 attach when the device goes away</li>
+          <li>Make the HSI tests optional for embedded targets</li>
+          <li>Make the plugin startup order deterministic</li>
+          <li>Set Thunderbolt ports offline on host controller</li>
+          <li>Use endian-safe version functions when enumerating Logitech hardware</li>
+          <li>Use lowercase flag names in intel-spi to prevent a runtime warning</li>
+          <li>Wait for the System76 Launch device to come back from DFU mode</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Most Nordic Semiconductor nRF Secure devices</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.7.2" date="2021-11-19">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a new HSI check that PCR registers 0-7 are not empty</li>
+          <li>Add several compile flags to reduce the install size by over 300Kb</li>
+          <li>Allow overriding HwId data from the daemon.conf config file</li>
+          <li>Allow overriding the firmware GType from a quirk file</li>
+          <li>Export the component release ID over DBus</li>
+          <li>Remove support for the SoloKey and ChaosKey devices</li>
+          <li>Show a daemon warning if quirk flags are malformed</li>
+          <li>Speed up the daemon startup by ~40% by doing less at startup</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Be case insensitive when fixing the device model</li>
+          <li>Fix a critical warning in ccgx found by the fuzzer</li>
+          <li>Fix a DFU crash if the attach failed due to a hardware fault</li>
+          <li>Fix a Redfish crash when specifying a URL without a port</li>
+          <li>Fix CLI downloads when using fwupdmgr --ipfs</li>
+          <li>Fix critical warning when /etc/machine-id does not exist</li>
+          <li>Inhibit thunderbolt devices to correctly use UPDATABLE_HIDDEN</li>
+          <li>Set SSL_VERIFYHOST=0 when using Redfish to fix OpenBMC auth</li>
+          <li>Skip UEFI devices that fail coldplug</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>All exported MTD block devices</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.7.1" date="2021-11-01">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Allow specifying 'fwupdmgr device-test foo --json' for unattended testing</li>
+          <li>Allow using a filename when using set-approved-firmware</li>
+          <li>Inhibit ModemManager device in mbim-qdu</li>
+          <li>Share the Common Flash Memory Interface quirks between plugins</li>
+          <li>Show changes in HSI attributes when using 'fwupdmgr security'</li>
+          <li>Show the user a warning if updating may affect full-disk-encryption</li>
+          <li>Show translated firmware release notes when provided</li>
+          <li>Support loading remotes from /var/lib/fwupd/remotes.d</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Fix a CCGX regression when loading firmware</li>
+          <li>Fix a potential crash when dumping Parade devices</li>
+          <li>Fix build error when sys/io.h is not available</li>
+          <li>Fix building the Synaptics RMI self tests on s390x</li>
+          <li>Fix the CSME CVE detection for new generations</li>
+          <li>Handle EPERM when running the self tests on systems with IPMI</li>
+          <li>Mark as SUPPORTED even if on battery power</li>
+          <li>Only save the HSI attributes to the database if different</li>
+          <li>Raise the client timeout value from 25 seconds to fix Redfish startup</li>
+          <li>Redirect the old HSI links to the correct place</li>
+          <li>Relax the ITE SuperIO signature checks for new hardware support</li>
+          <li>Set device time and timezone for logitech bulkcontroller devices</li>
+          <li>Set the verfmt of the returned device when the daemon device is unset</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Dell Atomic Dock</li>
+          <li>HP Thunderbolt Dock G4</li>
+          <li>More PixArt devices</li>
+          <li>Steelseries Stratus</li>
+          <li>Wacom 3rd-gen Intuos BT</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.7.0" date="2021-10-06">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add FuCfuPayload and FuCfuOffer for future usage</li>
+          <li>Add support for an 'unreachable' device flag</li>
+          <li>Add support for Logitech devices supporting the Unified Battery feature</li>
+          <li>Allow adding GUIDs to each HSI security attribute</li>
+          <li>Allow installing the LVFS remote, but with it disabled by default</li>
+          <li>Convert security attributes to JSON and write then to the database</li>
+          <li>Convert the device test script to a fwupdmgr subcommand</li>
+          <li>Create Redfish user accounts automatically using IPMI</li>
+          <li>Use an interactive request to restart some Logitech DFU devices</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Abort on invalid SREC files early to avoid a fuzzing timeout</li>
+          <li>Allow using interrupt transfers for HID devices</li>
+          <li>Allow waiting for multiple devices to replug</li>
+          <li>Fix a critical warning on a Unifying flash failure</li>
+          <li>Fix a regression in flashing the Dell dock</li>
+          <li>Fix Thunderbolt host controller probing</li>
+          <li>Forcefully set checksums found in cabinet files to lowercase</li>
+          <li>Force UX-capsule over full size BGRT</li>
+          <li>Make the SuperIO ports and timeouts specific to the DMI model</li>
+          <li>Only probe SynapticsMST devices that have opted-in</li>
+          <li>Remove support for --ignore-power as it did not work for UEFI firmware</li>
+          <li>Reset the CMOS as required when changing system firmware branch</li>
+          <li>Restart the daemon if any of the plugin config files are modified</li>
+          <li>Show HSiLevel=0 attributes in JSON security output</li>
+          <li>Update the child composite ID if the parent changes</li>
+          <li>Use a per-device global percentage completion</li>
+          <li>Write the BMP image upside down to avoid using a negative bitmap height</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>A huge number of Synaptics CAPE devices</li>
+          <li>Elan fingerprint readers</li>
+          <li>Logitech Bolt peripherals, receivers and radio hardware</li>
+          <li>Logitech devices supporting the bulk controller protocol</li>
+          <li>More supported PixArt devices</li>
+          <li>More supported StarBook coreboot devices</li>
+          <li>Union Point SPI hardware</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.6.2" date="2021-08-02">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a plugin to check Lenovo firmware settings</li>
+          <li>Add initial support for the powerd daemon</li>
+          <li>Add support for CapsuleOnDisk</li>
+          <li>Add support for installing UEFI updates from GRUB</li>
+          <li>Add support for soft-requirements that can be ignored with --force</li>
+          <li>Allow devices to only accept version upgrades</li>
+          <li>Allow discovery of Redfish BMCs specified by VID-PID or MAC</li>
+          <li>Allow the daemon to request interactive action from the end user</li>
+          <li>Automatically connect the BMC network interface at startup</li>
+          <li>Show the build timestamp if set on the device</li>
+          <li>Show the user how to switch out of Wacom tablet Android-mode</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Add the alternate vendor name into the 8BitDo allowlist</li>
+          <li>Allow multiple devices to set WAIT_FOR_REPLUG</li>
+          <li>Allow the client to watch for more property changes</li>
+          <li>Always ensure the SuperIO version string is NUL terminated</li>
+          <li>Automatically clear the update error as required</li>
+          <li>Disable all UX capsules for Lenovo hardware</li>
+          <li>Do not assume the metainfo file is NUL-terminated</li>
+          <li>Do not save invalid files on LVFS server error</li>
+          <li>Fix a VLI regression in enumerating the PD device</li>
+          <li>Fix a VLI regression when installing VL820Q7 firmware</li>
+          <li>Fix enumeration of the Synaptics Prometheus config child</li>
+          <li>Fix parsing Redfish USB/PCI network VID/PIDs</li>
+          <li>Fix the fwupdmgr progressbar spinner to actually work</li>
+          <li>Fix version number for legacy Wacom Bluetooth modules</li>
+          <li>Ignore virtual M.2 ATA devices</li>
+          <li>Preserve NEEDS_REBOOT on successful update</li>
+          <li>Prevent a corrupt PHAT table from allocating lots of memory</li>
+          <li>Read the Redfish SMBIOS table when required</li>
+          <li>Remove the vendor string from the device name where required</li>
+          <li>Save the update state to the database correctly all of the time</li>
+          <li>Switch from sysctl to ioctl for ESRT on FreeBSD</li>
+          <li>Try reading from /sys/class/dmi if SMBIOS direct access fails</li>
+          <li>Watch for children added or removed after setup has been completed</li>
+          <li>Work around a XCC-ism on Lenovo hardware</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>ModemManager devices supporting Firehose or MBIM QDU</li>
+          <li>More models of RTS54HUB</li>
+          <li>More Poly DFU devices</li>
+          <li>Parade LSPCON</li>
+          <li>PixArt receiver and wireless hardware</li>
+          <li>Realtek MST with RTD2142</li>
+          <li>SuperIO IT5570</li>
+          <li>USB4 Dell dock</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.6.1" date="2021-06-14">
+      <description>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add FreeBSD UEFI Capsule support</li>
+          <li>Add generic ModemManager support for PCI based modems</li>
+          <li>Add initial support for USB4 module in the Dell dock</li>
+          <li>Add support for sibling requirements</li>
+          <li>Add support for the ACPI PHAT table</li>
+          <li>Allow building the documentation with gi-docgen and gtk-doc</li>
+          <li>Support binary artifact resources in cabinet archives</li>
+          <li>Use GProxyResolver to get the system proxy setting for a given URL</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Ask the user to confirm all CLI actions</li>
+          <li>Check the versions of libfwupd and libfwupdplugin at startup</li>
+          <li>Do not prevent firmware updates on desktop hardware</li>
+          <li>Do not show an invalid DFU warning on attach</li>
+          <li>Fail parsing if wacom firmware sections are not in sorted order</li>
+          <li>Fall back to binary files when flashing STM32 hardware</li>
+          <li>Fix a critical warning when downloading files</li>
+          <li>Fix a possible critical warning due to a bug in type casting</li>
+          <li>Fix a regression in updating the WD19TB dock</li>
+          <li>Fix GUID generation on pixart hardware</li>
+          <li>Fix the VLI i2c device enumeration, e.g. MSP430</li>
+          <li>Follow HTTP 3XX redirects when downloading files</li>
+          <li>Force the device locker to close() an aborted open()</li>
+          <li>Handle bsdisks' UDisks2 implementation on FreeBSD</li>
+          <li>Only lock fwupdtool when loading the engine</li>
+          <li>Read current Wacom firmware index before finding image to write</li>
+          <li>Support all hash types when loading cabinet archives</li>
+          <li>Support mirroring the detach and update images</li>
+          <li>Switch lock directory from /var/run to /run/lock</li>
+        </ul>
+        <p>This release adds support for the following hardware:</p>
+        <ul>
+          <li>Minibons devices</li>
+          <li>More 8BitDo hardware</li>
+          <li>More Synaptics Prometheus hardware</li>
+          <li>RTD21xx devices in background mode</li>
+          <li>Some Kingston SSD and NVMe hardware</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.6.0" date="2021-04-26">
+      <description>
+        <p>
+          This is the first release of the 1.6.x series, and since 1.5.x
+          some internal plugin API has been changed and removed.
+          Although we've tested this release on all the hardware we have
+          regression tests for, bugs may have crept in; please report failures
+          to the issue tracker as required.
+        </p>
+        <p>
+          There are several new plugins adding support for new hardware
+          and a lot of code has been migrated to the new plugin API.
+          The public libfwupd API also has some trivial additions, although no
+          action is required.
+        </p>
+        <p>
+          This release adds the following features:
+        </p>
+        <ul>
+          <li>Add a composite ID that is used to identify dock device components</li>
+          <li>Add an Intel Flash Descriptor parser</li>
+          <li>Add API to allow the device to report its own battery level</li>
+          <li>Add API to recount why the device is non-updatable</li>
+          <li>Add lspcon-i2c-spi programmer support</li>
+          <li>Add more hardware support to the pixart-rf plugin</li>
+          <li>Add some more new category types for firmware to use</li>
+          <li>Add support for downloading the SPI image from the Intel eSPI device</li>
+          <li>Add support for some Analogix hardware</li>
+          <li>Add support for writing SREC firmware</li>
+          <li>Add the firmware-sign command to fwupdtool to allow resigning archives</li>
+          <li>Split UEFI EFI binary into a subproject</li>
+          <li>Use an OFD or Unix lock to prevent more than one fwupdtool process</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Actually write the bcm57xx stage1 version into the file</li>
+          <li>Add option to disable the UEFI capsule splash screen generation</li>
+          <li>Avoid use-after-free when specifying the VID/PID in dfu-tool</li>
+          <li>Cancel the GDBusObjectManager operation to fix a potential crash</li>
+          <li>Check PixArt firmware compatibility with hardware before flashing</li>
+          <li>Do not check for native dependencies as target dependencies</li>
+          <li>Do not use help2man to build manual pages</li>
+          <li>Fix a crash when shutting down the daemon</li>
+          <li>Fix build on musl</li>
+          <li>Fix build when using BSD</li>
+          <li>Fix /etc/os-release ID_LIKE field parsing</li>
+          <li>Force the synaptics-rmi hardware into IEP mode as required</li>
+          <li>Never allow D-Bus replacement when a firmware update is in operation</li>
+          <li>Offer the user to refresh the remote after enabling</li>
+          <li>Remove unused, unsafe and deprecated functions from libfwupdplugin</li>
+          <li>Simplify asking the user about reviews</li>
+          <li>Write BMP data directly without using PIL</li>
+          <li>Write synaptics-rmi files with valid checksum data</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.5.7" date="2021-02-23">
       <description>
         <p>This release adds the following features:</p>
@@ -137,7 +2143,7 @@
         <p>This release fixes the following bugs:</p>
         <ul>
           <li>Add a UEFI quirk for Star Labs Lite Mk III</li>
-          <li>Add the device firmare ID for serio class hardware</li>
+          <li>Add the device firmware ID for serio class hardware</li>
           <li>Allow the client to send legacy PKCS7 and GPG signatures</li>
           <li>Do not use accidentally depend on new meson versions</li>
           <li>Fix a possible critical warning due to missing retval</li>
@@ -632,7 +2638,7 @@
         </ul>
         <p>This release fixes the following bugs:</p>
         <ul>
-          <li>Blacklist the synapticsmst plugin when using amdgpu</li>
+          <li>Blocklist the synapticsmst plugin when using amdgpu</li>
           <li>Correct ATA activation functionality to work for all vendors</li>
           <li>Implement QMI PDC active config selection for modems</li>
           <li>Make an error message clearer when there are no updates available</li>
@@ -1120,7 +3126,7 @@
           <li>Catch invalid Dell dock component requests</li>
           <li>Correctly output Intel HEX files with &gt; 16bit offset addresses</li>
           <li>Do not try to verify the element write if upload is unsupported</li>
-          <li>Fix a double-unref when updating any 8Bitdo device</li>
+          <li>Fix a double-unref when updating any 8BitDo device</li>
           <li>Fix crash when enumerating with Dell dock connected but with no UEFI</li>
           <li>Fix uploading large firmware files over DFU</li>
           <li>Format the BCD USB revision numbers correctly</li>
@@ -1133,7 +3139,7 @@
             fwupdmgr
           </li>
           <li>Use the correct wDetachTimeOut when writing DFU firmware</li>
-          <li>Verify devices with legacy VIDs are actually 8Bitdo controllers</li>
+          <li>Verify devices with legacy VIDs are actually 8BitDo controllers</li>
         </ul>
       </description>
     </release>
@@ -1149,7 +3155,7 @@
             device
           </li>
           <li>Add FuDeviceLocker to simplify device open/close lifecycles</li>
-          <li>Add functionality to blacklist Dell HW with problems</li>
+          <li>Add functionality to blocklist Dell HW with problems</li>
           <li>Add fu_plugin_check_supported()</li>
           <li>Add fwupd_remote_get_checksum() to use in client programs</li>
           <li>Add ModifyRemote as an easy way to enable and disable remotes</li>
@@ -1222,7 +3228,7 @@
         </ul>
         <p>This release fixes the following bugs:</p>
         <ul>
-          <li>Check all the device GUIDs against the blacklist when added</li>
+          <li>Check all the device GUIDs against the blocklist when added</li>
           <li>Correct a memory leak in Dell plugin</li>
           <li>Default to 'en' for UEFI capsule graphics</li>
           <li>Don't log a warning when an unknown unifying report is parsed</li>
@@ -1324,7 +3330,7 @@
         </ul>
         <p>This release fixes the following bugs:</p>
         <ul>
-          <li>Do not spew a critial warning when parsing an invalid URI</li>
+          <li>Do not spew a critical warning when parsing an invalid URI</li>
           <li>Ensure device is closed if did not complete setup</li>
           <li>Ensure steelseries device is closed if it returns an invalid packet</li>
           <li>Fix man page installation location</li>
@@ -1464,7 +3470,7 @@
         </ul>
         <p>This release fixes the following bugs:</p>
         <ul>
-          <li>Add XPS 9250 to Dell TPM modeswitch blacklist</li>
+          <li>Add XPS 9250 to Dell TPM modeswitch blocklist</li>
           <li>Allow blacklisting devices by their GUID</li>
           <li>Conditionally enable all providers based upon installed</li>
           <li>Display flashes left in results output when it gets low</li>

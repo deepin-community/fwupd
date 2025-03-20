@@ -1,72 +1,72 @@
 /*
- * Copyright (C) 2015 Peter Jones <pjones@redhat.com>
- * Copyright (C) 2020 Richard Hughes <richard@hughsie.com>
+ * Copyright 2015 Peter Jones <pjones@redhat.com>
+ * Copyright 2020 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #include "config.h"
 
-#include <fwupd.h>
 #include <glib/gi18n.h>
-#include <glib-unix.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "fu-common.h"
-#include "fu-efivar.h"
+#include "fu-context-private.h"
 #include "fu-uefi-dbx-common.h"
-#include "fu-efi-signature.h"
 
 /* custom return code */
-#define EXIT_NOTHING_TO_DO		2
+#define EXIT_NOTHING_TO_DO 2
 
 static void
-fu_util_ignore_cb (const gchar *log_domain, GLogLevelFlags log_level,
-		   const gchar *message, gpointer user_data)
+fu_util_ignore_cb(const gchar *log_domain,
+		  GLogLevelFlags log_level,
+		  const gchar *message,
+		  gpointer user_data)
 {
 }
 
 static FuFirmware *
-fu_dbxtool_get_siglist_system (GError **error)
+fu_dbxtool_get_siglist_system(FuContext *ctx, GError **error)
 {
+	FuEfivars *efivars = fu_context_get_efivars(ctx);
 	g_autoptr(GBytes) blob = NULL;
-	g_autoptr(FuFirmware) dbx = fu_efi_signature_list_new ();
-	blob = fu_efivar_get_data_bytes (FU_EFIVAR_GUID_SECURITY_DATABASE, "dbx", NULL, error);
+	g_autoptr(FuFirmware) dbx = fu_efi_signature_list_new();
+	blob = fu_efivars_get_data_bytes(efivars,
+					 FU_EFIVARS_GUID_SECURITY_DATABASE,
+					 "dbx",
+					 NULL,
+					 error);
 	if (blob == NULL)
 		return NULL;
-	if (!fu_firmware_parse (dbx, blob, FWUPD_INSTALL_FLAG_NO_SEARCH, error))
+	if (!fu_firmware_parse_bytes(dbx, blob, 0x0, FWUPD_INSTALL_FLAG_NO_SEARCH, error))
 		return NULL;
-	return g_steal_pointer (&dbx);
+	return g_steal_pointer(&dbx);
 }
 
 static FuFirmware *
-fu_dbxtool_get_siglist_local (const gchar *filename, GError **error)
+fu_dbxtool_get_siglist_local(const gchar *filename, GError **error)
 {
-	g_autoptr(GBytes) blob = NULL;
-	g_autoptr(FuFirmware) siglist = fu_efi_signature_list_new ();
-	blob = fu_common_get_contents_bytes (filename, error);
-	if (blob == NULL)
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(FuFirmware) siglist = fu_efi_signature_list_new();
+	file = g_file_new_for_path(filename);
+	if (!fu_firmware_parse_file(siglist, file, FWUPD_INSTALL_FLAG_NONE, error))
 		return NULL;
-	if (!fu_firmware_parse (siglist, blob, FWUPD_INSTALL_FLAG_NONE, error))
-		return NULL;
-	return g_steal_pointer (&siglist);
+	return g_steal_pointer(&siglist);
 }
 
 static gboolean
-fu_dbxtool_siglist_inclusive (FuFirmware *outer, FuFirmware *inner)
+fu_dbxtool_siglist_inclusive(FuFirmware *outer, FuFirmware *inner)
 {
-	g_autoptr(GPtrArray) sigs = fu_firmware_get_images (inner);
+	g_autoptr(GPtrArray) sigs = fu_firmware_get_images(inner);
 	for (guint i = 0; i < sigs->len; i++) {
-		FuEfiSignature *sig = g_ptr_array_index (sigs, i);
+		FuEfiSignature *sig = g_ptr_array_index(sigs, i);
 		g_autofree gchar *checksum = NULL;
-		g_autoptr(FuFirmwareImage) img = NULL;
-		checksum = fu_firmware_image_get_checksum (FU_FIRMWARE_IMAGE (sig),
-							   G_CHECKSUM_SHA256, NULL);
+		g_autoptr(FuFirmware) img = NULL;
+		checksum = fu_firmware_get_checksum(FU_FIRMWARE(sig), G_CHECKSUM_SHA256, NULL);
 		if (checksum == NULL)
 			continue;
-		img = fu_firmware_get_image_by_checksum (outer, checksum, NULL);
+		img = fu_firmware_get_image_by_checksum(outer, checksum, NULL);
 		if (img == NULL)
 			return FALSE;
 	}
@@ -74,20 +74,20 @@ fu_dbxtool_siglist_inclusive (FuFirmware *outer, FuFirmware *inner)
 }
 
 static const gchar *
-fu_dbxtool_guid_to_string (const gchar *guid)
+fu_dbxtool_guid_to_string(const gchar *guid)
 {
-	if (g_strcmp0 (guid, FU_EFI_SIGNATURE_GUID_ZERO) == 0)
+	if (g_strcmp0(guid, FU_EFI_SIGNATURE_GUID_ZERO) == 0)
 		return "zero";
-	if (g_strcmp0 (guid, FU_EFI_SIGNATURE_GUID_MICROSOFT) == 0)
+	if (g_strcmp0(guid, FU_EFI_SIGNATURE_GUID_MICROSOFT) == 0)
 		return "microsoft";
-	if (g_strcmp0 (guid, FU_EFI_SIGNATURE_GUID_OVMF) == 0 ||
-	    g_strcmp0 (guid, FU_EFI_SIGNATURE_GUID_OVMF_LEGACY) == 0)
+	if (g_strcmp0(guid, FU_EFI_SIGNATURE_GUID_OVMF) == 0 ||
+	    g_strcmp0(guid, FU_EFI_SIGNATURE_GUID_OVMF_LEGACY) == 0)
 		return "ovmf";
 	return guid;
 }
 
 int
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
 	gboolean action_apply = FALSE;
 	gboolean action_list = FALSE;
@@ -96,61 +96,103 @@ main (int argc, char *argv[])
 	gboolean verbose = FALSE;
 	g_autofree gchar *dbxfile = NULL;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(FuContext) ctx = fu_context_new();
 	g_autoptr(GOptionContext) context = NULL;
 	g_autofree gchar *tmp = NULL;
+	g_autofree gchar *esp_path = NULL;
 	const GOptionEntry options[] = {
-		{ "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose,
-			/* TRANSLATORS: command line option */
-			_("Show extra debugging information"), NULL },
-		{ "version", '\0', 0, G_OPTION_ARG_NONE, &action_version,
-			/* TRANSLATORS: command line option */
-			_("Show the calculated version of the dbx"), NULL },
-		{ "list", 'l', 0, G_OPTION_ARG_NONE, &action_list,
-			/* TRANSLATORS: command line option */
-			_("List entries in dbx"), NULL },
-		{ "apply", 'a', 0, G_OPTION_ARG_NONE, &action_apply,
-			/* TRANSLATORS: command line option */
-			_("Apply update files"), NULL },
-		{ "dbx", 'd', 0, G_OPTION_ARG_STRING, &dbxfile,
-			/* TRANSLATORS: command line option */
-			_("Specify the dbx database file"),
-			/* TRANSLATORS: command argument: uppercase, spaces->dashes */
-			_("FILENAME") },
-		{ "force", 'f', 0, G_OPTION_ARG_NONE, &force,
-			/* TRANSLATORS: command line option */
-			_("Apply update even when not advised"), NULL },
-		{ NULL}
-	};
+	    {"verbose",
+	     'v',
+	     0,
+	     G_OPTION_ARG_NONE,
+	     &verbose,
+	     /* TRANSLATORS: command line option */
+	     N_("Show extra debugging information"),
+	     NULL},
+	    {"version",
+	     '\0',
+	     0,
+	     G_OPTION_ARG_NONE,
+	     &action_version,
+	     /* TRANSLATORS: command line option */
+	     N_("Show the calculated version of the dbx"),
+	     NULL},
+	    {"list",
+	     'l',
+	     0,
+	     G_OPTION_ARG_NONE,
+	     &action_list,
+	     /* TRANSLATORS: command line option */
+	     N_("List entries in dbx"),
+	     NULL},
+	    {"apply",
+	     'a',
+	     0,
+	     G_OPTION_ARG_NONE,
+	     &action_apply,
+	     /* TRANSLATORS: command line option */
+	     N_("Apply update files"),
+	     NULL},
+	    {"dbx",
+	     'd',
+	     0,
+	     G_OPTION_ARG_STRING,
+	     &dbxfile,
+	     /* TRANSLATORS: command line option */
+	     N_("Specify the dbx database file"),
+	     /* TRANSLATORS: command argument: uppercase, spaces->dashes */
+	     N_("FILENAME")},
+	    {"esp-path",
+	     'p',
+	     G_OPTION_FLAG_NONE,
+	     G_OPTION_ARG_STRING,
+	     &esp_path,
+	     /* TRANSLATORS: command line option */
+	     N_("Override the default ESP path"),
+	     /* TRANSLATORS: command argument: uppercase, spaces->dashes */
+	     N_("PATH")},
+	    {"force",
+	     'f',
+	     0,
+	     G_OPTION_ARG_NONE,
+	     &force,
+	     /* TRANSLATORS: command line option */
+	     N_("Apply update even when not advised"),
+	     NULL},
+	    {NULL}};
 
-	setlocale (LC_ALL, "");
+	setlocale(LC_ALL, "");
 
-	bindtextdomain (GETTEXT_PACKAGE, FWUPD_LOCALEDIR);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
+	bindtextdomain(GETTEXT_PACKAGE, FWUPD_LOCALEDIR);
+	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+	textdomain(GETTEXT_PACKAGE);
 
 	/* get a action_list of the commands */
-	context = g_option_context_new (NULL);
-	g_option_context_set_description (context,
-		/* TRANSLATORS: description of dbxtool */
-		_("This tool allows an administrator to apply UEFI dbx updates."));
+	context = g_option_context_new(NULL);
+	g_option_context_set_description(
+	    context,
+	    /* TRANSLATORS: description of dbxtool */
+	    _("This tool allows an administrator to apply UEFI dbx updates."));
 
 	/* TRANSLATORS: program name */
-	g_set_application_name (_("UEFI dbx Utility"));
-	g_option_context_add_main_entries (context, options, NULL);
-	if (!g_option_context_parse (context, &argc, &argv, &error)) {
+	g_set_application_name(_("UEFI dbx Utility"));
+	g_option_context_add_main_entries(context, options, NULL);
+	if (!g_option_context_parse(context, &argc, &argv, &error)) {
 		/* TRANSLATORS: the user didn't read the man page */
-		g_print ("%s: %s\n", _("Failed to parse arguments"),
-			 error->message);
+		g_print("%s: %s\n", _("Failed to parse arguments"), error->message);
 		return EXIT_FAILURE;
 	}
 
 	/* set verbose? */
 	if (verbose) {
-		g_setenv ("G_MESSAGES_DEBUG", "all", FALSE);
+		(void)g_setenv("G_MESSAGES_DEBUG", "all", FALSE);
 	} else {
-		g_log_set_handler (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG,
-				   fu_util_ignore_cb, NULL);
+		g_log_set_handler(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, fu_util_ignore_cb, NULL);
 	}
+
+	/* override the default ESP path */
+	if (esp_path != NULL)
+		fu_context_set_esp_location(ctx, esp_path);
 
 	/* list contents, either of the existing system, or an update */
 	if (action_list || action_version) {
@@ -158,133 +200,143 @@ main (int argc, char *argv[])
 		g_autoptr(FuFirmware) dbx = NULL;
 		g_autoptr(GPtrArray) sigs = NULL;
 		if (dbxfile != NULL) {
-			dbx = fu_dbxtool_get_siglist_local (dbxfile, &error);
+			dbx = fu_dbxtool_get_siglist_local(dbxfile, &error);
 			if (dbx == NULL) {
-				/* TRANSLATORS: could not read existing system data */
-				g_printerr ("%s: %s\n", _("Failed to load local dbx"), error->message);
+				g_printerr("%s: %s\n",
+					   /* TRANSLATORS: could not read existing system data */
+					   _("Failed to load local dbx"),
+					   error->message);
 				return EXIT_FAILURE;
 			}
 		} else {
-			dbx = fu_dbxtool_get_siglist_system (&error);
+			dbx = fu_dbxtool_get_siglist_system(ctx, &error);
 			if (dbx == NULL) {
-				/* TRANSLATORS: could not read existing system data */
-				g_printerr ("%s: %s\n", _("Failed to load system dbx"), error->message);
+				g_printerr("%s: %s\n",
+					   /* TRANSLATORS: could not read existing system data */
+					   _("Failed to load system dbx"),
+					   error->message);
 				return EXIT_FAILURE;
 			}
 		}
 		if (action_version) {
 			/* TRANSLATORS: the detected version number of the dbx */
-			g_print ("%s: %s\n", _("Version"), fu_firmware_get_version (dbx));
+			g_print("%s: %s\n", _("Version"), fu_firmware_get_version(dbx));
 			return EXIT_SUCCESS;
 		}
-		sigs = fu_firmware_get_images (FU_FIRMWARE (dbx));
+		sigs = fu_firmware_get_images(FU_FIRMWARE(dbx));
 		for (guint i = 0; i < sigs->len; i++) {
-			FuEfiSignature *sig = g_ptr_array_index (sigs, i);
+			FuEfiSignature *sig = g_ptr_array_index(sigs, i);
 			g_autofree gchar *checksum = NULL;
-			checksum = fu_firmware_image_get_checksum (FU_FIRMWARE_IMAGE (sig),
-								   G_CHECKSUM_SHA256,
-								   NULL);
-			g_print ("%4u: {%s} {%s} %s\n",
-				 cnt++,
-				 fu_dbxtool_guid_to_string (fu_efi_signature_get_owner (sig)),
-				 fu_efi_signature_kind_to_string (fu_efi_signature_get_kind (sig)),
-				 checksum);
+			checksum =
+			    fu_firmware_get_checksum(FU_FIRMWARE(sig), G_CHECKSUM_SHA256, NULL);
+			g_print("%4u: {%s} {%s} %s\n",
+				cnt++,
+				fu_dbxtool_guid_to_string(fu_efi_signature_get_owner(sig)),
+				fu_efi_signature_kind_to_string(fu_efi_signature_get_kind(sig)),
+				checksum);
 		}
+		g_info("version: %s", fu_firmware_get_version(FU_FIRMWARE(dbx)));
 		return EXIT_SUCCESS;
 	}
 
 #ifdef HAVE_GETUID
 	/* ensure root user */
-	if (getuid () != 0 || geteuid () != 0) {
+	if (getuid() != 0 || geteuid() != 0) {
 		/* TRANSLATORS: we're poking around as a power user */
-		g_printerr ("%s\n", _("This program may only work correctly as root"));
+		g_printerr("%s\n", _("This program may only work correctly as root"));
 	}
 #endif
 
 	/* apply update */
 	if (action_apply) {
+		FuEfivars *efivars = fu_context_get_efivars(ctx);
 		g_autoptr(FuFirmware) dbx_system = NULL;
-		g_autoptr(FuFirmware) dbx_update = fu_efi_signature_list_new ();
+		g_autoptr(FuFirmware) dbx_update = fu_efi_signature_list_new();
 		g_autoptr(GBytes) blob = NULL;
 
 		if (dbxfile == NULL) {
 			/* TRANSLATORS: user did not include a filename parameter */
-			g_printerr ("%s\n", _("Filename required"));
+			g_printerr("%s\n", _("Filename required"));
 			return EXIT_FAILURE;
 		}
 
 		/* TRANSLATORS: reading existing dbx from the system */
-		g_print ("%s\n", _("Parsing system dbx…"));
-		dbx_system = fu_dbxtool_get_siglist_system (&error);
+		g_print("%s\n", _("Parsing system dbx…"));
+		dbx_system = fu_dbxtool_get_siglist_system(ctx, &error);
 		if (dbx_system == NULL) {
 			/* TRANSLATORS: could not read existing system data */
-			g_printerr ("%s: %s\n", _("Failed to load system dbx"), error->message);
+			g_printerr("%s: %s\n", _("Failed to load system dbx"), error->message);
 			return EXIT_FAILURE;
 		}
 
 		/* TRANSLATORS: reading new dbx from the update */
-		g_print ("%s\n", _("Parsing dbx update…"));
-		blob = fu_common_get_contents_bytes (dbxfile, &error);
+		g_print("%s\n", _("Parsing dbx update…"));
+		blob = fu_bytes_get_contents(dbxfile, &error);
 		if (blob == NULL) {
 			/* TRANSLATORS: could not read file */
-			g_printerr ("%s: %s\n", _("Failed to load local dbx"), error->message);
+			g_printerr("%s: %s\n", _("Failed to load local dbx"), error->message);
 			return EXIT_FAILURE;
 		}
-		if (!fu_firmware_parse (dbx_update, blob, FWUPD_INSTALL_FLAG_NONE, &error)) {
+		if (!fu_firmware_parse_bytes(dbx_update,
+					     blob,
+					     0x0,
+					     FWUPD_INSTALL_FLAG_NONE,
+					     &error)) {
 			/* TRANSLATORS: could not parse file */
-			g_printerr ("%s: %s\n", _("Failed to parse local dbx"), error->message);
+			g_printerr("%s: %s\n", _("Failed to parse local dbx"), error->message);
 			return EXIT_FAILURE;
 		}
 
 		/* check this is a newer dbx update */
-		if (!force && fu_dbxtool_siglist_inclusive (dbx_system, dbx_update)) {
-			/* TRANSLATORS: same or newer update already applied */
-			g_printerr ("%s\n", _("Cannot apply as dbx update has already been applied."));
-			return EXIT_FAILURE;
-		}
-
-		/* check if on live media */
-		if (fu_common_is_live_media () && !force) {
-			/* TRANSLATORS: the user is using a LiveCD or LiveUSB install disk */
-			g_printerr ("%s\n", _("Cannot apply updates on live media"));
+		if (!force && fu_dbxtool_siglist_inclusive(dbx_system, dbx_update)) {
+			g_printerr("%s\n",
+				   /* TRANSLATORS: same or newer update already applied */
+				   _("Cannot apply as dbx update has already been applied."));
 			return EXIT_FAILURE;
 		}
 
 		/* validate this is safe to apply */
 		if (!force) {
 			/* TRANSLATORS: ESP refers to the EFI System Partition */
-			g_print ("%s\n", _("Validating ESP contents…"));
-			if (!fu_uefi_dbx_signature_list_validate (FU_EFI_SIGNATURE_LIST (dbx_update), &error)) {
-				/* TRANSLATORS: something with a blocked hash exists
-				 * in the users ESP -- which would be bad! */
-				g_printerr ("%s: %s\n", _("Failed to validate ESP contents"), error->message);
+			g_print("%s\n", _("Validating ESP contents…"));
+			if (!fu_uefi_dbx_signature_list_validate(ctx,
+								 FU_EFI_SIGNATURE_LIST(dbx_update),
+								 FWUPD_INSTALL_FLAG_NONE,
+								 &error)) {
+				g_printerr("%s: %s\n",
+					   /* TRANSLATORS: something with a blocked hash exists
+					    * in the users ESP -- which would be bad! */
+					   _("Failed to validate ESP contents"),
+					   error->message);
 				return EXIT_FAILURE;
 			}
 		}
 
 		/* TRANSLATORS: actually sending the update to the hardware */
-		g_print ("%s\n", _("Applying update…"));
-		if (!fu_efivar_set_data_bytes (FU_EFIVAR_GUID_SECURITY_DATABASE,
-					       "dbx", blob,
-					       FU_EFIVAR_ATTR_APPEND_WRITE |
-					       FU_EFIVAR_ATTR_TIME_BASED_AUTHENTICATED_WRITE_ACCESS |
-					       FU_EFIVAR_ATTR_RUNTIME_ACCESS |
-					       FU_EFIVAR_ATTR_BOOTSERVICE_ACCESS |
-					       FU_EFIVAR_ATTR_NON_VOLATILE,
-					       &error)) {
+		g_print("%s\n", _("Applying update…"));
+		if (!fu_efivars_set_data_bytes(
+			efivars,
+			FU_EFIVARS_GUID_SECURITY_DATABASE,
+			"dbx",
+			blob,
+			FU_EFIVARS_ATTR_APPEND_WRITE |
+			    FU_EFIVARS_ATTR_TIME_BASED_AUTHENTICATED_WRITE_ACCESS |
+			    FU_EFIVARS_ATTR_RUNTIME_ACCESS | FU_EFIVARS_ATTR_BOOTSERVICE_ACCESS |
+			    FU_EFIVARS_ATTR_NON_VOLATILE,
+			&error)) {
 			/* TRANSLATORS: dbx file failed to be applied as an update */
-			g_printerr ("%s: %s\n", _("Failed to apply update"), error->message);
+			g_printerr("%s: %s\n", _("Failed to apply update"), error->message);
 			return EXIT_FAILURE;
 		}
 
 		/* TRANSLATORS: success */
-		g_print ("%s\n", _("Done!"));
+		g_print("%s\n", _("Done!"));
 		return EXIT_SUCCESS;
 	}
 
 	/* nothing specified */
-	tmp = g_option_context_get_help (context, TRUE, NULL);
+	tmp = g_option_context_get_help(context, TRUE, NULL);
 	/* TRANSLATORS: user did not tell the tool what to do */
-	g_printerr ("%s\n\n%s", _("No action specified!"), tmp);
+	g_printerr("%s\n\n%s", _("No action specified!"), tmp);
 	return EXIT_FAILURE;
 }

@@ -6,12 +6,23 @@
 
   <!--
     Policy definitions for fwupd actions.
-    Copyright (c) 2015 Richard Hughes <richard@hughsie.com>
+    Copyright 2015 Richard Hughes <richard@hughsie.com>
   -->
 
   <vendor>System firmware update</vendor>
   <vendor_url>https://github.com/fwupd/fwupd</vendor_url>
   <icon_name>application-x-firmware</icon_name>
+
+  <action id="org.freedesktop.fwupd.quit">
+    <description>Stop the fwupd service</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to stop the firmware update service</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
 
   <action id="org.freedesktop.fwupd.update-internal-trusted">
     <description>Install signed system firmware</description>
@@ -36,8 +47,8 @@
     <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.update-internal-trusted</annotate>
   </action>
 
-  <action id="org.freedesktop.fwupd.downgrade-internal">
-    <description>Install old version of system firmware</description>
+  <action id="org.freedesktop.fwupd.downgrade-internal-trusted">
+    <description>Install old version of signed system firmware</description>
     <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
     <message>Authentication is required to downgrade the firmware on this machine</message>
     <defaults>
@@ -46,6 +57,18 @@
       <allow_active>auth_admin_keep</allow_active>
     </defaults>
     <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.update-internal</annotate>
+  </action>
+
+  <action id="org.freedesktop.fwupd.downgrade-internal">
+    <description>Install old version of unsigned system firmware</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to downgrade the firmware on this machine</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.downgrade-internal-trusted</annotate>
   </action>
 
   <action id="org.freedesktop.fwupd.update-hotplug-trusted">
@@ -71,6 +94,17 @@
     <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.update-hotplug-trusted</annotate>
   </action>
 
+  <action id="org.freedesktop.fwupd.downgrade-hotplug-trusted">
+    <description>Install signed device firmware</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to downgrade the firmware on a removable device</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+
   <action id="org.freedesktop.fwupd.downgrade-hotplug">
     <description>Install unsigned device firmware</description>
     <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
@@ -80,7 +114,7 @@
       <allow_inactive>no</allow_inactive>
       <allow_active>auth_admin_keep</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.update-hotplug</annotate>
+    <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.downgrade-hotplug-trusted</annotate>
   </action>
 
   <action id="org.freedesktop.fwupd.device-unlock">
@@ -104,6 +138,18 @@
       <allow_active>auth_admin_keep</allow_active>
     </defaults>
     <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.modify-remote</annotate>
+  </action>
+
+  <action id="org.freedesktop.fwupd.reset-config">
+    <description>Reset daemon configuration</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to reset daemon configuration to defaults</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.modify-config</annotate>
   </action>
 
   <action id="org.freedesktop.fwupd.device-activate">
@@ -159,6 +205,86 @@
       <allow_inactive>no</allow_inactive>
       <allow_active>auth_admin_keep</allow_active>
     </defaults>
+  </action>
+
+  <action id="org.freedesktop.fwupd.get-bios-settings">
+    <description>Get BIOS settings</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to read BIOS settings</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.freedesktop.fwupd.set-bios-settings">
+    <description>Set one or more BIOS settings</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to modify BIOS settings</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.get-bios-settings</annotate>
+  </action>
+
+  <action id="org.freedesktop.fwupd.fix-host-security-attr">
+    <description>Security hardening for HSI</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to fix a host security issue</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
+    <action id="org.freedesktop.fwupd.undo-host-security-attr">
+    <description>Security hardening for HSI</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to undo the fix for a host security issue</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.freedesktop.fwupd.emulation-load">
+    <description>Load device emulation data</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to load hardware emulation data</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.freedesktop.fwupd.emulation-save">
+    <description>Save device emulation data</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to save hardware emulation data</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.emulation-load</annotate>
+  </action>
+
+  <action id="org.freedesktop.fwupd.emulation-tag">
+    <description>Enable emulation data collection</description>
+    <!-- TRANSLATORS: this is the PolicyKit modal dialog -->
+    <message>Authentication is required to enable emulation data collection</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.freedesktop.fwupd.emulation-load</annotate>
   </action>
 
 </policyconfig>

@@ -1,0 +1,157 @@
+{
+  "UsbDevices": [
+    {
+      "GType": "FuUsbDevice",
+      "PlatformId": "1-5",
+      "Created": "2024-11-07T14:42:49.114706Z",
+      "IdVendor": 11225,
+      "IdProduct": 41009,
+      "Device": 261,
+      "USB": 528,
+      "Manufacturer": 1,
+      "DeviceClass": 239,
+      "DeviceSubClass": 2,
+      "DeviceProtocol": 1,
+      "Product": 2,
+      "SerialNumber": 3,
+      "UsbBosDescriptors": [
+        {
+          "DevCapabilityType": 22,
+          "ExtraData": "AAI="
+        },
+        {
+          "DevCapabilityType": 2,
+          "ExtraData": "DgEAAA=="
+        },
+        {
+          "DevCapabilityType": 3,
+          "ExtraData": "AA8AAQr/AQ=="
+        }
+      ],
+      "UsbConfigDescriptors": [
+        {
+          "Configuration": 4,
+          "ConfigurationValue": 1
+        }
+      ],
+      "UsbInterfaces": [
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceClass": 14,
+          "InterfaceSubClass": 1,
+          "Interface": 7
+        },
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceNumber": 1,
+          "InterfaceClass": 14,
+          "InterfaceSubClass": 2,
+          "Interface": 8
+        },
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceNumber": 1,
+          "AlternateSetting": 1,
+          "InterfaceClass": 14,
+          "InterfaceSubClass": 2,
+          "Interface": 8,
+          "UsbEndpoints": [
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 129,
+              "Interval": 1,
+              "MaxPacketSize": 5120
+            }
+          ]
+        },
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceNumber": 2,
+          "InterfaceClass": 255,
+          "UsbEndpoints": [
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 130,
+              "MaxPacketSize": 512
+            },
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 1,
+              "MaxPacketSize": 512
+            }
+          ]
+        }
+      ],
+      "UsbEvents": [
+        {
+          "Id": "#4693935e",
+          "Data": "001"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=189\nMINOR=16\nDEVNAME=bus/usb/001/017\nDEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=2bd9/a031/105\nTYPE=239/2/1\nBUSNUM=001\nDEVNUM=017"
+        },
+        {
+          "Id": "#1ab3ae0a",
+          "Data": "017"
+        },
+        {
+          "Id": "#4693935e",
+          "Data": "001"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=189\nMINOR=16\nDEVNAME=bus/usb/001/017\nDEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=2bd9/a031/105\nTYPE=239/2/1\nBUSNUM=001\nDEVNUM=017"
+        },
+        {
+          "Id": "#1ab3ae0a",
+          "Data": "017"
+        },
+        {
+          "Id": "#ded9760f",
+          "Data": "SHVkZGx5AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#1fcf122d",
+          "Data": "SHVkZGx5IFMxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#028c3a0e",
+          "Data": "NTI0MjlGMDYzMS01MjQyMUMwMTMxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#5292e31c",
+          "Data": ""
+        },
+        {
+          "Id": "#5292e31c",
+          "Data": ""
+        },
+        {
+          "Id": "#9a533eb0",
+          "Data": "AA=="
+        },
+        {
+          "Id": "#122b2970",
+          "Data": "SExpbmsgdjA="
+        },
+        {
+          "Id": "#2e4395f0",
+          "Data": "AAAAAAAAAAAAABIAGgAAAGhsaW5rLW1iLXN1YnNjcmliZXByb2RpbmZvL2dldF9tc2dwYWNrX3JlcGx5"
+        },
+        {
+          "Id": "#05c6452e",
+          "Data": "AAAAAAAAAAAAABQAAAAAAHByb2RpbmZvL2dldF9tc2dwYWNr"
+        },
+        {
+          "Id": "#67e7444f",
+          "Data": "AAAAAAAAAAAAABoAKgEAAHByb2RpbmZvL2dldF9tc2dwYWNrX3JlcGx5i6thcHBfdmVyc2lvbrgxLjguNC0wLjc5K3NoYS5mOWY0OTk5OGWoYm9hcmRfaWShMKxib2FyZF9zZXJpYWyrSDM2MjQyOTAwMzGrY2FtZXJhLWFkZHKuMTY5LjI1NC4xMjguNTerY2FtZXJhLW1vZGWlbWpwZWeuY2FtZXJhLXZlcnNpb264MS44LjQtMC43OStzaGEuZjlmNDk5OThlpmh3X3JldqExpnNlcmlhbKo1MjQyOUYwNjMxpHNsb3ShQqxzc2JsLXZlcnNpb27ZS1UtQm9vdCAyMDIwLjA0LXNtYXJ0YmFzZS0wMTEwMC1nN2QyNDNhMGNhZDZiIChNYXkgMjcgMjAyNCAtIDA2OjUyOjIyICswMDAwKaVzdGF0ZahWZXJpZmllZA=="
+        }
+      ]
+    }
+  ]
+}

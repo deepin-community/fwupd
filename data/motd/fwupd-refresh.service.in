@@ -1,17 +1,23 @@
 [Unit]
 Description=Refresh fwupd metadata and update motd
 Documentation=man:fwupdmgr(1)
-After=network.target
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=oneshot
 CacheDirectory=fwupdmgr
 StandardError=null
-DynamicUser=yes
+@user@
 RestrictAddressFamilies=AF_NETLINK AF_UNIX AF_INET AF_INET6
 SystemCallFilter=~@mount
 ProtectKernelModules=yes
 ProtectControlGroups=yes
 RestrictRealtime=yes
-SuccessExitStatus=2
+ProtectSystem=full
+ProtectHome=true
+ProtectHostname=true
+ProtectKernelTunables=true
+ProtectKernelLogs=true
+SuccessExitStatus=2 101
 ExecStart=@bindir@/fwupdmgr refresh

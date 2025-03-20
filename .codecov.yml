@@ -1,0 +1,17 @@
+comment: off
+
+coverage:
+  range: 40..60
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+ignore:
+  - "**/*.h"

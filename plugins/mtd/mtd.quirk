@@ -1,0 +1,18 @@
+[MTD\VENDOR_PINE64&PRODUCT_PinePhone-Pro&NAME_spi1.0]
+Name = Tow-Boot platform firmware
+FirmwareGType = FuUswidFirmware
+
+# Intel GPUs
+[MTD\NAME_i915.spi.1024.DAM]
+Flags = no-probe
+[MTD\NAME_i915.spi.1024.DESCRIPTOR]
+Flags = no-probe
+[MTD\NAME_i915.spi.1024.GSC]
+Flags = no-probe
+[MTD\NAME_i915.spi.1024.OptionROM]
+Flags = no-probe
+
+# Intel SPI Controller
+[MTD\NAME_BIOS]
+Name = Internal SPI Controller
+#FirmwareGType = FuIfdFirmware

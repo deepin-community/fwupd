@@ -1,8 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #
-# Copyright (C) 2020 Dell Inc.
+# Copyright 2020 Dell Inc.
 #
-# SPDX-License-Identifier: LGPL-2.1+
+# SPDX-License-Identifier: LGPL-2.1-or-later
 #
 import os
 import argparse
@@ -21,5 +21,5 @@ if __name__ == "__main__":
         if release.attrib["version"] != args.version:
             continue
         description = release.find("description")
-        str = etree.tostring(description, encoding="unicode", method="text")
-        print(str.strip())
+        result = etree.tostring(description, encoding="unicode", method="text")
+        print(result.strip())

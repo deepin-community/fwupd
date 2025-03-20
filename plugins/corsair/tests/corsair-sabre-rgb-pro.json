@@ -1,0 +1,18 @@
+{
+  "name": "Corsair SABRE RGB PRO Gaming Mouse",
+  "interactive": false,
+  "steps": [
+    {
+      "url": "https://fwupd.org/downloads/a7540311d6b8da599cc24cd6225c34d4c27a4afb9bbbe73397fa23ccf71723f8-corsair-vise-1.15.30.cab",
+      "components": [
+        {
+          "version": "1.15.30",
+          "protocol": "com.corsair.bp",
+          "guids": [
+            "7eb05392-a5e0-529a-991b-1910a4bce8cf"
+          ]
+        }
+      ]
+    }
+  ]
+}
