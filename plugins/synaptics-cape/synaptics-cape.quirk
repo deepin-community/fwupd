@@ -1,0 +1,110 @@
+# Framework Audio Card
+[USB\VID_32AC&PID_0010]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+
+# EPOS Raw Plus
+[USB\VID_1395&PID_0280]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0281]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+# RAW Teams
+[USB\VID_1395&PID_0294]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0295]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0296]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0297]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+# This is the outdated PID for 0x0298
+[USB\VID_1395&PID_0286]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = add-counterpart-guids
+CounterpartGuid = USB\VID_1395&PID_0298
+
+[USB\VID_1395&PID_0298]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0299]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0400]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+# EPOS Morgan-T
+[USB\VID_1395&PID_0200]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0288]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0289]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_028A]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_028B]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_028C]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_028D]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_028E]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_028F]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+# EPOS Morgan-V
+[USB\VID_1395&PID_0290]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0291]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0292]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+[USB\VID_1395&PID_0293]
+Guid[quirk] = SYNAPTICS_CAPE\CX31993
+Flags = use-in-report-interrupt
+
+# USB audio codec USB receiver
+[SYNAPTICS_CAPE\CX31993]
+Plugin = synaptics_cape
+Icon = usb-receiver
+
+# USB audio codec Hifi
+[SYNAPTICS_CAPE\CX31988]
+Plugin = synaptics_cape

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fwupd\n"
 "Report-Msgid-Bugs-To: \n"
-"Language-Team: Serbian (http://www.transifex.com/freedesktop/fwupd/language/sr/)\n"
+"Language-Team: Serbian (http://app.transifex.com/freedesktop/fwupd/language/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -70,11 +70,8 @@ msgstr "Потребна је пријава за ажурирање фирмв�
 msgid "Authentication is required to update the stored checksums for the device"
 msgstr "Потребна је пријава за ажурирање причуваних сума провере за уређај"
 
-#. TRANSLATORS: command description
-msgid "Build firmware using a sandbox"
-msgstr "Изгради фирмвер унутар кутије"
-
 #. TRANSLATORS: this is when a device ctrl+c's a watch
+#. TRANSLATORS: this is from ctrl+c
 msgid "Cancelled"
 msgstr "Отказао"
 
@@ -82,21 +79,10 @@ msgstr "Отказао"
 msgid "Changed"
 msgstr "Променио"
 
+#. TRANSLATORS: hash to that exact firmware archive
 #. TRANSLATORS: remote checksum
 msgid "Checksum"
 msgstr "Чек-сума"
-
-#. TRANSLATORS: get interactive prompt
-msgid "Choose a device:"
-msgstr "Изаберите уређај:"
-
-#. TRANSLATORS: get interactive prompt
-msgid "Choose a release:"
-msgstr "Изаберите издање:"
-
-#. TRANSLATORS: command description
-msgid "Clears any updates scheduled to be updated offline"
-msgstr "Очисти сва ажурирања заказана за ажурирање ван мреже"
 
 #. TRANSLATORS: command description
 msgid "Clears the results from the last update"
@@ -106,10 +92,6 @@ msgstr "Чисти резултате последњег ажурирања"
 msgid "Command not found"
 msgstr "Наредба није пронађена"
 
-#. TRANSLATORS: DFU stands for device firmware update
-msgid "DFU Utility"
-msgstr "ДФУ алатка"
-
 #. TRANSLATORS: for the --verbose arg
 msgid "Debugging Options"
 msgstr "Опције отклањања проблема"
@@ -118,6 +100,7 @@ msgstr "Опције отклањања проблема"
 msgid "Decompressing…"
 msgstr "Распакујем…"
 
+#. TRANSLATORS: description of BIOS setting
 #. TRANSLATORS: multiline description of device
 msgid "Description"
 msgstr "Опис"
@@ -147,28 +130,16 @@ msgid "Do not check for old metadata"
 msgstr "Не проверавај старе метаподатке"
 
 #. TRANSLATORS: command line option
-msgid "Do not check for reboot after update"
-msgstr "Не проверавај да ли је потребно поновно покретање након ажурирања"
-
-#. TRANSLATORS: command line option
 msgid "Do not check for unreported history"
 msgstr "Не проверавај непослати историјат"
 
 #. TRANSLATORS: success
-#. success
 msgid "Done!"
 msgstr "Урађено!"
 
 #. TRANSLATORS: command description
 msgid "Downgrades the firmware on a device"
 msgstr "Уназађује фирмвер на уређају"
-
-#. TRANSLATORS: the first replacement is a display name
-#. * e.g. "ColorHugALS" and the second and third are
-#. * version numbers e.g. "1.2.3"
-#, c-format
-msgid "Downgrading %s from %s to %s... "
-msgstr "Уназађујем %s са %s на %s..."
 
 #. TRANSLATORS: downloading from a remote server
 msgid "Downloading…"
@@ -178,9 +149,8 @@ msgstr "Преузимам…"
 msgid "Dump SMBIOS data from a file"
 msgstr "Ишчитај SMBIOS податке из датотеке"
 
-#. TRANSLATORS: Suffix: the HSI result
-#. TRANSLATORS: Plugin is active and in use
 #. TRANSLATORS: if the remote is enabled
+#. TRANSLATORS: Suffix: the HSI result
 msgid "Enabled"
 msgstr "Омогућено"
 
@@ -199,10 +169,6 @@ msgstr "Изађи након малог застоја"
 #. TRANSLATORS: exit straight away, used for automatic profiling
 msgid "Exit after the engine has loaded"
 msgstr "Изађи након учитавања мотора"
-
-#. TRANSLATORS: quirks are device-specific workarounds
-msgid "Failed to load quirks"
-msgstr "Нисам могао да учитам ћефове"
 
 #. TRANSLATORS: the user didn't read the man page
 msgid "Failed to parse arguments"
@@ -245,7 +211,7 @@ msgid "Found"
 msgstr "Нашао"
 
 #. TRANSLATORS: command argument: uppercase, spaces->dashes
-msgctxt "A single GUID"
+msgctxt "command-argument"
 msgid "GUID"
 msgstr "ГУИД"
 
@@ -277,13 +243,6 @@ msgstr "Добавља резултате последњег ажурирања"
 msgid "Idle…"
 msgstr "Мирујем…"
 
-#. TRANSLATORS: command description
-msgid "Install a firmware file on this hardware"
-msgstr "Инсталирај датотеку са фирмвером на овај уређај"
-
-msgid "Install old version of system firmware"
-msgstr "Инсталирајте старо издање системског фирмвера"
-
 msgid "Install signed device firmware"
 msgstr "Инсталирајте потписани фирмвер за уређаје"
 
@@ -299,9 +258,6 @@ msgstr "Инсталирајте непотписани системски фи�
 #. TRANSLATORS: this is shown when updating the firmware after the reboot
 msgid "Installing firmware update…"
 msgstr "Инсталирам ажурирање фирмвера…"
-
-msgid "Keyring"
-msgstr "Привезак"
 
 #. TRANSLATORS: parsing the firmware information
 msgid "Loading…"
@@ -344,14 +300,6 @@ msgstr "Важност"
 msgid "Proceed with upload?"
 msgstr "Наставити са отпремањем?"
 
-#. TRANSLATORS: command description
-msgid "Read firmware from device into a file"
-msgstr "Исчитај фирмвер са уређаја у датотеку"
-
-#. TRANSLATORS: command description
-msgid "Read firmware from one partition into a file"
-msgstr "Исчитај фирмвер са једне партиције у датотеку"
-
 #. TRANSLATORS: reading from the flash chips
 msgid "Reading…"
 msgstr "Читам…"
@@ -360,27 +308,16 @@ msgstr "Читам…"
 msgid "Refresh metadata from remote server"
 msgstr "Освежава метаподатке са удаљеног сервера"
 
-#. TRANSLATORS: the first replacement is a display name
-#. * e.g. "ColorHugALS" and the second is a version number
-#. * e.g. "1.2.3"
-#, c-format
-msgid "Reinstalling %s with %s... "
-msgstr "Поново инсталирам %s са %s..."
-
 #. TRANSLATORS: the server the file is coming from
 #. TRANSLATORS: remote identifier, e.g. lvfs-testing
 msgid "Remote ID"
 msgstr "Удаљени ИБ"
 
-#. TRANSLATORS: command description
-msgid "Replace data in an existing firmware file"
-msgstr "Замењује податке у постојећој датотеци фирмвера"
-
 #. TRANSLATORS: URI to send success/failure reports
 msgid "Report URI"
 msgstr "URI извештаја"
 
-#. TRANSLATORS: metadata is downloaded from the Internet
+#. TRANSLATORS: metadata is downloaded
 msgid "Requires internet connection"
 msgstr "Захтева везу са интернетом"
 
@@ -395,10 +332,6 @@ msgstr "Поново покрећем уређај…"
 #. TRANSLATORS: command description
 msgid "Return all the hardware IDs for the machine"
 msgstr "Враћа све ИБ-јеве хардвера на машини"
-
-#. TRANSLATORS: command line option
-msgid "Schedule installation for next reboot when possible"
-msgstr "Заказује инсталирање за следеће подизање система када је могуће"
 
 #. TRANSLATORS: scheduling an update to be done on the next boot
 msgid "Scheduling…"
@@ -424,14 +357,11 @@ msgstr "Прикажи додатне податке за отклањање п�
 msgid "Show history of firmware updates"
 msgstr "Прикажи историјат ажурирања фирмвера"
 
-#. TRANSLATORS: this is for plugin development
-msgid "Show plugin verbose information"
-msgstr "Прикажи опширне податке о прикључку"
-
 #. TRANSLATORS: one line summary of device
 msgid "Summary"
 msgstr "Сажетак"
 
+#. show the user the entire data blob
 msgid "Target"
 msgstr "Мета"
 
@@ -442,6 +372,7 @@ msgstr "Врста"
 #. TRANSLATORS: current daemon status is unknown
 #. TRANSLATORS: we don't know the license of the update
 #. TRANSLATORS: unknown release urgency
+#. TRANSLATORS: Suffix: the fallback HSI result
 msgid "Unknown"
 msgstr "Непознато"
 
@@ -456,27 +387,12 @@ msgstr "Откључава уређај за приступ фирмверу"
 msgid "Update failure is a known issue, visit this URL for more information:"
 msgstr "Узрок неуспеха ажурирања је познат, погледајте ову адресу за више података:"
 
-#. TRANSLATORS: ask the user if we can update the metadata
+#. TRANSLATORS: ask if we can update metadata
 msgid "Update now?"
 msgstr "Ажурирати сада?"
 
 msgid "Update the stored device verification information"
 msgstr "Ажурирајте причуване податке потврђивања уређаја"
-
-#. TRANSLATORS: command description
-msgid "Updates all firmware to latest versions available"
-msgstr "Ажурира сав фирмвер на последња доступна издања"
-
-#. TRANSLATORS: the first replacement is a display name
-#. * e.g. "ColorHugALS" and the second and third are
-#. * version numbers e.g. "1.2.3"
-#, c-format
-msgid "Updating %s from %s to %s... "
-msgstr "Ажурирам %s са %s на %s..."
-
-#. TRANSLATORS: ask the user to upload
-msgid "Upload report now?"
-msgstr "Отпремити извештај сада?"
 
 #. TRANSLATORS: remote filename base
 msgid "Username"
@@ -493,14 +409,6 @@ msgstr "Издање"
 #. TRANSLATORS: waiting for device to do something
 msgid "Waiting…"
 msgstr "Чекам…"
-
-#. TRANSLATORS: command description
-msgid "Write firmware from file into device"
-msgstr "Упиши фирмвер из датотеке у уређај"
-
-#. TRANSLATORS: command description
-msgid "Write firmware from file into one partition"
-msgstr "Упиши фирмвер из датотеке у једну партицију"
 
 #. TRANSLATORS: writing to the flash chips
 msgid "Writing…"

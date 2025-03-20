@@ -3,8 +3,8 @@
 # no history database exists
 [ -f @localstatedir@/lib/fwupd/pending.db ] || exit 0
 
-# activate firmware when we have a read-only filesysten
-if !@bindir@/fwupdtool activate; then
+# activate firmware when we have a read-only filesystem
+if ! @bindir@/fwupdtool activate; then
         ret=$?
         [ "$ret" -eq "2" ] && exit 0
         exit $ret

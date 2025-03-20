@@ -1,0 +1,10 @@
+<firmware gtype="FuFmapFirmware">
+  <firmware>
+    <id>FMAP</id>
+    <data>aGVsbG8gd29ybGQ=</data>
+  </firmware>
+  <firmware>
+    <id>TEST</id>
+    <data>V29ybGQh</data>
+  </firmware>
+</firmware>

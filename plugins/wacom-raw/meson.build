@@ -1,33 +1,24 @@
-if get_option('gudev')
+if enable_udev
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 cargs = ['-DG_LOG_DOMAIN="FuPluginWacomRaw"']
 
-install_data(['wacom-raw.quirk'],
-  install_dir: join_paths(datadir, 'fwupd', 'quirks.d')
-)
-
-shared_module('fu_plugin_wacom_raw',
-  fu_hash,
-  sources : [
-    'fu-plugin-wacom-raw.c',
+plugin_quirks += files('wacom-raw.quirk')
+plugin_builtins += static_library('fu_plugin_wacom_raw',
+  rustgen.process('fu-wacom-raw.rs'),
+  sources: [
+    'fu-wacom-raw-plugin.c',
     'fu-wacom-common.c',
     'fu-wacom-device.c',
     'fu-wacom-aes-device.c',
     'fu-wacom-emr-device.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
+  include_directories: plugin_incdirs,
+  c_args: cargs,
+  dependencies: plugin_deps,
+  link_with: plugin_libs,
+)
+
+device_tests += files(
+  'tests/wacom-g14t.json',
 )
 endif

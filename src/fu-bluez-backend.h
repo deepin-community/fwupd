@@ -1,14 +1,15 @@
 /*
- * Copyright (C) 2021
+ * Copyright 2021
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
 #include "fu-backend.h"
 
-#define FU_TYPE_BLUEZ_BACKEND (fu_bluez_backend_get_type ())
-G_DECLARE_FINAL_TYPE (FuBluezBackend, fu_bluez_backend, FU, BLUEZ_BACKEND, FuBackend)
+#define FU_TYPE_BLUEZ_BACKEND (fu_bluez_backend_get_type())
+G_DECLARE_FINAL_TYPE(FuBluezBackend, fu_bluez_backend, FU, BLUEZ_BACKEND, FuBackend)
 
-FuBackend	*fu_bluez_backend_new			(void);
+FuBackend *
+fu_bluez_backend_new(FuContext *ctx) G_GNUC_NON_NULL(1);

@@ -1,0 +1,12 @@
+/*
+ * Copyright {{Year}} {{Author}} <{{Email}}>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#pragma once
+
+#include <glib-object.h>
+
+const gchar *
+fu_{{vendor_example}}_strerror(guint8 code);

@@ -1,0 +1,90 @@
+default_stages: [commit]
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: no-commit-to-branch
+        args: [--branch, main, --pattern, 1_.*_X]
+    -   id: check-added-large-files
+    -   id: check-byte-order-marker
+    -   id: check-executables-have-shebangs
+    -   id: forbid-new-submodules
+    -   id: check-yaml
+        exclude: '.clang-format'
+    -   id: check-json
+    -   id: pretty-format-json
+        args: ['--no-sort-keys', '--autofix']
+    -   id: check-symlinks
+    -   id: check-xml
+    -   id: end-of-file-fixer
+        types_or: [c, shell, python, proto]
+    -   id: trailing-whitespace
+        types_or: [c, shell, python, xml]
+    -   id: check-docstring-first
+    -   id: check-merge-conflict
+    -   id: mixed-line-ending
+        args: [--fix=lf]
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.2.2
+    hooks:
+    -   id: codespell
+        args: ['--config', './contrib/codespell.cfg', --write-changes]
+-   repo: https://github.com/ambv/black
+    rev: 23.12.1
+    hooks:
+    - id: black
+-   repo: local
+    hooks:
+    - id: check-null-false-returns
+      name: check for null / false return mismatch
+      language: script
+      entry: ./contrib/ci/check-null-false-returns.py
+    - id: check-potfiles
+      name: check for missing translated files from potfiles
+      language: script
+      entry: ./contrib/ci/check-potfiles.py
+    - id: check-finalizers
+      name: check for missing GObject parent finalize
+      language: script
+      entry: ./contrib/ci/check-finalizers.py
+    - id: check-headers
+      name: check for superfluous includes
+      language: script
+      entry: ./contrib/ci/check-headers.py
+    - id: check-source
+      name: check source code for common issues
+      language: script
+      entry: ./contrib/ci/check-source.py
+    - id: check-quirks
+      name: check quirk style
+      language: script
+      entry: ./contrib/ci/check-quirks.py
+    - id: shellcheck
+      name: check shellscript style
+      language: system
+      entry: shellcheck --severity=warning -e SC2068
+      types: [shell]
+    - id: run-tests
+      name: run tests before pushing
+      language: system
+      entry: "test-fwupd"
+      stages: [push]
+    - id: clang-format
+      name: clang-format
+      language: script
+      entry: ./contrib/reformat-code.py
+      types: [c]
+    - id: check-license
+      name: Check license header
+      types_or: [shell, c, python]
+      language: script
+      entry: ./contrib/ci/check-license.py
+-   repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+    - id: markdownlint
+      args: ['--fix', '--ignore', '.github']
+-   repo: https://github.com/gitleaks/gitleaks
+    rev: v8.16.3
+    hooks:
+    -   id: gitleaks
