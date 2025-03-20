@@ -1,10 +1,9 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 #
-# Copyright (C) 2017 Peter Jones <pjones@redhat.com>
-# Copyright (C) 2020 Richard Hughes <richard@hughsie.com>
+# Copyright 2017 Peter Jones <pjones@redhat.com>
+# Copyright 2020 Richard Hughes <richard@hughsie.com>
 #
-# SPDX-License-Identifier: LGPL-2.1+
+# SPDX-License-Identifier: LGPL-2.1-or-later
 #
 # pylint: disable=wrong-import-position,too-many-locals,unused-argument,too-many-statements
 # pylint: disable=invalid-name,too-many-instance-attributes,missing-module-docstring
@@ -16,6 +15,8 @@ import argparse
 import tarfile
 import math
 import io
+import struct
+
 from typing import Dict, Optional, Any
 
 import cairo
@@ -24,11 +25,10 @@ import gi
 gi.require_version("Pango", "1.0")
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Pango, PangoCairo
-from PIL import Image
 
 
 def languages(podir: str):
-    for x in open(os.path.join(podir, "LINGUAS"), "r").readlines():
+    for x in open(os.path.join(podir, "LINGUAS")).readlines():
         yield x.strip()
     yield "en"
 
@@ -40,7 +40,7 @@ class PotFile:
             self.parse(fn)
 
     def parse(self, fn: str) -> None:
-        with open(fn, "r") as f:
+        with open(fn) as f:
             lang_en: Optional[str] = None
             for line in f.read().split("\n"):
                 if not line:
@@ -49,7 +49,7 @@ class PotFile:
                     continue
                 try:
                     key, value = line.split(" ", maxsplit=1)
-                except ValueError as _:
+                except ValueError:
                     continue
                 if key == "msgid":
                     lang_en = value[1:-1]
@@ -60,20 +60,44 @@ class PotFile:
                     continue
 
 
+def _cairo_surface_write_to_bmp(img: cairo.ImageSurface) -> bytes:
+    data = bytes(img.get_data())
+    return (
+        b"BM"
+        + struct.pack(
+            "<ihhiiiihhiiiiii",
+            54 + len(data),  # size of BMP file
+            0,  # unused
+            0,  # unused
+            54,  # pixel array offset
+            40,  # DIB header
+            img.get_width(),  # width
+            img.get_height(),  # height
+            1,  # planes
+            32,  # BPP
+            0,  # no compression
+            len(data),  # size of the raw bitmap data
+            2835,  # 72DPI H
+            2835,  # 72DPI V
+            0,  # palette
+            0,  # all colors are important
+        )
+        + data
+    )
+
+
 def main(args) -> int:
-
     # open output archive
-    with tarfile.open(args.out, "w:xz") as tar:
-
+    with tarfile.open(args.out, "w:xz", preset=8) as tar:
         for lang in languages(args.podir):
             # these are the 1.6:1 of some common(ish) screen widths
             if lang == "en":
                 label_translated: str = args.label
             else:
-                potfile = PotFile(os.path.join(args.podir, "{}.po".format(lang)))
+                potfile = PotFile(os.path.join(args.podir, f"{lang}.po"))
                 try:
                     label_translated = potfile.msgs[args.label]
-                except KeyError as _:
+                except KeyError:
                     continue
                 if label_translated == args.label:
                     continue
@@ -95,9 +119,8 @@ def main(args) -> int:
                 (5688, 3200),
                 (7680, 4320),
             ):
-
                 # generate PangoLanguage
-                font_desc = "Sans %.2fpx" % (height / 32,)
+                font_desc = f"Sans {height / 32:.2f}px"
                 fd = Pango.FontDescription(font_desc)
                 font_option = cairo.FontOptions()
                 font_option.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
@@ -116,12 +139,14 @@ def main(args) -> int:
                 attrs = Pango.AttrList()
                 length = len(bytes(label_translated, "utf8"))
                 items = Pango.itemize(pctx, label_translated, 0, length, attrs, None)
+                if not items:
+                    continue
                 gs = Pango.GlyphString()
                 Pango.shape(label_translated, length, items[0].analysis, gs)
                 del img, cctx, pctx, layout
 
                 def find_size(fs, f, data):
-                    """ find our size, I hope... """
+                    """find our size, I hope..."""
                     (ink, log) = gs.extents(f)
                     if ink.height == 0 or ink.width == 0:
                         return False
@@ -151,33 +176,32 @@ def main(args) -> int:
                 PangoCairo.context_set_font_options(pctx, font_option)
 
                 cctx.set_source_rgb(1, 1, 1)
-                cctx.move_to(x, y)
+                cctx.move_to(x, y - surface_height / 2)
 
                 def do_write(fs, f, data):
-                    """ write out glyphs """
+                    """write out glyphs"""
                     ink = gs.extents(f)[0]
                     if ink.height == 0 or ink.width == 0:
                         return False
                     PangoCairo.show_glyph_string(cctx, f, gs)
                     return True
 
+                # flip the image to write the bitmap upside-down
+                mat = cairo.Matrix()
+                mat.scale(1, -1)
+                cctx.transform(mat)
+
                 fs.foreach(do_write, None)
                 img.flush()
 
-                # write PNG
-                with io.BytesIO() as io_png:
-                    img.write_to_png(io_png)
-                    io_png.seek(0)
-
-                    # convert to BMP and add to archive
-                    with io.BytesIO() as io_bmp:
-                        pimg = Image.open(io_png)
-                        pimg.save(io_bmp, format="BMP")
-                        filename = "fwupd-{}-{}-{}.bmp".format(lang, width, height)
-                        tarinfo = tarfile.TarInfo(filename)
-                        tarinfo.size = io_bmp.tell()
-                        io_bmp.seek(0)
-                        tar.addfile(tarinfo, fileobj=io_bmp)
+                # convert to BMP and add to archive
+                with io.BytesIO() as io_bmp:
+                    io_bmp.write(_cairo_surface_write_to_bmp(img))
+                    filename = f"fwupd-{lang}-{width}-{height}.bmp"
+                    tarinfo = tarfile.TarInfo(filename)
+                    tarinfo.size = io_bmp.tell()
+                    io_bmp.seek(0)
+                    tar.addfile(tarinfo, fileobj=io_bmp)
 
     # success
     return 0

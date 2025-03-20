@@ -1,18 +1,16 @@
 /*
- * Copyright (C) 2019 Richard Hughes <richard@hughsie.com>
+ * Copyright 2019 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
-#include "fu-hid-device.h"
-#include "fu-plugin.h"
+#include <fwupdplugin.h>
 
-#define FU_TYPE_SYNAPTICS_CXAUDIO_DEVICE (fu_synaptics_cxaudio_device_get_type ())
-G_DECLARE_FINAL_TYPE (FuSynapticsCxaudioDevice, fu_synaptics_cxaudio_device, FU, SYNAPTICS_CXAUDIO_DEVICE, FuHidDevice)
-
-struct _FuSynapticsCxaudioDeviceClass
-{
-	FuHidDeviceClass	parent_class;
-};
+#define FU_TYPE_SYNAPTICS_CXAUDIO_DEVICE (fu_synaptics_cxaudio_device_get_type())
+G_DECLARE_FINAL_TYPE(FuSynapticsCxaudioDevice,
+		     fu_synaptics_cxaudio_device,
+		     FU,
+		     SYNAPTICS_CXAUDIO_DEVICE,
+		     FuHidDevice)

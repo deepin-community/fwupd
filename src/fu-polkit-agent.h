@@ -1,13 +1,19 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/*
+ * Copyright 2011 Lennart Poettering <lennart@poettering.net>
+ * Copyright 2012 Matthias Klumpp <matthias@tenstral.net>
+ * Copyright 2015 Richard Hughes <richard@hughsie.com>
  *
- * Copyright (C) 2011 Lennart Poettering <lennart@poettering.net>
- * Copyright (C) 2012 Matthias Klumpp <matthias@tenstral.net>
- * Copyright (C) 2015 Richard Hughes <richard@hughsie.com>
- *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
-gboolean	 fu_polkit_agent_open		(GError		**error);
-void		 fu_polkit_agent_close		(void);
+#include <glib-object.h>
+
+#define FU_TYPE_POLKIT_AGENT (fu_polkit_agent_get_type())
+G_DECLARE_FINAL_TYPE(FuPolkitAgent, fu_polkit_agent, FU, POLKIT_AGENT, GObject)
+
+FuPolkitAgent *
+fu_polkit_agent_new(void);
+gboolean
+fu_polkit_agent_open(FuPolkitAgent *self, GError **error);

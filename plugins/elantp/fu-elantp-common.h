@@ -1,50 +1,71 @@
 /*
- * Copyright (C) 2020 Richard Hughes <richard@hughsie.com>
+ * Copyright 2020 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
 #include <glib.h>
 
-#define ETP_CMD_GET_HID_DESCRIPTOR	0x0001
-#define ETP_CMD_GET_HARDWARE_ID		0x0100
-#define ETP_CMD_GET_MODULE_ID		0x0101
-#define ETP_CMD_I2C_FW_CHECKSUM		0x030F
-#define ETP_CMD_I2C_FW_VERSION		0x0102
-#define ETP_CMD_I2C_IAP			0x0311
-#define ETP_CMD_I2C_IAP_CHECKSUM	0x0315
-#define ETP_CMD_I2C_IAP_CTRL		0x0310
-#define ETP_CMD_I2C_IAP_ICBODY		0x0110
-#define ETP_CMD_I2C_IAP_RESET		0x0314
-#define ETP_CMD_I2C_IAP_VERSION		0x0111
-#define ETP_CMD_I2C_IAP_VERSION_2	0x0110
-#define ETP_CMD_I2C_OSM_VERSION		0x0103
-#define ETP_CMD_I2C_GET_HID_ID		0x0100
-#define ETP_CMD_I2C_IAP_TYPE		0x0304
+#define ETP_CMD_GET_HID_DESCRIPTOR 0x0001
+#define ETP_CMD_GET_HARDWARE_ID	   0x0100
+#define ETP_CMD_GET_MODULE_ID	   0x0101
+#define ETP_CMD_I2C_FW_CHECKSUM	   0x030F
+#define ETP_CMD_I2C_FW_VERSION	   0x0102
+#define ETP_CMD_I2C_IAP		   0x0311
+#define ETP_CMD_I2C_IAP_CHECKSUM   0x0315
+#define ETP_CMD_I2C_IAP_CTRL	   0x0310
+#define ETP_CMD_I2C_IAP_ICBODY	   0x0110
+#define ETP_CMD_I2C_IAP_RESET	   0x0314
+#define ETP_CMD_I2C_IAP_VERSION	   0x0111
+#define ETP_CMD_I2C_IAP_VERSION_2  0x0110
+#define ETP_CMD_I2C_OSM_VERSION	   0x0103
+#define ETP_CMD_I2C_GET_HID_ID	   0x0100
+#define ETP_CMD_I2C_IAP_TYPE	   0x0304
+#define ETP_CMD_I2C_FW_PW	   0x030E
+#define ETP_CMD_FORCE_ADDR	   0x03AD
 
-#define ETP_I2C_IAP_TYPE_REG		0x0040
+#define ETP_CMD_I2C_FORCE_TYPE_ENABLE	     0x0104
+#define ETP_CMD_I2C_SET_EEPROM_CTRL	     0x0321
+#define ETP_CMD_I2C_GET_EEPROM_FW_VERSION    0x0710
+#define ETP_CMD_I2C_GET_EEPROM_IAP_VERSION   0x0711
+#define ETP_CMD_I2C_SET_EEPROM_ENTER_IAP     0x0607
+#define ETP_CMD_I2C_SET_EEPROM_LEAVE_IAP     0x0606
+#define ETP_CMD_I2C_SET_EEPROM_DATATYPE	     0x0702
+#define ETP_CMD_I2C_CALC_EEPROM_CHECKSUM     0x060F
+#define ETP_CMD_I2C_READ_EEPROM_CHECKSUM     0x070A
+#define ETP_CMD_I2C_HAPTIC_RESTART	     0x0601
+#define ETP_CMD_I2C_EEPROM_SETTING	     0x0322
+#define ETP_CMD_I2C_EEPROM_LONG_TRANS_ENABLE 0x4607
+#define ETP_CMD_I2C_EEPROM_SETTING_INITIAL   0x0000
+#define ETP_CMD_I2C_EEPROM_WRITE_INFORMATION 0x4600
+#define ETP_CMD_I2C_EEPROM_WRITE_CHECKSUM    0x048B
 
-#define ETP_I2C_ENABLE_REPORT		0x0800
+#define ETP_I2C_IC13_IAPV5_PW 0x37CA
 
-#define ETP_I2C_IAP_RESET		0xF0F0
-#define ETP_I2C_MAIN_MODE_ON		(1 << 9)
+#define ETP_FW_FORCE_TYPE_ENABLE_BIT 0x1
+#define ETP_FW_EEPROM_ENABLE_BIT     0x2
 
-#define ETP_I2C_IAP_REG_L		0x01
-#define ETP_I2C_IAP_REG_H		0x06
+#define ETP_I2C_IAP_TYPE_REG 0x0040
 
-#define ETP_FW_IAP_INTF_ERR		(1 << 4)
-#define ETP_FW_IAP_PAGE_ERR		(1 << 5)
-#define ETP_FW_IAP_CHECK_PW		(1 << 7)
-#define ETP_FW_IAP_LAST_FIT		(1 << 9)
+#define ETP_I2C_ENABLE_REPORT 0x0800
 
+#define ETP_I2C_IAP_RESET     0xF0F0
+#define ETP_I2C_MAIN_MODE_ON  (1 << 9)
+#define ETP_I2C_MAIN_MODE_ON2 (1 << 12)
 
-#define ELANTP_DELAY_COMPLETE		1200	/* ms */
-#define ELANTP_DELAY_RESET		30	/* ms */
-#define ELANTP_DELAY_UNLOCK		100	/* ms */
-#define ELANTP_DELAY_WRITE_BLOCK	35	/* ms */
-#define ELANTP_DELAY_WRITE_BLOCK_512	50	/* ms */
+#define ETP_I2C_IAP_REG_L 0x01
+#define ETP_I2C_IAP_REG_H 0x06
 
-guint16		 fu_elantp_calc_checksum	(const guint8	*data,
-						 gsize		 length);
+#define ETP_FW_IAP_INTF_ERR (1 << 4)
+#define ETP_FW_IAP_PAGE_ERR (1 << 5)
+#define ETP_FW_IAP_CHECK_PW (1 << 7)
+#define ETP_FW_IAP_LAST_FIT (1 << 9)
+
+#define ELANTP_DELAY_COMPLETE	     1200 /* ms */
+#define ELANTP_DELAY_RESET	     30	  /* ms */
+#define ELANTP_EEPROM_READ_DELAY     100  /* ms */
+#define ELANTP_DELAY_UNLOCK	     100  /* ms */
+#define ELANTP_DELAY_WRITE_BLOCK     35	  /* ms */
+#define ELANTP_DELAY_WRITE_BLOCK_512 50	  /* ms */

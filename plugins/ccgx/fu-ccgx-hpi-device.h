@@ -1,13 +1,13 @@
 /*
- * Copyright (C) 2020 Cypress Semiconductor Corporation.
- * Copyright (C) 2020 Richard Hughes <richard@hughsie.com>
+ * Copyright 2020 Cypress Semiconductor Corporation.
+ * Copyright 2020 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
-#include "fu-usb-device.h"
+#include <fwupdplugin.h>
 
-#define FU_TYPE_CCGX_HPI_DEVICE (fu_ccgx_hpi_device_get_type ())
-G_DECLARE_FINAL_TYPE (FuCcgxHpiDevice, fu_ccgx_hpi_device, FU, CCGX_HPI_DEVICE, FuUsbDevice)
+#define FU_TYPE_CCGX_HPI_DEVICE (fu_ccgx_hpi_device_get_type())
+G_DECLARE_FINAL_TYPE(FuCcgxHpiDevice, fu_ccgx_hpi_device, FU, CCGX_HPI_DEVICE, FuUsbDevice)

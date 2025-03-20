@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>fwupd</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta property="og:type" content="website"/>
+  <meta property="og:image:width" content="256"/>
+  <meta property="og:image:height" content="256"/>
+  <meta property="og:image:secure_url" content="libfwupd/org.freedesktop.fwupd.svg"/>
+  <meta property="og:image:alt" content="fwupd"/>
+  <meta property="og:title" content="fwupd"/>
+  <meta property="og:description" content="Documentation for fwupd"/>
+  <meta name="twitter:title" content="fwupd docs"/>
+  <meta name="twitter:description" content="Documentation for fwupd"/>
+  <meta name="twitter:card" content="summary"/>
+  <link rel="stylesheet" href="libfwupd/style.css" type="text/css" />
+</head>
+<body>
+  <div id="body-wrapper" tabindex="-1">
+    <img src="libfwupd/org.freedesktop.fwupd.svg" class="logo"/>
+    <div class="section namespace">
+      <h2><a href="index.html">fwupd documentation</a></h2>
+    </div>
+  </div>
+  <section id="main" style="max-width: 100%" class="content">
+    <header>
+      <h1>End user documentation</h1>
+    </header>
+    {% if man %}
+    <header>
+      <h2>Manual pages</h2>
+      <div class="description">
+        <p>Manual pages for interacting with fwupd.</p>
+      </div>
+    </header>{% for obj in man %}
+    <ul>
+      <li><a href="libfwupdplugin/{{ obj }}.html">{{ obj }}</a></li>
+    </ul>{% endfor %}{% endif %}
+    <header>
+      <h2>Host Security ID</h2>
+      <div class="description">
+        <p>The fwupd HSI specification.</p>
+      </div>
+    </header>
+    <ul>
+      <li><a href="libfwupdplugin/hsi.html">Public specification</a></li>
+    </ul>
+    <header>
+      <h1>BIOS Settings</h2>
+      <div class="description">
+        <p>The fwupd BIOS settings interface</p>
+      </div>
+    </header>
+    <ul>
+      <li><a href="libfwupdplugin/bios-settings.html">User documentation</a></li>
+    </ul>
+    <header>
+      <h2>Supermicro BMC license issue</h2>
+      <div class="description">
+        <p>Fixing the missing license issue when updating Supermicro boards</p>
+      </div>
+    </header>
+    <ul>
+      <li><a href="libfwupdplugin/supermicro-license.html">Issue</a></li>
+    </ul>
+    <header>
+      <h1>Developer documentation</h1>
+    </header>
+    <header>
+      <h2>Building fwupd</h2>
+      <div class="description">
+        <p>Building using the fwupd development environment</p>
+      </div>
+    </header>
+    <ul>
+      <li><a href="libfwupdplugin/building.html">Building and debugging</a></li>
+    </ul>
+    <header>
+      <h2>libfwupd</h2>
+      <div class="description">
+        <p>Functionality exported by libfwupd for client applications.</p>
+      </div>
+    </header>
+    <ul>
+      <li><a href="libfwupd/index.html">Developer documentation</a></li>
+    </ul>
+    <header>
+      <h2>libfwupdplugin</h2>
+      <div class="description">
+        <p>Functionality available to fwupd plugins.</p>
+      </div>
+    </header>
+    <ul>
+      <li><a href="libfwupdplugin/index.html">Developer documentation</a></li>
+    </ul>
+    <ul>
+      <li><a href="libfwupdplugin/tutorial.html">Plugin tutorial</a></li>
+    </ul>
+    <ul>
+      <li><a href="libfwupdplugin/hwids.html">Hardware IDs</a></li>
+    </ul>
+    <ul>
+      <li><a href="libfwupdplugin/device-emulation.html">Device Emulation</a></li>
+    </ul>
+    <ul>
+      <li><a href="libfwupdplugin/env.html">Environment variables</a></li>
+    </ul>
+    <header>
+      <h2>BOS DS20 Specification</h2>
+      <div class="description">
+        <p>The fwupd Binary Object Store descriptor specification</p>
+      </div>
+    </header>
+    <ul>
+      <li><a href="libfwupdplugin/ds20.html">Documentation</a></li>
+    </ul>
+  </section>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "8BitDo NES30Pro",
+  "interactive": false,
+  "steps": [
+    {
+      "url": "https://fwupd.org/downloads/5b7c4df860695bf000967e140682082b44cea2c033da27fabeffc91be5d2d30c-8Bitdo-SFC30PRO_NES30PRO-4.01.cab",
+      "components": [
+        {
+          "version": "4.01",
+          "guids": [
+            "c6566b1b-0c6e-5d2e-9376-78c23ab57bf2"
+          ]
+        }
+      ]
+    }
+  ]
+}

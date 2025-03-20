@@ -1,0 +1,267 @@
+# No Manufacturer
+[CFI\FLASHID_0020]
+Name = M25PxxA/xx
+CfiDeviceCmdChipErase = 0xC7
+CfiDeviceCmdSectorErase = 0x00
+[CFI\FLASHID_00BF]
+Name = PCT/SST25VFxxx/xxxA
+CfiDeviceCmdReadId = 0x90
+CfiDeviceCmdChipErase = 0x60
+CfiDeviceCmdSectorErase = 0x20
+[CFI\FLASHID_009D]
+Name = PM25LDxxx
+CfiDeviceCmdReadId = 0x90
+CfiDeviceCmdChipErase = 0xC7
+CfiDeviceCmdSectorErase = 0xD7
+[CFI\FLASHID_009D]
+Name = PM25LVxxx
+CfiDeviceCmdReadId = 0xAB
+CfiDeviceCmdChipErase = 0xC7
+CfiDeviceCmdSectorErase = 0xD7
+[CFI\FLASHID_00EF]
+Name = W25XxxBV/W25XxxCL
+CfiDeviceCmdChipErase = 0xC7
+CfiDeviceCmdSectorErase = 0x20
+
+# Fujitsu
+[CFI\FLASHID_04]
+Vendor = Fujitsu
+
+# Atmel
+[CFI\FLASHID_1F]
+Vendor = Atmel
+[CFI\FLASHID_1F65]
+Name = AT25F512A/B
+CfiDeviceCmdReadId = 0x15
+CfiDeviceCmdChipErase = 0x62
+CfiDeviceCmdSectorErase = 0x00
+FirmwareSizeMax = 0x10000
+
+# EON
+[CFI\FLASHID_1C]
+Vendor = EON
+[CFI\FLASHID_1C31]
+Name = EN25Fxx
+CfiDeviceCmdChipErase = 0x60
+CfiDeviceCmdSectorErase = 0x20
+
+# ST
+[CFI\FLASHID_20]
+Vendor = ST
+
+# Catalyst
+[CFI\FLASHID_31]
+Vendor = Catalyst
+
+# AMIC
+[CFI\FLASHID_37]
+Vendor = AMIC
+[CFI\FLASHID_3730]
+Name = A25Lxxx
+CfiDeviceCmdChipErase = 0xc7
+CfiDeviceCmdSectorErase = 0x20
+
+# SyncMOS
+[CFI\FLASHID_40]
+Vendor = SyncMOS
+
+# ESI
+[CFI\FLASHID_4A]
+Vendor = ESI
+
+# Alliance
+[CFI\FLASHID_52]
+Vendor = Alliance
+
+# Tenx
+[CFI\FLASHID_5E]
+Vendor = Tenx
+
+# Sanyo
+[CFI\FLASHID_62]
+Vendor = Sanyo
+
+# AMIC
+[CFI\FLASHID_7F]
+Vendor = AMIC
+
+# Puya Semiconductor
+[CFI\FLASHID_85]
+Vendor = Puya
+[CFI\FLASHID_854012]
+Name = P25Q21H
+FirmwareSizeMax = 0x40000
+[CFI\FLASHID_854011]
+Name = P25Q11H
+FirmwareSizeMax = 0x20000
+[CFI\FLASHID_854010]
+Name = P25Q06H
+FirmwareSizeMax = 0x10000
+[CFI\FLASHID_852014]
+Name = PY25Q80HB
+FirmwareSizeMax = 0x100000
+
+[CFI\FLASHID_89]
+Vendor = Intel
+
+# Elite
+[CFI\FLASHID_8C]
+Vendor = Elite
+
+# Texas Instruments
+[CFI\FLASHID_97]
+Vendor = Texas Instruments
+
+# PMC
+[CFI\FLASHID_9D]
+Vendor = PMC
+[CFI\FLASHID_7F9D20]
+Name = PM25Lx512x
+FirmwareSizeMax = 0x10000
+[CFI\FLASHID_7F9D21]
+Name = PM25LD010
+FirmwareSizeMax = 0x20000
+
+# Fudan
+[CFI\FLASHID_A1]
+Vendor = Fudan
+[CFI\FLASHID_A131]
+Name = FM25xxx
+CfiDeviceBlockSize = 0x10000
+CfiDeviceSectorSize = 0x1000
+CfiDevicePageSize = 0x100
+CfiDeviceCmdBlockErase = 0xd8
+[CFI\FLASHID_A13110]
+Name = FM25W04
+FirmwareSizeMax = 0x80000
+[CFI\FLASHID_A13111]
+Name = FM25F01
+FirmwareSizeMax = 0x20000
+
+# Hyundai
+[CFI\FLASHID_AD]
+Vendor = Hyundai
+
+# Sharp
+[CFI\FLASHID_B0]
+Vendor = Sharp
+
+# SST
+[CFI\FLASHID_BF]
+Vendor = SST
+
+# Macronix
+[CFI\FLASHID_C2]
+Vendor = Macronix
+[CFI\FLASHID_C220]
+Name = MX25Lxxx/xxxC/xxxE
+CfiDeviceCmdChipErase = 0x60
+CfiDeviceCmdSectorErase = 0x20
+CfiDeviceCmdBlockErase = 0xd8
+CfiDeviceBlockSize = 0x10000
+CfiDeviceSectorSize = 0x1000
+CfiDevicePageSize = 0x100
+[CFI\FLASHID_C22011]
+Name = MX25L1006E
+FirmwareSizeMax = 0x20000
+[CFI\FLASHID_C22012]
+Name = MX25V2033F
+FirmwareSizeMax = 0x40000
+[CFI\FLASHID_C22016]
+Name = MX25L3236F
+FirmwareSizeMax = 0x400000
+[CFI\FLASHID_C222]
+Name = MX25Lxxx1E
+CfiDeviceCmdChipErase = 0x60
+CfiDeviceCmdSectorErase = 0x20
+[CFI\FLASHID_C22312]
+Name = MX25V2035F
+FirmwareSizeMax = 0x40000
+
+# GigaDevice
+[CFI\FLASHID_C8]
+Vendor = GigaDevice
+[CFI\FLASHID_C840]
+Name = GD25Qxxx
+CfiDeviceCmdChipErase = 0xC7
+CfiDeviceCmdSectorErase = 0x20
+CfiDeviceCmdBlockErase = 0xd8
+CfiDeviceBlockSize = 0x10000
+CfiDeviceSectorSize = 0x1000
+CfiDevicePageSize = 0x100
+[CFI\FLASHID_C84011]
+Name = GD25D10B
+FirmwareSizeMax = 0x20000
+[CFI\FLASHID_C84012]
+Name = GD25Q20C
+FirmwareSizeMax = 0x40000
+[CFI\FLASHID_C84016]
+Name = GD25Q32C
+FirmwareSizeMax = 0x400000
+[CFI\FLASHID_C84018]
+Name = GD25Q127C
+FirmwareSizeMax = 0x1000000
+
+# Nantronics
+[CFI\FLASHID_D5]
+Vendor = Nantronics
+
+# Winbond
+[CFI\FLASHID_DA]
+Vendor = Winbond
+
+# Winbond (ex Nexcom)
+[CFI\FLASHID_EF]
+Vendor = Winbond
+[CFI\FLASHID_EF3010]
+Name = W25X05CL
+FirmwareSizeMax = 0x10000
+[CFI\FLASHID_EF3011]
+Name = W25X10CL
+FirmwareSizeMax = 0x20000
+[CFI\FLASHID_EF3012]
+Name = W25X20X
+FirmwareSizeMax = 0x40000
+[CFI\FLASHID_EF3013]
+Name = W25X40
+FirmwareSizeMax = 0x80000
+[CFI\FLASHID_EF3014]
+Name = W25X80
+FirmwareSizeMax = 0x100000
+[CFI\FLASHID_EF3015]
+Name = W25X16
+FirmwareSizeMax = 0x200000
+[CFI\FLASHID_EF3016]
+Name = W25X32
+FirmwareSizeMax = 0x400000
+[CFI\FLASHID_EF3017]
+Name = W25X64
+FirmwareSizeMax = 0x800000
+[CFI\FLASHID_EF4013]
+Name = W25Q40
+FirmwareSizeMax = 0x80000
+[CFI\FLASHID_EF4014]
+Name = W25Q80
+FirmwareSizeMax = 0x100000
+[CFI\FLASHID_EF4015]
+Name = W25Q16
+FirmwareSizeMax = 0x200000
+[CFI\FLASHID_EF4016]
+Name = W25Q32
+FirmwareSizeMax = 0x400000
+[CFI\FLASHID_EF4017]
+Name = W25Q64
+FirmwareSizeMax = 0x800000
+[CFI\FLASHID_EF4018]
+Name = W25Q128
+FirmwareSizeMax = 0x1000000
+[CFI\FLASHID_EF4019]
+Name = W25Q256
+FirmwareSizeMax = 0x2000000
+[CFI\FLASHID_EF4020]
+Name = W25Q512
+FirmwareSizeMax = 0x4000000
+
+# Fidelix
+[CFI\FLASHID_F8]
+Vendor = Fidelix

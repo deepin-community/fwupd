@@ -1,7 +1,7 @@
 /*
- * Copyright (C) 2019 Richard Hughes <richard@hughsie.com>
+ * Copyright 2019 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #include "config.h"
@@ -9,7 +9,7 @@
 #include "fu-nvme-common.h"
 
 const gchar *
-fu_nvme_status_to_string (guint32 status)
+fu_nvme_status_to_string(guint32 status)
 {
 	switch (status) {
 	case NVME_SC_SUCCESS:
@@ -90,7 +90,7 @@ fu_nvme_status_to_string (guint32 status)
 		return "Commit was successful, activation requires a reset";
 	case NVME_SC_FW_NEEDS_MAX_TIME:
 		return "Would exceed the Maximum Time for Firmware Activation";
-	case NVME_SC_FW_ACIVATE_PROHIBITED:
+	case NVME_SC_FW_ACTIVATE_PROHIBITED:
 		return "Image specified is being prohibited from activation";
 	case NVME_SC_OVERLAPPING_RANGE:
 		return "Image has overlapping ranges";
