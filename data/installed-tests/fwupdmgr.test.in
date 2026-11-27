@@ -1,3 +1,0 @@
-[Test]
-Type=session
-Exec=sh -c "@installedtestsdir@/fwupdmgr.sh"

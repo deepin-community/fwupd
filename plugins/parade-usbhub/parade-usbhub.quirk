@@ -1,0 +1,39 @@
+# PS5511 devboard
+[USB\VID_1DA0&PID_5511]
+Plugin = parade_usbhub
+Flags = enforce-requires
+[USB\VID_1DA0&PID_55A1]
+Plugin = parade_usbhub
+Flags = enforce-requires
+
+# PS5512 devboard
+[USB\VID_1DA0&PID_5512]
+Plugin = parade_usbhub
+Flags = enforce-requires
+[USB\VID_1DA0&PID_551D]
+Plugin = parade_usbhub
+Flags = enforce-requires
+
+# PS5512 - Dell
+[USB\VID_413C&PID_1020]
+Plugin = parade_usbhub
+[USB\VID_413C&PID_1021]
+Plugin = parade_usbhub
+
+# PS188
+[USB\VID_1DA0&PID_0188]
+Plugin = parade_usbhub
+Flags = enforce-requires
+ParadeUsbhubChip = ps188
+[USB\VID_1DA0&PID_2188]
+Plugin = parade_usbhub
+Flags = enforce-requires
+ParadeUsbhubChip = ps188
+
+# PS188 - Lenovo
+[USB\VID_17EF&PID_10B7]
+Plugin = parade_usbhub
+ParadeUsbhubChip = ps188
+[USB\VID_17EF&PID_10B8]
+Plugin = parade_usbhub
+ParadeUsbhubChip = ps188

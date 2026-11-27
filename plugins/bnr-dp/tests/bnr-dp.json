@@ -1,0 +1,18 @@
+{
+  "name": "B&R Automation Panel Link Module",
+  "interactive": false,
+  "steps": [
+    {
+      "url": "e4bf3652666625df2bbcfc851709090d5765ed37323f6becb1f05b4b45be1e2f-bnr-dp-0.13-test.cab",
+      "emulation-url": "2d65498250eab4800c250b9499c3595be165762154f41dbfa1118797f5004636-bnr-dp-0.13-dpaux-dpcd-check-minimal.zip",
+      "components": [
+        {
+          "version": "0.13",
+          "guids": [
+            "9099977e-4a86-5c57-9a4d-40db2d31b52b"
+          ]
+        }
+      ]
+    }
+  ]
+}

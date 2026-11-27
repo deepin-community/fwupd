@@ -1,0 +1,18 @@
+{
+  "name": "Qualcomm EG25GGC",
+  "interactive": false,
+  "steps": [
+    {
+      "url": "b1cd72c75053f5c29e55784ef30e5d4be722c1aacc2400995b1ee248f07be7d6-EG25GGC-0.0.cab",
+      "emulation-url": "7868d8239184b8d3c63ba9936441f86410447411a650f2ba0169c3f870d63dcf-emulation.zip",
+      "components": [
+        {
+          "version": "0.0",
+          "guids": [
+            "9d5ddb63-31c7-55cc-a11e-67b5fd871113"
+          ]
+        }
+      ]
+    }
+  ]
+}

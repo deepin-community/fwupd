@@ -1,0 +1,124 @@
+{
+  "UsbDevices": [
+    {
+      "GType": "FuUsbDevice",
+      "PlatformId": "1-1",
+      "Created": "2024-10-24T17:45:42.490939Z",
+      "IdVendor": 6790,
+      "IdProduct": 21979,
+      "Device": 320,
+      "USB": 512,
+      "Manufacturer": 1,
+      "Product": 2,
+      "SerialNumber": 3,
+      "UsbConfigDescriptors": [
+        {
+          "ConfigurationValue": 1
+        }
+      ],
+      "UsbInterfaces": [
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceClass": 2,
+          "InterfaceSubClass": 2,
+          "InterfaceProtocol": 1,
+          "UsbEndpoints": [
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 131,
+              "Interval": 1,
+              "MaxPacketSize": 64
+            }
+          ]
+        },
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceNumber": 1,
+          "InterfaceClass": 10,
+          "UsbEndpoints": [
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 4,
+              "MaxPacketSize": 512
+            },
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 132,
+              "MaxPacketSize": 512
+            }
+          ]
+        },
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceNumber": 2,
+          "InterfaceClass": 255,
+          "UsbEndpoints": [
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 6,
+              "MaxPacketSize": 512
+            },
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 134,
+              "MaxPacketSize": 512
+            }
+          ]
+        }
+      ],
+      "UsbEvents": [
+        {
+          "Id": "#4693935e",
+          "Data": "001"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=189\nMINOR=75\nDEVNAME=bus/usb/001/076\nDEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=1a86/55db/140\nTYPE=0/0/0\nBUSNUM=001\nDEVNUM=076"
+        },
+        {
+          "Id": "#1ab3ae0a",
+          "Data": "076"
+        },
+        {
+          "Id": "#028c3a0e",
+          "Data": "MDEyMzQ1Njc4OQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#4f7f767b",
+          "Data": "wBoAAAAEAQAAAAAAAAACEAAAAAcAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#e8e979a2",
+          "Data": "wAEAAA=="
+        },
+        {
+          "Id": "#e62e60a8",
+          "Data": "wQoAgAAAAAAAAAAAAA=="
+        },
+        {
+          "Id": "#e8f9929d",
+          "Data": "xAEAnw=="
+        },
+        {
+          "Id": "#9074dd4e",
+          "Data": "xAEAAA=="
+        },
+        {
+          "Id": "#c6abc2c8",
+          "Data": "wwQAAwAAAA=="
+        },
+        {
+          "Id": "#43321f40",
+          "Data": "wwMAAAAA"
+        },
+        {
+          "Id": "#279f56ea",
+          "Data": "wQoAwAAAAAAAAAAAAA=="
+        }
+      ]
+    }
+  ]
+}

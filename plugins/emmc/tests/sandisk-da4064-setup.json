@@ -1,0 +1,158 @@
+{
+  "UsbDevices": [
+    {
+      "GType": "FuUdevDevice",
+      "BackendId": "/sys/devices/platform/fe330000.mmc/mmc_host/mmc2/mmc2:0001/block/mmcblk2",
+      "DeviceFile": "/dev/mmcblk2",
+      "Subsystem": "block",
+      "Created": "2024-11-07T13:44:05.189919Z",
+      "Events": [
+        {
+          "Id": "#d5a801ad",
+          "Data": "block"
+        },
+        {
+          "Id": "#ad8c58d3"
+        },
+        {
+          "Id": "#1075ed5c",
+          "Data": "disk"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=179\nMINOR=0\nDEVNAME=mmcblk2\nDEVTYPE=disk\nDISKSEQ=1"
+        },
+        {
+          "Id": "#d432c663",
+          "Data": "mmcblk2"
+        },
+        {
+          "Id": "#9b895db2"
+        },
+        {
+          "Id": "#66f3e150"
+        },
+        {
+          "Id": "#d410b6c7"
+        },
+        {
+          "Id": "#1075ed5c",
+          "Data": "disk"
+        },
+        {
+          "Id": "#19c26604"
+        },
+        {
+          "Id": "#0e9e7dc9",
+          "GType": "FuUdevDevice",
+          "BackendId": "/sys/devices/platform/fe330000.mmc/mmc_host/mmc2/mmc2:0001/block/mmcblk2"
+        },
+        {
+          "Id": "#d5a801ad",
+          "Data": "mmc"
+        },
+        {
+          "Id": "#ad8c58d3",
+          "Data": "mmcblk"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "DRIVER=mmcblk\nMMC_TYPE=MMC\nMMC_NAME=DA4064\nMODALIAS=mmc:block"
+        },
+        {
+          "Id": "#0d176430",
+          "Data": "mmc:block"
+        },
+        {
+          "Id": "#d432c663"
+        },
+        {
+          "Id": "#9b895db2"
+        },
+        {
+          "Id": "#66f3e150"
+        },
+        {
+          "Id": "#d410b6c7"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#e9f704fa",
+          "Data": "1"
+        },
+        {
+          "Id": "#e371a663",
+          "Data": "DA4064"
+        },
+        {
+          "Id": "#4f7d7cad",
+          "Data": "0x3536323330613137"
+        },
+        {
+          "Id": "#e9729218",
+          "Data": "0x000045"
+        },
+        {
+          "Id": "#d8e0d47a",
+          "Data": "0x0100"
+        },
+        {
+          "Id": "#e9729218",
+          "Data": "0x000045"
+        },
+        {
+          "Id": "#1fdc635e",
+          "GType": "FuUdevDevice",
+          "BackendId": "/sys/devices/platform/fe330000.mmc/mmc_host/mmc2/mmc2:0001/block/mmcblk2"
+        },
+        {
+          "Id": "#d5a801ad",
+          "Data": "mmc"
+        },
+        {
+          "Id": "#ad8c58d3",
+          "Data": "mmcblk"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "DRIVER=mmcblk\nMMC_TYPE=MMC\nMMC_NAME=DA4064\nMODALIAS=mmc:block"
+        },
+        {
+          "Id": "#0d176430",
+          "Data": "mmc:block"
+        },
+        {
+          "Id": "#d432c663"
+        },
+        {
+          "Id": "#9b895db2"
+        },
+        {
+          "Id": "#66f3e150"
+        },
+        {
+          "Id": "#d410b6c7"
+        },
+        {
+          "Id": "#1075ed5c"
+        },
+        {
+          "Id": "#0b053619",
+          "Data": "0"
+        },
+        {
+          "Id": "#09a5a089",
+          "DataOut": "AAAAAAAAAAAAAAAAAAAAAAgDmAlnAgAAAAAAAAAAAAAAAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACUJAAcBAAIAABUfgAAAAAAAAAEAAAAAAAAAAAECAA0AAAAACAACAFcfCgPd3QAAAAoKCgoKCgEAwEcHFxMXBwgQAQMBCCAAB6amVQMAAAAA3d0AAf8QAAAAABkZABAAAN01NjIzMGExN1FQCAgIAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAQAAMDAAUDAwE/PwEBAQAAAAAAAAA="
+        }
+      ]
+    }
+  ]
+}

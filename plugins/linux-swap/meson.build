@@ -1,52 +1,43 @@
-if host_machine.system() == 'linux'
-cargs = ['-DG_LOG_DOMAIN="FuPluginLinuxSwap"']
+host_machine.system() == 'linux' or subdir_done()
+hsi or subdir_done()
 
-shared_module('fu_plugin_linux_swap',
-  fu_hash,
-  sources : [
-    'fu-plugin-linux-swap.c',
+cargs = ['-DG_LOG_DOMAIN="FuPluginLinuxSwap"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
+
+plugin_builtin_linux_swap = static_library('fu_plugin_linux_swap',
+  sources: [
+    'fu-linux-swap-plugin.c',
     'fu-linux-swap.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
-endif
+plugin_builtins += plugin_builtin_linux_swap
 
 if get_option('tests')
+  env = environment()
+  env.set('G_TEST_SRCDIR', meson.current_source_dir())
+  env.set('G_TEST_BUILDDIR', meson.current_build_dir())
   e = executable(
     'linux-swap-self-test',
-    fu_hash,
-    sources : [
+    sources: [
       'fu-self-test.c',
-      'fu-linux-swap.c',
     ],
-    include_directories : [
-      root_incdir,
-      fwupd_incdir,
-      fwupdplugin_incdir,
+    include_directories: plugin_incdirs,
+    dependencies: plugin_deps,
+    link_with: [
+      plugin_libs,
+      plugin_builtin_linux_swap,
     ],
-    dependencies : [
-      plugin_deps,
+    install: true,
+    install_rpath: libdir_pkg,
+    install_tag: 'tests',
+    install_dir: installed_test_bindir,
+    c_args: [
+      '-DSRCDIR="' + meson.current_source_dir() + '"',
     ],
-    link_with : [
-      fwupd,
-      fwupdplugin,
-    ],
-    install : true,
-    install_dir : installed_test_bindir,
   )
-  test('linux-swap-self-test', e)  # added to installed-tests
+  test('linux-swap-self-test', e, env: env)  # added to installed-tests
 endif

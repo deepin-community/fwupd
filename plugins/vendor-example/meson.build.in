@@ -1,0 +1,25 @@
+{%- if Parent == 'Udev' -%}
+host_machine.system() == 'linux' or subdir_done()
+{%- endif %}
+cargs = ['-DG_LOG_DOMAIN="FuPlugin{{VendorExample}}"']
+
+plugins += {meson.current_source_dir().split('/')[-1]: true}
+plugin_quirks += files('{{vendor_dash_example}}.quirk')
+plugin_builtins += static_library('fu_plugin_{{vendor_example}}',
+  rustgen.process('fu-{{vendor_dash_example}}.rs'),
+  sources: [
+    'fu-{{vendor_dash_example}}-common.c',
+    'fu-{{vendor_dash_example}}-device.c',
+    'fu-{{vendor_dash_example}}-firmware.c',
+    'fu-{{vendor_dash_example}}-plugin.c',
+  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
+)
+
+device_tests += files(
+  'tests/vendor-example.json',
+  'tests/vendor-example-setup.json',
+)

@@ -1,67 +1,33 @@
 /*
- * Copyright (C) 2015 Richard Hughes <richard@hughsie.com>
+ * Copyright 2015 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
 #include <gio/gio.h>
-#ifdef HAVE_GUSB
-#include <gusb.h>
-#endif
 
 #include "fu-bluez-device.h"
-#include "fu-common.h"
 #include "fu-common-guid.h"
-#include "fu-common-version.h"
-#include "fu-device.h"
+#include "fu-common.h"
+#include "fu-context.h"
 #include "fu-device-locker.h"
+#include "fu-device.h"
 #include "fu-quirks.h"
-#include "fu-hwids.h"
-#include "fu-usb-device.h"
-//#include "fu-hid-device.h"
-#ifdef HAVE_GUDEV
-#include "fu-udev-device.h"
-#endif
-#include <libfwupd/fwupd-common.h>
-#include <libfwupd/fwupd-plugin.h>
+#include "fu-security-attrs.h"
+#include "fu-version-common.h"
 
-#define FU_TYPE_PLUGIN (fu_plugin_get_type ())
-G_DECLARE_DERIVABLE_TYPE (FuPlugin, fu_plugin, FU, PLUGIN, FwupdPlugin)
+/* only until HSI is declared stable */
+#include "fwupd-security-attr-private.h"
 
-#define fu_plugin_get_flags(p)			fwupd_plugin_get_flags(FWUPD_PLUGIN(p))
-#define fu_plugin_has_flag(p,f)			fwupd_plugin_has_flag(FWUPD_PLUGIN(p),f)
-#define fu_plugin_add_flag(p,f)			fwupd_plugin_add_flag(FWUPD_PLUGIN(p),f)
-#define fu_plugin_remove_flag(p,f)		fwupd_plugin_remove_flag(FWUPD_PLUGIN(p),f)
+#define FU_TYPE_PLUGIN (fu_plugin_get_type())
+G_DECLARE_DERIVABLE_TYPE(FuPlugin, fu_plugin, FU, PLUGIN, FwupdPlugin)
 
-struct _FuPluginClass
-{
-	FwupdPluginClass parent_class;
-	/* signals */
-	void		 (* device_added)		(FuPlugin	*self,
-							 FuDevice	*device);
-	void		 (* device_removed)		(FuPlugin	*self,
-							 FuDevice	*device);
-	void		 (* status_changed)		(FuPlugin	*self,
-							 FwupdStatus	 status);
-	void		 (* percentage_changed)		(FuPlugin	*self,
-							 guint		 percentage);
-	void		 (* recoldplug)			(FuPlugin	*self);
-	void		 (* set_coldplug_delay)		(FuPlugin	*self,
-							 guint		 duration);
-	void		 (* device_register)		(FuPlugin	*self,
-							 FuDevice	*device);
-	gboolean	 (* check_supported)		(FuPlugin	*self,
-							 const gchar	*guid);
-	void		 (* rules_changed)		(FuPlugin	*self);
-	gboolean	 (* add_firmware_gtype)		(FuPlugin	*self,
-							 const gchar	*id,
-							 GType		 gtype);
-	void		 (* security_changed)		(FuPlugin	*self);
-	/*< private >*/
-	gpointer	padding[20];
-};
+#define fu_plugin_get_flags(p)	    fwupd_plugin_get_flags(FWUPD_PLUGIN(p))
+#define fu_plugin_has_flag(p, f)    fwupd_plugin_has_flag(FWUPD_PLUGIN(p), f)
+#define fu_plugin_add_flag(p, f)    fwupd_plugin_add_flag(FWUPD_PLUGIN(p), f)
+#define fu_plugin_remove_flag(p, f) fwupd_plugin_remove_flag(FWUPD_PLUGIN(p), f)
 
 /**
  * FuPluginVerifyFlags:
@@ -70,10 +36,427 @@ struct _FuPluginClass
  * Flags used when verifying, currently unused.
  **/
 typedef enum {
-	FU_PLUGIN_VERIFY_FLAG_NONE		= 0,
+	FU_PLUGIN_VERIFY_FLAG_NONE = 0,
 	/*< private >*/
 	FU_PLUGIN_VERIFY_FLAG_LAST
 } FuPluginVerifyFlags;
+
+/* nocheck:lines */
+struct _FuPluginClass {
+	FwupdPluginClass parent_class;
+	/* signals */
+	void (*_device_added)(FuPlugin *self, FuDevice *device);
+	void (*_device_removed)(FuPlugin *self, FuDevice *device);
+	void (*_status_changed)(FuPlugin *self, FwupdStatus status);
+	void (*_percentage_changed)(FuPlugin *self, guint percentage);
+	void (*_device_register)(FuPlugin *self, FuDevice *device);
+	gboolean (*_check_supported)(FuPlugin *self, const gchar *guid);
+	void (*_rules_changed)(FuPlugin *self);
+
+	/* vfuncs */
+	/**
+	 * init:
+	 * @self: A #FuPlugin
+	 *
+	 * Initializes the modular plugin.
+	 * Sets up any static data structures for the plugin.
+	 *
+	 * Since: 1.7.2
+	 **/
+	void (*constructed)(GObject *obj);
+	/**
+	 * finalize:
+	 * @self: a plugin
+	 *
+	 * Destroys the modular plugin.
+	 * Any allocated memory should be freed here.
+	 *
+	 * Since: 1.7.2
+	 **/
+	void (*finalize)(GObject *obj);
+	/**
+	 * startup:
+	 * @self: a #FuPlugin
+	 * @progress: a #FuProgress
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Tries to start the plugin.
+	 * Returns: TRUE for success or FALSE for failure.
+	 *
+	 * Any plugins not intended for the system or that have failure communicating
+	 * with the device should return FALSE.
+	 * Any allocated memory should be freed here.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*startup)(FuPlugin *self, FuProgress *progress, GError **error);
+	/**
+	 * ready:
+	 * @self: a #FuPlugin
+	 * @progress: a #FuProgress
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Tells the plugin that all devices have been coldplugged and the plugin is
+	 * ready to be used.
+	 *
+	 * Returns: TRUE for success or FALSE for failure.
+	 *
+	 * NOTE: Any plugins not intended for the system or that have failure communicating
+	 * with the device should return %FALSE and set @error.
+	 *
+	 * Since: 1.9.6
+	 **/
+	gboolean (*ready)(FuPlugin *self, FuProgress *progress, GError **error);
+	/**
+	 * coldplug:
+	 * @self: a #FuPlugin
+	 * @progress: a #FuProgress
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Probes for devices.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*coldplug)(FuPlugin *self, FuProgress *progress, GError **error);
+	/**
+	 * device_created
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Function run when the subclassed device has been created.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*device_created)(FuPlugin *self, FuDevice *device, GError **error);
+	/**
+	 * device_registered
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 *
+	 * Function run when device registered from another plugin.
+	 *
+	 * Since: 1.7.2
+	 **/
+	void (*device_registered)(FuPlugin *self, FuDevice *device);
+	/**
+	 * device_added
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 *
+	 * Function run when the subclassed device has been added.
+	 *
+	 * Since: 1.7.2
+	 **/
+	void (*device_added)(FuPlugin *self, FuDevice *device);
+	/**
+	 * verify:
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @progress: a #FuProgress
+	 * @flags: verify flags
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Verifies the firmware on the device matches the value stored in the database
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*verify)(FuPlugin *self,
+			   FuDevice *device,
+			   FuProgress *progress,
+			   FuPluginVerifyFlags flags,
+			   GError **error);
+	/**
+	 * get_results:
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Obtains historical update results for the device.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*get_results)(FuPlugin *self, FuDevice *device, GError **error);
+	/**
+	 * clear_results:
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Clears stored update results for the device.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*clear_results)(FuPlugin *self, FuDevice *device, GError **error);
+	/**
+	 * backend_device_added
+	 * @self: a #FuPlugin
+	 * @device: a device
+	 * @progress: a #FuProgress
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Function to run after a device is added by a backend, e.g. by USB or Udev.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*backend_device_added)(FuPlugin *self,
+					 FuDevice *device,
+					 FuProgress *progress,
+					 GError **error);
+	/**
+	 * backend_device_changed
+	 * @self: a #FuPlugin
+	 * @device: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Function run when the device changed.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*backend_device_changed)(FuPlugin *self, FuDevice *device, GError **error);
+	/**
+	 * backend_device_removed
+	 * @self: a #FuPlugin
+	 * @device: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Function to run when device is physically removed.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*backend_device_removed)(FuPlugin *self, FuDevice *device, GError **error);
+	/**
+	 * add_security_attrs
+	 * @self: a #FuPlugin
+	 * @attrs: a security attribute
+	 *
+	 * Function that asks plugins to add Host Security Attributes.
+	 *
+	 * Since: 1.7.2
+	 **/
+	void (*add_security_attrs)(FuPlugin *self, FuSecurityAttrs *attrs);
+	/**
+	 * write_firmware:
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @firmware: a #FuFirmware
+	 * @progress: a #FuProgress
+	 * @flags: install flags
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Updates the firmware on the device.
+	 *
+	 * Since: 2.0.7
+	 **/
+	gboolean (*write_firmware)(FuPlugin *self,
+				   FuDevice *device,
+				   FuFirmware *firmware,
+				   FuProgress *progress,
+				   FwupdInstallFlags flags,
+				   GError **error);
+	/**
+	 * unlock:
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Unlocks the device for writes.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*unlock)(FuPlugin *self, FuDevice *device, GError **error);
+	/**
+	 * activate:
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Activates the new firmware on the device.
+	 *
+	 * This is intended for devices that it is not safe to immediately activate
+	 * the firmware.  It may be called at a more convenient time instead.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*activate)(FuPlugin *self,
+			     FuDevice *device,
+			     FuProgress *progress,
+			     GError **error);
+	/**
+	 * attach:
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Swaps the device from bootloader mode to runtime mode.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*attach)(FuPlugin *self, FuDevice *device, FuProgress *progress, GError **error);
+	/**
+	 * detach:
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Swaps the device from runtime mode to bootloader mode.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*detach)(FuPlugin *self, FuDevice *device, FuProgress *progress, GError **error);
+	/**
+	 * prepare:
+	 * @self: a #FuPlugin
+	 * @device: a device
+	 * @progress: a #FuProgress
+	 * @flags: install flags
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Prepares the device to receive an update.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*prepare)(FuPlugin *self,
+			    FuDevice *device,
+			    FuProgress *progress,
+			    FwupdInstallFlags flags,
+			    GError **error);
+	/**
+	 * cleanup
+	 * @self: a #FuPlugin
+	 * @device: a device
+	 * @progress: a #FuProgress
+	 * @flags: install flags
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Cleans up the device after receiving an update.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*cleanup)(FuPlugin *self,
+			    FuDevice *device,
+			    FuProgress *progress,
+			    FwupdInstallFlags flags,
+			    GError **error);
+	/**
+	 * composite_prepare
+	 * @self: a #FuPlugin
+	 * @devices: (element-type FuDevice): array of devices
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Function run before updating group of composite devices.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*composite_prepare)(FuPlugin *self, GPtrArray *devices, GError **error);
+	/**
+	 * composite_cleanup
+	 * @self: a #FuPlugin
+	 * @devices: (element-type FuDevice): array of devices
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Function run after updating group of composite devices.
+	 *
+	 * Since: 1.7.2
+	 **/
+	gboolean (*composite_cleanup)(FuPlugin *self, GPtrArray *devices, GError **error);
+	/**
+	 * load
+	 * @ctx: a #FuContext
+	 *
+	 * Function to register context attributes, run during early startup even on plugins which
+	 * will be later disabled.
+	 *
+	 * Since: 1.8.1
+	 **/
+	void (*load)(FuContext *ctx);
+	/**
+	 * to_string:
+	 * @self: A #FuPlugin
+	 *
+	 * Prints plugin private data to the console.
+	 *
+	 * Since: 1.8.4
+	 **/
+	void (*to_string)(FuPlugin *self, guint idt, GString *str);
+	/**
+	 * fix_host_security_attr:
+	 * @self: a #FuPlugin
+	 * @attr: a #FwupdSecurityAttr
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Fix a host security issue.
+	 *
+	 * Since: 1.9.6
+	 **/
+	gboolean (*fix_host_security_attr)(FuPlugin *self, FwupdSecurityAttr *attr, GError **error);
+	/**
+	 * undo_host_security_attr:
+	 * @self: a #FuPlugin
+	 * @attr: a #FwupdSecurityAttr
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Undo the fix for a host security issue.
+	 *
+	 * Since: 1.9.6
+	 **/
+	gboolean (*undo_host_security_attr)(FuPlugin *self,
+					    FwupdSecurityAttr *attr,
+					    GError **error);
+	/**
+	 * reboot_cleanup:
+	 * @self: a #FuPlugin
+	 * @device: a device
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Performs cleanup actions after the reboot has been performed.
+	 *
+	 * Since: 1.9.7
+	 **/
+	gboolean (*reboot_cleanup)(FuPlugin *self, FuDevice *device, GError **error);
+	/**
+	 * modify_config:
+	 * @self: a #FuPlugin
+	 * @key: a config key
+	 * @value: a config value
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Sets a plugin config option, which may be allow-listed or value-checked.
+	 *
+	 * Since: 2.0.0
+	 **/
+	gboolean (*modify_config)(FuPlugin *self,
+				  const gchar *key,
+				  const gchar *value,
+				  GError **error);
+	/**
+	 * composite_peek_firmware:
+	 * @self: a #FuPlugin
+	 * @dev: a device
+	 * @firmware: a #FuFirmware
+	 * @progress: a #FuProgress
+	 * @flags: install flags
+	 * @error: (nullable): optional return location for an error
+	 *
+	 * Notify each plugin when the firmware has been parsed and the update is ready to be
+	 * deployed. A plugin should avoid returning with an error here unless an emergency.
+	 *
+	 * Since: 2.0.19
+	 **/
+	gboolean (*composite_peek_firmware)(FuPlugin *self,
+					    FuDevice *device,
+					    FuFirmware *firmware,
+					    FuProgress *progress,
+					    FwupdInstallFlags flags,
+					    GError **error);
+};
+
+/**
+ * FuPluginVfuncs:
+ *
+ * A subset of virtual functions that are implemented by modular plugins.
+ **/
+typedef struct _FuPluginClass FuPluginVfuncs;
 
 /**
  * FuPluginRule:
@@ -93,87 +476,69 @@ typedef enum {
 	FU_PLUGIN_RULE_RUN_BEFORE,
 	FU_PLUGIN_RULE_BETTER_THAN,
 	FU_PLUGIN_RULE_INHIBITS_IDLE,
-	FU_PLUGIN_RULE_METADATA_SOURCE,		/* Since: 1.3.6 */
+	FU_PLUGIN_RULE_METADATA_SOURCE, /* Since: 1.3.6 */
 	/*< private >*/
 	FU_PLUGIN_RULE_LAST
 } FuPluginRule;
 
-typedef struct	FuPluginData	FuPluginData;
+/**
+ * FuPluginData:
+ *
+ * The plugin-allocated private data.
+ **/
+typedef struct FuPluginData FuPluginData;
 
 /* for plugins to use */
-const gchar	*fu_plugin_get_name			(FuPlugin	*self);
-FuPluginData	*fu_plugin_get_data			(FuPlugin	*self);
-FuPluginData	*fu_plugin_alloc_data			(FuPlugin	*self,
-							 gsize		 data_sz);
-gboolean	 fu_plugin_get_enabled			(FuPlugin	*self)
-G_DEPRECATED_FOR(fu_plugin_has_flag);
-void		 fu_plugin_set_enabled			(FuPlugin	*self,
-							 gboolean	 enabled)
-G_DEPRECATED_FOR(fu_plugin_add_flag);
-void		 fu_plugin_set_build_hash		(FuPlugin	*self,
-							 const gchar	*build_hash);
-GUsbContext	*fu_plugin_get_usb_context		(FuPlugin	*self);
-void		 fu_plugin_device_add			(FuPlugin	*self,
-							 FuDevice	*device);
-void		 fu_plugin_device_remove		(FuPlugin	*self,
-							 FuDevice	*device);
-void		 fu_plugin_device_register		(FuPlugin	*self,
-							 FuDevice	*device);
-void		 fu_plugin_request_recoldplug		(FuPlugin	*self);
-void		 fu_plugin_security_changed		(FuPlugin	*self);
-void		 fu_plugin_set_coldplug_delay		(FuPlugin	*self,
-							 guint		 duration);
-void		 fu_plugin_set_device_gtype		(FuPlugin	*self,
-							 GType		 device_gtype);
-void		 fu_plugin_add_firmware_gtype		(FuPlugin	*self,
-							 const gchar	*id,
-							 GType		 gtype);
-gpointer	 fu_plugin_cache_lookup			(FuPlugin	*self,
-							 const gchar	*id);
-void		 fu_plugin_cache_remove			(FuPlugin	*self,
-							 const gchar	*id);
-void		 fu_plugin_cache_add			(FuPlugin	*self,
-							 const gchar	*id,
-							 gpointer	 dev);
-gboolean	 fu_plugin_check_hwid			(FuPlugin	*self,
-							 const gchar	*hwid);
-gchar		*fu_plugin_get_hwid_replace_value	(FuPlugin	*self,
-							 const gchar	*keys,
-							 GError		**error)
-							 G_GNUC_WARN_UNUSED_RESULT;
-GPtrArray	*fu_plugin_get_devices			(FuPlugin	*self);
-GPtrArray	*fu_plugin_get_hwids			(FuPlugin	*self);
-const gchar	*fu_plugin_get_dmi_value		(FuPlugin	*self,
-							 const gchar	*dmi_id);
-const gchar	*fu_plugin_get_smbios_string		(FuPlugin	*self,
-							 guint8		 structure_type,
-							 guint8		 offset);
-GBytes		*fu_plugin_get_smbios_data		(FuPlugin	*self,
-							 guint8		 structure_type);
-void		 fu_plugin_add_rule			(FuPlugin	*self,
-							 FuPluginRule	 rule,
-							 const gchar	*name);
-void		 fu_plugin_add_udev_subsystem		(FuPlugin	*self,
-							 const gchar	*subsystem);
-FuQuirks	*fu_plugin_get_quirks			(FuPlugin	*self);
-const gchar	*fu_plugin_lookup_quirk_by_id		(FuPlugin	*self,
-							 const gchar	*group,
-							 const gchar	*key);
-guint64		 fu_plugin_lookup_quirk_by_id_as_uint64	(FuPlugin	*self,
-							 const gchar	*group,
-							 const gchar	*key);
-void		 fu_plugin_add_report_metadata		(FuPlugin	*self,
-							 const gchar	*key,
-							 const gchar	*value);
-gchar		*fu_plugin_get_config_value		(FuPlugin	*self,
-							 const gchar	*key);
-gboolean	 fu_plugin_get_config_value_boolean	(FuPlugin	*self,
-							 const gchar	*key);
-void		 fu_plugin_add_runtime_version		(FuPlugin	*self,
-							 const gchar	*component_id,
-							 const gchar	*version);
-void		 fu_plugin_add_compile_version		(FuPlugin	*self,
-							 const gchar	*component_id,
-							 const gchar	*version);
-gboolean	 fu_plugin_has_custom_flag		(FuPlugin	*self,
-							 const gchar	*flag);
+const gchar *
+fu_plugin_get_name(FuPlugin *self) G_GNUC_NON_NULL(1);
+void
+fu_plugin_set_name(FuPlugin *self, const gchar *name) G_GNUC_NON_NULL(1);
+FuPluginData *
+fu_plugin_get_data(FuPlugin *self) G_GNUC_NON_NULL(1);
+FuPluginData *
+fu_plugin_alloc_data(FuPlugin *self, gsize data_sz) G_GNUC_NON_NULL(1);
+FuContext *
+fu_plugin_get_context(FuPlugin *self) G_GNUC_NON_NULL(1);
+void
+fu_plugin_device_add(FuPlugin *self, FuDevice *device) G_GNUC_NON_NULL(1, 2);
+void
+fu_plugin_device_remove(FuPlugin *self, FuDevice *device) G_GNUC_NON_NULL(1, 2);
+void
+fu_plugin_device_register(FuPlugin *self, FuDevice *device) G_GNUC_NON_NULL(1, 2);
+void
+fu_plugin_add_device_gtype(FuPlugin *self, GType device_gtype) G_GNUC_NON_NULL(1);
+GType
+fu_plugin_get_device_gtype_default(FuPlugin *self) G_GNUC_NON_NULL(1);
+void
+fu_plugin_set_device_gtype_default(FuPlugin *self, GType device_gtype) G_GNUC_NON_NULL(1);
+void
+fu_plugin_add_firmware_gtype(FuPlugin *self, const gchar *id, GType gtype) G_GNUC_NON_NULL(1);
+void
+fu_plugin_add_device_udev_subsystem(FuPlugin *self, const gchar *subsystem) G_GNUC_NON_NULL(1, 2);
+void
+fu_plugin_add_udev_subsystem(FuPlugin *self, const gchar *subsystem) G_GNUC_NON_NULL(1, 2);
+gpointer
+fu_plugin_cache_lookup(FuPlugin *self, const gchar *id) G_GNUC_NON_NULL(1, 2);
+void
+fu_plugin_cache_remove(FuPlugin *self, const gchar *id) G_GNUC_NON_NULL(1, 2);
+void
+fu_plugin_cache_add(FuPlugin *self, const gchar *id, gpointer dev) G_GNUC_NON_NULL(1, 2);
+GPtrArray *
+fu_plugin_get_devices(FuPlugin *self) G_GNUC_NON_NULL(1);
+void
+fu_plugin_add_rule(FuPlugin *self, FuPluginRule rule, const gchar *name) G_GNUC_NON_NULL(1, 3);
+void
+fu_plugin_add_report_metadata(FuPlugin *self, const gchar *key, const gchar *value)
+    G_GNUC_NON_NULL(1, 2, 3);
+void
+fu_plugin_set_config_default(FuPlugin *self, const gchar *key, const gchar *value)
+    G_GNUC_NON_NULL(1, 2);
+gchar *
+fu_plugin_get_config_value(FuPlugin *self, const gchar *key) G_GNUC_NON_NULL(1, 2);
+gboolean
+fu_plugin_get_config_value_boolean(FuPlugin *self, const gchar *key) G_GNUC_NON_NULL(1, 2);
+gboolean
+fu_plugin_set_config_value(FuPlugin *self, const gchar *key, const gchar *value, GError **error)
+    G_GNUC_NON_NULL(1, 2);
+FwupdSecurityAttr *
+fu_plugin_security_attr_new(FuPlugin *self, const gchar *appstream_id) G_GNUC_NON_NULL(1, 2);

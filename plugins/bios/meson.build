@@ -1,25 +1,15 @@
-if get_option('plugin_uefi_capsule')
-cargs = ['-DG_LOG_DOMAIN="FuPluginBios"']
+allow_uefi or subdir_done()
+host_cpu in ['x86', 'x86_64'] or subdir_done()
 
-shared_module('fu_plugin_bios',
-  fu_hash,
-  sources : [
-    'fu-plugin-bios.c',
+cargs = ['-DG_LOG_DOMAIN="FuPluginBios"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
+
+plugin_builtins += static_library('fu_plugin_bios',
+  sources: [
+    'fu-bios-plugin.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
-endif

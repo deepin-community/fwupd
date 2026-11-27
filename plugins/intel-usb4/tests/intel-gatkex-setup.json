@@ -1,0 +1,777 @@
+{
+  "UsbDevices": [
+    {
+      "GType": "FuUsbDevice",
+      "PlatformId": "8-1",
+      "Created": "2024-11-12T15:49:43.933624Z",
+      "IdVendor": 32903,
+      "IdProduct": 2880,
+      "Device": 4660,
+      "USB": 800,
+      "Manufacturer": 1,
+      "DeviceClass": 9,
+      "DeviceProtocol": 3,
+      "Product": 2,
+      "UsbBosDescriptors": [
+        {
+          "DevCapabilityType": 70,
+          "ExtraData": "AAQ="
+        },
+        {
+          "DevCapabilityType": 2,
+          "ExtraData": "BgAAAA=="
+        },
+        {
+          "DevCapabilityType": 3,
+          "ExtraData": "AA4AAQVeAQ=="
+        },
+        {
+          "DevCapabilityType": 4,
+          "ExtraData": "AAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "DevCapabilityType": 10,
+          "ExtraData": "ACMAAAAAEQAAMAAFALAABQAxQAoAsUAKAA=="
+        }
+      ],
+      "UsbConfigDescriptors": [
+        {
+          "ConfigurationValue": 1
+        }
+      ],
+      "UsbInterfaces": [
+        {
+          "Length": 9,
+          "DescriptorType": 4,
+          "InterfaceClass": 9,
+          "UsbEndpoints": [
+            {
+              "DescriptorType": 5,
+              "EndpointAddress": 129,
+              "Interval": 8,
+              "MaxPacketSize": 2
+            }
+          ]
+        }
+      ],
+      "UsbEvents": [
+        {
+          "Id": "#4693935e",
+          "Data": "008"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=189\nMINOR=897\nDEVNAME=bus/usb/008/002\nDEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=8087/b40/1234\nTYPE=9/0/3\nBUSNUM=008\nDEVNUM=002"
+        },
+        {
+          "Id": "#1ab3ae0a",
+          "Data": "002"
+        },
+        {
+          "Id": "#4693935e",
+          "Data": "008"
+        },
+        {
+          "Id": "#bddbca22",
+          "Data": "MAJOR=189\nMINOR=897\nDEVNAME=bus/usb/008/002\nDEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=8087/b40/1234\nTYPE=9/0/3\nBUSNUM=008\nDEVNUM=002"
+        },
+        {
+          "Id": "#1ab3ae0a",
+          "Data": "002"
+        },
+        {
+          "Id": "#1fcf122d",
+          "Data": "VVNCMy4wIEh1YgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "Id": "#b3898fd1",
+          "Data": "DCoECQCvAAQgAQAA"
+        },
+        {
+          "Id": "#98769e96",
+          "Data": "AAAAEA=="
+        },
+        {
+          "Id": "#c6078ba2",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAAA=="
+        },
+        {
+          "Id": "#ddc999fa",
+          "Data": "rwH3EA=="
+        },
+        {
+          "Id": "#db335c76",
+          "Data": "KiYLoA=="
+        },
+        {
+          "Id": "#f2aa4ce8",
+          "Data": "AAA4gA=="
+        },
+        {
+          "Id": "#37872e8b",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#6ba9f901",
+          "Data": "DAA8BQ=="
+        },
+        {
+          "Id": "#a2a0bdcd",
+          "Data": "NlDTyQ=="
+        },
+        {
+          "Id": "#cefb1000",
+          "Data": "AQQtBA=="
+        },
+        {
+          "Id": "#db50a488",
+          "Data": "gDagIw=="
+        },
+        {
+          "Id": "#a2c967b4",
+          "Data": "JAAkAA=="
+        },
+        {
+          "Id": "#74e40049",
+          "Data": "JAAkAA=="
+        },
+        {
+          "Id": "#dc4a8856",
+          "Data": "LgAuAA=="
+        },
+        {
+          "Id": "#44304f43",
+          "Data": "LsAu8A=="
+        },
+        {
+          "Id": "#cc958773",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#a763774f",
+          "Data": "KiFh/w=="
+        },
+        {
+          "Id": "#29f84081",
+          "Data": "7xUAAA=="
+        },
+        {
+          "Id": "#a6caa5cd",
+          "Data": "gAAAAA=="
+        },
+        {
+          "Id": "#611ca26e",
+          "Data": "QAAAEA=="
+        },
+        {
+          "Id": "#c6078ba2",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAAA=="
+        },
+        {
+          "Id": "#ddc999fa",
+          "Data": "BS0hog=="
+        },
+        {
+          "Id": "#db335c76",
+          "Data": "GQvJNg=="
+        },
+        {
+          "Id": "#f2aa4ce8",
+          "Data": "AKgoDA=="
+        },
+        {
+          "Id": "#37872e8b",
+          "Data": "UAQBAA=="
+        },
+        {
+          "Id": "#6ba9f901",
+          "Data": "A1BYIA=="
+        },
+        {
+          "Id": "#a2a0bdcd",
+          "Data": "oDbGNg=="
+        },
+        {
+          "Id": "#cefb1000",
+          "Data": "OTYbNg=="
+        },
+        {
+          "Id": "#db50a488",
+          "Data": "5MmAAA=="
+        },
+        {
+          "Id": "#a2c967b4",
+          "Data": "IIeAAA=="
+        },
+        {
+          "Id": "#74e40049",
+          "Data": "JgsAAA=="
+        },
+        {
+          "Id": "#dc4a8856",
+          "Data": "AQAAAA=="
+        },
+        {
+          "Id": "#44304f43",
+          "Data": "QVBQIA=="
+        },
+        {
+          "Id": "#cc958773",
+          "Data": "RU0gIA=="
+        },
+        {
+          "Id": "#a763774f",
+          "Data": "xhAGAA=="
+        },
+        {
+          "Id": "#29f84081",
+          "Data": "AL+/Dw=="
+        },
+        {
+          "Id": "#a6caa5cd",
+          "Data": "mgAAAA=="
+        },
+        {
+          "Id": "#52e639c4",
+          "Data": "gAAAEA=="
+        },
+        {
+          "Id": "#c6078ba2",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAAA=="
+        },
+        {
+          "Id": "#ddc999fa",
+          "Data": "AKBABg=="
+        },
+        {
+          "Id": "#db335c76",
+          "Data": "AIDJNg=="
+        },
+        {
+          "Id": "#f2aa4ce8",
+          "Data": "ADgAhA=="
+        },
+        {
+          "Id": "#37872e8b",
+          "Data": "AADICQ=="
+        },
+        {
+          "Id": "#6ba9f901",
+          "Data": "gmAQAA=="
+        },
+        {
+          "Id": "#a2a0bdcd",
+          "Data": "AAB+mQ=="
+        },
+        {
+          "Id": "#cefb1000",
+          "Data": "AHw5AA=="
+        },
+        {
+          "Id": "#db50a488",
+          "Data": "AAAEgA=="
+        },
+        {
+          "Id": "#a2c967b4",
+          "Data": "+gBVRA=="
+        },
+        {
+          "Id": "#74e40049",
+          "Data": "MzPS/A=="
+        },
+        {
+          "Id": "#dc4a8856",
+          "Data": "MwAAAA=="
+        },
+        {
+          "Id": "#44304f43",
+          "Data": "yeTJAA=="
+        },
+        {
+          "Id": "#cc958773",
+          "Data": "AAEPBQ=="
+        },
+        {
+          "Id": "#a763774f",
+          "Data": "AAAaMQ=="
+        },
+        {
+          "Id": "#29f84081",
+          "Data": "AxsAAA=="
+        },
+        {
+          "Id": "#a6caa5cd",
+          "Data": "AP8DEA=="
+        },
+        {
+          "Id": "#cb724008",
+          "Data": "wAAAEA=="
+        },
+        {
+          "Id": "#c6078ba2",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAAA=="
+        },
+        {
+          "Id": "#ddc999fa",
+          "Data": "CAB7EA=="
+        },
+        {
+          "Id": "#db335c76",
+          "Data": "DABqAA=="
+        },
+        {
+          "Id": "#f2aa4ce8",
+          "Data": "AAAAEA=="
+        },
+        {
+          "Id": "#37872e8b",
+          "Data": "EAAiEA=="
+        },
+        {
+          "Id": "#6ba9f901",
+          "Data": "EgBCAA=="
+        },
+        {
+          "Id": "#a2a0bdcd",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#cefb1000",
+          "Data": "AAAAEA=="
+        },
+        {
+          "Id": "#db50a488",
+          "Data": "FgBYAA=="
+        },
+        {
+          "Id": "#a2c967b4",
+          "Data": "AAAAEA=="
+        },
+        {
+          "Id": "#74e40049",
+          "Data": "GgBuAA=="
+        },
+        {
+          "Id": "#dc4a8856",
+          "Data": "AAAAIA=="
+        },
+        {
+          "Id": "#44304f43",
+          "Data": "CAECAA=="
+        },
+        {
+          "Id": "#cc958773",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#a763774f",
+          "Data": "ABESHA=="
+        },
+        {
+          "Id": "#29f84081",
+          "Data": "GwALDA=="
+        },
+        {
+          "Id": "#a6caa5cd",
+          "Data": "CwwDBw=="
+        },
+        {
+          "Id": "#c568d6b9",
+          "Data": "AAEAEA=="
+        },
+        {
+          "Id": "#c6078ba2",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAAA=="
+        },
+        {
+          "Id": "#ddc999fa",
+          "Data": "BiQAEQ=="
+        },
+        {
+          "Id": "#db335c76",
+          "Data": "EBMSAA=="
+        },
+        {
+          "Id": "#f2aa4ce8",
+          "Data": "AAASEg=="
+        },
+        {
+          "Id": "#37872e8b",
+          "Data": "EhIQAg=="
+        },
+        {
+          "Id": "#6ba9f901",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#a2a0bdcd",
+          "Data": "AAAAHQ=="
+        },
+        {
+          "Id": "#cefb1000",
+          "Data": "HQAAAA=="
+        },
+        {
+          "Id": "#db50a488",
+          "Data": "AA8AAA=="
+        },
+        {
+          "Id": "#a2c967b4",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#74e40049",
+          "Data": "Ag8AAA=="
+        },
+        {
+          "Id": "#dc4a8856",
+          "Data": "ABAAAA=="
+        },
+        {
+          "Id": "#44304f43",
+          "Data": "AvAAIA=="
+        },
+        {
+          "Id": "#cc958773",
+          "Data": "D/AAIA=="
+        },
+        {
+          "Id": "#a763774f",
+          "Data": "D/AAAA=="
+        },
+        {
+          "Id": "#29f84081",
+          "Data": "UAAAMw=="
+        },
+        {
+          "Id": "#a6caa5cd",
+          "Data": "EwIFIw=="
+        },
+        {
+          "Id": "#df245998",
+          "Data": "QAEAEA=="
+        },
+        {
+          "Id": "#c6078ba2",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAAA=="
+        },
+        {
+          "Id": "#ddc999fa",
+          "Data": "VVUAAA=="
+        },
+        {
+          "Id": "#db335c76",
+          "Data": "BQAVAA=="
+        },
+        {
+          "Id": "#f2aa4ce8",
+          "Data": "AAAQBA=="
+        },
+        {
+          "Id": "#37872e8b",
+          "Data": "AAcAFA=="
+        },
+        {
+          "Id": "#6ba9f901",
+          "Data": "BAIAAA=="
+        },
+        {
+          "Id": "#a2a0bdcd",
+          "Data": "HB4gGw=="
+        },
+        {
+          "Id": "#cefb1000",
+          "Data": "HR8TFA=="
+        },
+        {
+          "Id": "#db50a488",
+          "Data": "FwAAAA=="
+        },
+        {
+          "Id": "#a2c967b4",
+          "Data": "EB4AAg=="
+        },
+        {
+          "Id": "#74e40049",
+          "Data": "ECAAAg=="
+        },
+        {
+          "Id": "#dc4a8856",
+          "Data": "ECIAAg=="
+        },
+        {
+          "Id": "#44304f43",
+          "Data": "ECQABQ=="
+        },
+        {
+          "Id": "#cc958773",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#a763774f",
+          "Data": "ECYAAw=="
+        },
+        {
+          "Id": "#29f84081",
+          "Data": "yclj/w=="
+        },
+        {
+          "Id": "#a6caa5cd",
+          "Data": "/wAAAQ=="
+        },
+        {
+          "Id": "#5a76bd48",
+          "Data": "gAEAEA=="
+        },
+        {
+          "Id": "#c6078ba2",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAAA=="
+        },
+        {
+          "Id": "#ddc999fa",
+          "Data": "AAABIQ=="
+        },
+        {
+          "Id": "#db335c76",
+          "Data": "UAAAAA=="
+        },
+        {
+          "Id": "#f2aa4ce8",
+          "Data": "FBOcYw=="
+        },
+        {
+          "Id": "#37872e8b",
+          "Data": "NsmcYw=="
+        },
+        {
+          "Id": "#6ba9f901",
+          "Data": "GhYZFQ=="
+        },
+        {
+          "Id": "#a2a0bdcd",
+          "Data": "GBQXEw=="
+        },
+        {
+          "Id": "#cefb1000",
+          "Data": "yTbJNg=="
+        },
+        {
+          "Id": "#db50a488",
+          "Data": "yQEAAA=="
+        },
+        {
+          "Id": "#a2c967b4",
+          "Data": "AAAhUA=="
+        },
+        {
+          "Id": "#74e40049",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#dc4a8856",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#44304f43",
+          "Data": "AAAAAA=="
+        },
+        {
+          "Id": "#cc958773",
+          "Data": "AAoAAA=="
+        },
+        {
+          "Id": "#a763774f",
+          "Data": "AB4AKA=="
+        },
+        {
+          "Id": "#29f84081",
+          "Data": "AAQHLg=="
+        },
+        {
+          "Id": "#a6caa5cd",
+          "Data": "Ci2qLA=="
+        },
+        {
+          "Id": "#bdb7f1ab",
+          "Data": "wAEAEA=="
+        },
+        {
+          "Id": "#c6078ba2",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAAA=="
+        },
+        {
+          "Id": "#ddc999fa",
+          "Data": "qgnQCg=="
+        },
+        {
+          "Id": "#db335c76",
+          "Data": "wAs2/w=="
+        },
+        {
+          "Id": "#f2aa4ce8",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#37872e8b",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#6ba9f901",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#a2a0bdcd",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#cefb1000",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#db50a488",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#a2c967b4",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#74e40049",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#dc4a8856",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#44304f43",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#cc958773",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#a763774f",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#29f84081",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#a6caa5cd",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#628b70ed",
+          "Data": "AAIACQ=="
+        },
+        {
+          "Id": "#c6078ba2",
+          "Data": "IgAAgA=="
+        },
+        {
+          "Id": "#48f37699",
+          "Data": "IgAAAA=="
+        },
+        {
+          "Id": "#ddc999fa",
+          "Data": "RFJPTQ=="
+        },
+        {
+          "Id": "#db335c76",
+          "Data": "ICAgIA=="
+        },
+        {
+          "Id": "#f2aa4ce8",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#37872e8b",
+          "Data": "/////w=="
+        },
+        {
+          "Id": "#6ba9f901",
+          "Data": "kwC8/Q=="
+        },
+        {
+          "Id": "#a2a0bdcd",
+          "Data": "RXYfhw=="
+        },
+        {
+          "Id": "#cefb1000",
+          "Data": "gPxj1g=="
+        },
+        {
+          "Id": "#db50a488",
+          "Data": "+gHaAA=="
+        },
+        {
+          "Id": "#a2c967b4",
+          "Data": "h4A0Eg=="
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+# Xinput
+[HIDRAW\VEN_1A86&DEV_E310]
+Plugin = legion_hid2
+GType = FuLegionHid2Device
+CounterpartGuid = HIDRAW\VEN_1A86&DEV_FE10
+FirmwareSizeMax = 0x2C000
+Flags = use-runtime-version
+InstallDuration = 15
+Name = Legion Go S
+
+# Dinput
+[HIDRAW\VEN_1A86&DEV_E311]
+Plugin = legion_hid2
+GType = FuLegionHid2Device
+CounterpartGuid = HIDRAW\VEN_1A86&DEV_FE10
+FirmwareSizeMax = 0x2C000
+Flags = use-runtime-version
+InstallDuration = 15
+Name = Legion Go S
+
+# IAP
+[HIDRAW\VEN_1A86&DEV_FE10]
+Plugin = legion_hid2
+GType = FuLegionHid2IapDevice
+Flags = is-bootloader
+FirmwareSizeMax = 0x2C000
+InstallDuration = 15
+Name = Legion Go S IAP

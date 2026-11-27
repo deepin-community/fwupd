@@ -1,28 +1,84 @@
-[DeviceInstanceId=USB\VID_06CB&PID_00A9]
+[USB\VID_06CB&PID_00A9]
 Plugin = synaptics_prometheus
 InstallDuration = 2
 
-[DeviceInstanceId=USB\VID_06CB&PID_00BD]
+[USB\VID_06CB&PID_00BD]
 Plugin = synaptics_prometheus
 InstallDuration = 2
 
-[DeviceInstanceId=USB\VID_06CB&PID_00DF]
+[USB\VID_06CB&PID_00DF]
 Plugin = synaptics_prometheus
 InstallDuration = 2
 
-[DeviceInstanceId=USB\VID_06CB&PID_00E9]
+[USB\VID_06CB&PID_00E9]
 Plugin = synaptics_prometheus
 InstallDuration = 2
 
-[DeviceInstanceId=USB\VID_06CB&PID_00C2]
+[USB\VID_06CB&PID_00C2]
 Plugin = synaptics_prometheus
 InstallDuration = 2
 
-[DeviceInstanceId=USB\VID_06CB&PID_00F9]
+[USB\VID_06CB&PID_00C6]
 Plugin = synaptics_prometheus
 InstallDuration = 2
 
-[DeviceInstanceId=USB\VID_06CB&PID_00FC]
+[USB\VID_06CB&PID_00F9]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_00FC]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_00D8]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_00F0]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0103]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0123]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0126]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0129]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0100]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0168]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_015F]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0104]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0160]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0106]
+Plugin = synaptics_prometheus
+InstallDuration = 2
+
+[USB\VID_06CB&PID_0108]
 Plugin = synaptics_prometheus
 InstallDuration = 2
 

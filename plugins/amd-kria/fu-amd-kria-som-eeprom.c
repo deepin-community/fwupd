@@ -1,0 +1,172 @@
+/*
+ * Copyright 2024 Advanced Micro Devices Inc.
+ * All rights reserved.
+ * This file is provided under a dual MIT/LGPLv2 license.  When using or
+ * redistributing this file, you may do so under either license.
+ * AMD Chooses the MIT license part of Dual MIT/LGPLv2 license agreement.
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR MIT
+ */
+
+#include "config.h"
+
+#include "fu-amd-kria-som-eeprom-struct.h"
+#include "fu-amd-kria-som-eeprom.h"
+
+struct _FuAmdKriaSomEeprom {
+	FuFirmware parent_instance;
+	gchar *manufacturer;
+	gchar *product_name;
+	gchar *serial_number;
+};
+
+G_DEFINE_TYPE(FuAmdKriaSomEeprom, fu_amd_kria_som_eeprom, FU_TYPE_FIRMWARE)
+
+/* IPMI spec encodes 0:5 as length and 6:7 as "type" code */
+#define LENGTH(data)	data & 0x3f
+#define TYPE_CODE(data) data >> 6
+
+static gboolean
+fu_amd_kria_som_eeprom_parse(FuFirmware *firmware,
+			     GInputStream *stream,
+			     FuFirmwareParseFlags flags,
+			     GError **error)
+{
+	FuAmdKriaSomEeprom *self = FU_AMD_KRIA_SOM_EEPROM(firmware);
+	guint8 str_len = 0;
+	guint8 str_offset = FU_STRUCT_BOARD_INFO_OFFSET_MANUFACTURER_LEN;
+	guint8 board_offset;
+	const guint8 *buf;
+	gsize bufsz = 0;
+	g_autoptr(FuStructIpmiCommon) st_common = NULL;
+	g_autoptr(FuStructBoardInfo) st_board = NULL;
+	g_autoptr(GBytes) fw = NULL;
+
+	/* parse IPMI common header */
+	st_common = fu_struct_ipmi_common_parse_stream(stream, 0x0, error);
+	if (st_common == NULL)
+		return FALSE;
+	board_offset = fu_struct_ipmi_common_get_board_offset(st_common) * 8;
+
+	/* parse board info area */
+	st_board = fu_struct_board_info_parse_stream(stream, board_offset, error);
+	if (st_board == NULL)
+		return FALSE;
+
+	fw = fu_input_stream_read_bytes(stream,
+					board_offset,
+					fu_struct_board_info_get_length(st_board) * 8,
+					NULL,
+					error);
+	if (fw == NULL)
+		return FALSE;
+	buf = fu_bytes_get_data_safe(fw, &bufsz, error);
+	if (buf == NULL)
+		return FALSE;
+
+	/* manufacturer string in board area */
+	str_offset = str_offset + str_len;
+	if (str_offset >= bufsz) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_DATA,
+				    "board info manufacturer offset out of bounds");
+		return FALSE;
+	}
+	str_len = LENGTH(buf[str_offset]);
+	str_offset++;
+	self->manufacturer = fu_memstrsafe(buf, bufsz, str_offset, str_len, error);
+	if (self->manufacturer == NULL)
+		return FALSE;
+
+	str_offset = str_offset + str_len;
+	if (str_offset >= bufsz) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_DATA,
+				    "board info product name offset out of bounds");
+		return FALSE;
+	}
+	str_len = LENGTH(buf[str_offset]);
+	str_offset++;
+	self->product_name = fu_memstrsafe(buf, bufsz, str_offset, str_len, error);
+	if (self->product_name == NULL)
+		return FALSE;
+
+	str_offset = str_offset + str_len;
+	if (str_offset >= bufsz) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_DATA,
+				    "board info serial number offset out of bounds");
+		return FALSE;
+	}
+	str_len = LENGTH(buf[str_offset]);
+	str_offset++;
+	self->serial_number = fu_memstrsafe(buf, bufsz, str_offset, str_len, error);
+	if (self->serial_number == NULL)
+		return FALSE;
+
+	return TRUE;
+}
+
+const gchar *
+fu_amd_kria_som_eeprom_get_manufacturer(FuAmdKriaSomEeprom *self)
+{
+	return self->manufacturer;
+}
+
+const gchar *
+fu_amd_kria_som_eeprom_get_product_name(FuAmdKriaSomEeprom *self)
+{
+	return self->product_name;
+}
+
+const gchar *
+fu_amd_kria_som_eeprom_get_serial_number(FuAmdKriaSomEeprom *self)
+{
+	return self->serial_number;
+}
+
+static void
+fu_amd_kria_som_eeprom_export(FuFirmware *firmware, FuFirmwareExportFlags flags, XbBuilderNode *bn)
+{
+	FuAmdKriaSomEeprom *self = FU_AMD_KRIA_SOM_EEPROM(firmware);
+
+	fu_xmlb_builder_insert_kv(bn, "manufacturer", self->manufacturer);
+	fu_xmlb_builder_insert_kv(bn, "product_name", self->product_name);
+	fu_xmlb_builder_insert_kv(bn, "serial_number", self->serial_number);
+}
+
+static void
+fu_amd_kria_som_eeprom_init(FuAmdKriaSomEeprom *self)
+{
+	fu_firmware_add_flag(FU_FIRMWARE(self), FU_FIRMWARE_FLAG_NO_AUTO_DETECTION);
+}
+
+static void
+fu_amd_kria_som_eeprom_finalize(GObject *object)
+{
+	FuAmdKriaSomEeprom *self = FU_AMD_KRIA_SOM_EEPROM(object);
+
+	g_free(self->manufacturer);
+	g_free(self->product_name);
+	g_free(self->serial_number);
+
+	G_OBJECT_CLASS(fu_amd_kria_som_eeprom_parent_class)->finalize(object);
+}
+static void
+fu_amd_kria_som_eeprom_class_init(FuAmdKriaSomEepromClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS(klass);
+	FuFirmwareClass *firmware_class = FU_FIRMWARE_CLASS(klass);
+	object_class->finalize = fu_amd_kria_som_eeprom_finalize;
+	firmware_class->parse = fu_amd_kria_som_eeprom_parse;
+	firmware_class->export = fu_amd_kria_som_eeprom_export;
+}
+
+FuFirmware *
+fu_amd_kria_som_eeprom_new(void)
+{
+	return FU_FIRMWARE(g_object_new(FU_TYPE_AMD_KRIA_SOM_EEPROM, NULL));
+}

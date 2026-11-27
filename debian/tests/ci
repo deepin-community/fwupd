@@ -1,5 +1,12 @@
-#!/bin/sh
-set -e
-sed "s,^DisabledPlugins=.*,DisabledPlugins=," -i /etc/fwupd/daemon.conf
-sed "s,^VerboseDomains=.*,VerboseDomains=*,"  -i /etc/fwupd/daemon.conf
-gnome-desktop-testing-runner fwupd
+#!/bin/sh -e
+exec 2>&1
+# try loading the mtdram module to run our mtd tests
+modprobe mtdram || true
+fwupdtool enable-test-devices
+fwupdtool modify-config VerboseDomains "*"
+sed "s,ConditionVirtualization=.*,," \
+    /lib/systemd/system/fwupd.service > \
+    /etc/systemd/system/fwupd.service
+systemctl daemon-reload
+# run the tests
+gnome-desktop-testing-runner --timeout=1200 fwupd

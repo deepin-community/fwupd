@@ -1,211 +1,150 @@
 /*
- * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
+ * Copyright 2017 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
-#define G_LOG_DOMAIN				"FuSmbios"
+#define G_LOG_DOMAIN "FuSmbios"
 
 #include "config.h"
 
 #include <gio/gio.h>
 #include <string.h>
 
-#include "fu-common.h"
-#include "fu-smbios-private.h"
+#ifdef _WIN32
+#include <errhandlingapi.h>
+#include <sysinfoapi.h>
+#endif
+
 #include "fwupd-error.h"
 
+#include "fu-byte-array.h"
+#include "fu-common.h"
+#include "fu-input-stream.h"
+#include "fu-path.h"
+#include "fu-smbios-private.h"
+#include "fu-smbios-struct.h"
+#include "fu-string.h"
+
+/**
+ * FuSmbios:
+ *
+ * Enumerate the SMBIOS data on the system.
+ *
+ * See also: [class@FuHwids]
+ */
+
 struct _FuSmbios {
-	FuFirmware		 parent_instance;
-	guint32			 structure_table_len;
-	GPtrArray		*items;
+	FuFirmware parent_instance;
+	guint32 structure_table_len;
+	GPtrArray *items;
 };
 
-/* little endian */
-typedef struct __attribute__((packed)) {
-	gchar			 anchor_str[4];
-	guint8			 entry_point_csum;
-	guint8			 entry_point_len;
-	guint8			 smbios_major_ver;
-	guint8			 smbios_minor_ver;
-	guint16			 max_structure_sz;
-	guint8			 entry_point_rev;
-	guint8			 formatted_area[5];
-	gchar			 intermediate_anchor_str[5];
-	guint8			 intermediate_csum;
-	guint16			 structure_table_len;
-	guint32			 structure_table_addr;
-	guint16			 number_smbios_structs;
-	guint8			 smbios_bcd_rev;
-} FuSmbiosStructureEntryPoint32;
-
-/* little endian */
-typedef struct __attribute__((packed)) {
-	gchar			 anchor_str[5];
-	guint8			 entry_point_csum;
-	guint8			 entry_point_len;
-	guint8			 smbios_major_ver;
-	guint8			 smbios_minor_ver;
-	guint8			 smbios_docrev;
-	guint8			 entry_point_rev;
-	guint8			 reserved0;
-	guint32			 structure_table_len;
-	guint64			 structure_table_addr;
-} FuSmbiosStructureEntryPoint64;
-
 typedef struct {
-	guint8			 type;
-	guint16			 handle;
-	GByteArray		*buf;
-	GPtrArray		*strings;
+	guint8 type;
+	guint16 handle;
+	GByteArray *buf;
+	GPtrArray *strings;
 } FuSmbiosItem;
 
-G_DEFINE_TYPE (FuSmbios, fu_smbios, FU_TYPE_FIRMWARE)
+G_DEFINE_TYPE(FuSmbios, fu_smbios, FU_TYPE_FIRMWARE)
 
-static void
-fu_smbios_convert_dt_value (FuSmbios *self, guint8 type, guint8 offset, guint8 value)
+static FuSmbiosItem *
+fu_smbios_get_item_for_type_length(FuSmbios *self, guint8 type, guint8 length)
 {
-	FuSmbiosItem *item = g_ptr_array_index (self->items, type);
-	for (guint i = item->buf->len; i < (guint) offset + 1; i++)
-		fu_byte_array_append_uint8 (item->buf, 0x0);
-	item->buf->data[offset] = value;
-}
-
-static void
-fu_smbios_convert_dt_string (FuSmbios *self, guint8 type, guint8 offset,
-			     const gchar *path, const gchar *subpath)
-{
-	FuSmbiosItem *item = g_ptr_array_index (self->items, type);
-	gsize bufsz = 0;
-	g_autofree gchar *fn = g_build_filename (path, subpath, NULL);
-	g_autofree gchar *buf = NULL;
-
-	/* not found */
-	if (!g_file_get_contents (fn, &buf, &bufsz, NULL))
-		return;
-
-	/* add to strtab */
-	g_ptr_array_add (item->strings, g_strndup (buf, bufsz));
-	fu_smbios_convert_dt_value (self, type, offset, item->strings->len);
+	for (guint i = 0; i < self->items->len; i++) {
+		FuSmbiosItem *item = g_ptr_array_index(self->items, i);
+		if (item->type != type)
+			continue;
+		if (length != FU_SMBIOS_STRUCTURE_LENGTH_ANY && length != item->buf->len) {
+			g_debug("filtering SMBIOS structure by length: 0x%x != 0x%x",
+				length,
+				item->buf->len);
+			continue;
+		}
+		return item;
+	}
+	return NULL;
 }
 
 static gboolean
-fu_smbios_setup_from_path_dt (FuSmbios *self, const gchar *path, GError **error)
-{
-	g_autofree gchar *fn_battery = NULL;
-
-	/* add all four faked structures */
-	for (guint i = 0; i < FU_SMBIOS_STRUCTURE_TYPE_LAST; i++) {
-		FuSmbiosItem *item = g_new0 (FuSmbiosItem, 1);
-		item->type = i;
-		item->buf = g_byte_array_new ();
-		item->strings = g_ptr_array_new_with_free_func (g_free);
-		g_ptr_array_add (self->items, item);
-	}
-
-	/* if it has a battery it is portable (probably a laptop) */
-	fn_battery = g_build_filename (path, "battery", NULL);
-	if (g_file_test (fn_battery, G_FILE_TEST_EXISTS)) {
-		fu_smbios_convert_dt_value (self,
-					    FU_SMBIOS_STRUCTURE_TYPE_CHASSIS, 0x05,
-					    FU_SMBIOS_CHASSIS_KIND_PORTABLE);
-	}
-
-	/* DMI:Manufacturer */
-	fu_smbios_convert_dt_string (self, FU_SMBIOS_STRUCTURE_TYPE_SYSTEM, 0x04,
-				     path, "vendor");
-
-	/* DMI:Family */
-	fu_smbios_convert_dt_string (self, FU_SMBIOS_STRUCTURE_TYPE_SYSTEM, 0x1a,
-				     path, "model-name");
-
-	/* DMI:ProductName */
-	fu_smbios_convert_dt_string (self, FU_SMBIOS_STRUCTURE_TYPE_SYSTEM, 0x05,
-				     path, "model");
-
-	/* DMI:BiosVersion */
-	fu_smbios_convert_dt_string (self, FU_SMBIOS_STRUCTURE_TYPE_BIOS, 0x05,
-				     path, "ibm,firmware-versions/version");
-
-	/* DMI:BaseboardManufacturer */
-	fu_smbios_convert_dt_string (self, FU_SMBIOS_STRUCTURE_TYPE_BASEBOARD, 0x04,
-				     path, "vpd/root-node-vpd@a000/enclosure@1e00/backplane@800/vendor");
-
-	/* DMI:BaseboardProduct */
-	fu_smbios_convert_dt_string (self, FU_SMBIOS_STRUCTURE_TYPE_BASEBOARD, 0x05,
-				     path, "vpd/root-node-vpd@a000/enclosure@1e00/backplane@800/part-number");
-
-	return TRUE;
-}
-
-static gboolean
-fu_smbios_setup_from_data (FuSmbios *self, const guint8 *buf, gsize sz, GError **error)
+fu_smbios_setup_from_data(FuSmbios *self, const guint8 *buf, gsize bufsz, GError **error)
 {
 	/* go through each structure */
-	for (gsize i = 0; i < sz; i++) {
+	for (gsize i = 0; i < bufsz; i++) {
 		FuSmbiosItem *item;
-		guint16 str_handle = 0;
-		guint8 str_len = 0;
-		guint8 str_type = 0;
+		guint8 length;
+		g_autoptr(FuStructSmbiosStructure) st_str = NULL;
 
-		/* le */
-		if (!fu_common_read_uint8_safe (buf, sz, i + 0x0,
-						&str_type, error))
+		/* sanity check */
+		st_str = fu_struct_smbios_structure_parse(buf, bufsz, i, error);
+		if (st_str == NULL)
 			return FALSE;
-		if (!fu_common_read_uint8_safe (buf, sz, i + 0x1,
-						&str_len, error))
+		length = fu_struct_smbios_structure_get_length(st_str);
+		if (length < st_str->buf->len) {
+			g_set_error(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_FILE,
+				    "structure smaller than allowed @0x%x",
+				    (guint)i);
 			return FALSE;
-		if (!fu_common_read_uint16_safe (buf, sz, i + 0x2,
-						 &str_handle, G_LITTLE_ENDIAN,
-						 error))
-			return FALSE;
-
-		/* invalid */
-		if (str_len == 0x00)
-			break;
-		if (i + str_len >= sz) {
-			g_set_error_literal (error,
-					     FWUPD_ERROR,
-					     FWUPD_ERROR_INVALID_FILE,
-					     "structure larger than available data");
+		}
+		if (i + length >= bufsz) {
+			g_set_error(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_FILE,
+				    "structure larger than available data @0x%x",
+				    (guint)i);
 			return FALSE;
 		}
 
 		/* create a new result */
-		item = g_new0 (FuSmbiosItem, 1);
-		item->type = str_type;
-		item->handle = GUINT16_FROM_LE (str_handle);
-		item->buf = g_byte_array_sized_new (str_len);
-		item->strings = g_ptr_array_new_with_free_func (g_free);
-		g_byte_array_append (item->buf, buf + i, str_len);
-		g_ptr_array_add (self->items, item);
+		item = g_new0(FuSmbiosItem, 1);
+		item->type = fu_struct_smbios_structure_get_type(st_str);
+		item->handle = fu_struct_smbios_structure_get_handle(st_str);
+		item->buf = g_byte_array_sized_new(length);
+		item->strings = g_ptr_array_new_with_free_func(g_free);
+		g_byte_array_append(item->buf, buf + i, length);
+		g_ptr_array_add(self->items, item);
 
-		/* jump to the end of the struct */
-		i += str_len;
-		if (buf[i] == '\0' && buf[i+1] == '\0') {
-			i++;
-			continue;
-		}
+		/* jump to the end of the formatted area of the struct */
+		i += length;
 
 		/* add strings from table */
-		for (gsize start_offset = i; i < sz; i++) {
-			if (buf[i] == '\0') {
-				if (start_offset == i)
-					break;
-				g_ptr_array_add (item->strings,
-						 g_strdup ((const gchar *) &buf[start_offset]));
-				start_offset = i + 1;
-			}
+		while (i < bufsz) {
+			GString *str;
+
+			/* end of string section */
+			if (item->strings->len > 0 && buf[i] == 0x0)
+				break;
+
+			/* copy into string table */
+			str = fu_strdup((const gchar *)buf, bufsz, i);
+			i += str->len + 1;
+			g_ptr_array_add(item->strings, g_string_free(str, FALSE));
 		}
 	}
+
+	/* this has to exist */
+	if (fu_smbios_get_item_for_type_length(self,
+					       FU_SMBIOS_STRUCTURE_TYPE_SYSTEM,
+					       FU_SMBIOS_STRUCTURE_LENGTH_ANY) == NULL) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_FILE,
+				    "no structure with required type SYSTEM");
+		return FALSE;
+	}
+
+	/* success */
 	return TRUE;
 }
 
 /**
  * fu_smbios_setup_from_file:
- * @self: A #FuSmbios
- * @filename: A filename
- * @error: A #GError or %NULL
+ * @self: a #FuSmbios
+ * @filename: a filename
+ * @error: (nullable): optional return location for an error
  *
  * Reads all the SMBIOS values from a DMI blob.
  *
@@ -214,205 +153,107 @@ fu_smbios_setup_from_data (FuSmbios *self, const guint8 *buf, gsize sz, GError *
  * Since: 1.0.0
  **/
 gboolean
-fu_smbios_setup_from_file (FuSmbios *self, const gchar *filename, GError **error)
+fu_smbios_setup_from_file(FuSmbios *self, const gchar *filename, GError **error)
 {
 	gsize sz = 0;
 	g_autofree gchar *buf = NULL;
-	g_autofree gchar *basename = NULL;
 
-	g_return_val_if_fail (FU_IS_SMBIOS (self), FALSE);
-	g_return_val_if_fail (filename != NULL, FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	/* use a heuristic */
-	basename = g_path_get_basename (filename);
-	if (g_strcmp0 (basename, "base") == 0)
-		return fu_smbios_setup_from_path_dt (self, filename, error);
+	g_return_val_if_fail(FU_IS_SMBIOS(self), FALSE);
+	g_return_val_if_fail(filename != NULL, FALSE);
+	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
 	/* DMI blob */
-	if (!g_file_get_contents (filename, &buf, &sz, error))
+	if (!g_file_get_contents(filename, &buf, &sz, error))
 		return FALSE;
-	return fu_smbios_setup_from_data (self, (guint8 *) buf, sz, error);
+	return fu_smbios_setup_from_data(self, (guint8 *)buf, sz, error);
 }
 
 static gboolean
-fu_smbios_parse_ep32 (FuSmbios *self, const gchar *buf, gsize sz, GError **error)
+fu_smbios_parse_ep32(FuSmbios *self, const guint8 *buf, gsize bufsz, GError **error)
 {
-	FuSmbiosStructureEntryPoint32 *ep;
 	guint8 csum = 0;
 	g_autofree gchar *version_str = NULL;
-
-	/* verify size */
-	if (sz != sizeof(FuSmbiosStructureEntryPoint32)) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "invalid smbios entry point got %" G_GSIZE_FORMAT
-			     " bytes, expected %" G_GSIZE_FORMAT,
-			     sz, sizeof(FuSmbiosStructureEntryPoint32));
-		return FALSE;
-	}
+	g_autofree gchar *intermediate_anchor_str = NULL;
+	g_autoptr(FuStructSmbiosEp32) st_ep32 = NULL;
 
 	/* verify checksum */
-	for (guint i = 0; i < sz; i++)
+	st_ep32 = fu_struct_smbios_ep32_parse(buf, bufsz, 0x0, error);
+	if (st_ep32 == NULL)
+		return FALSE;
+	for (guint i = 0; i < bufsz; i++)
 		csum += buf[i];
 	if (csum != 0x00) {
-		g_set_error_literal (error,
-				     FWUPD_ERROR,
-				     FWUPD_ERROR_INVALID_FILE,
-				     "entry point checksum invalid");
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_FILE,
+				    "entry point checksum invalid");
 		return FALSE;
 	}
 
 	/* verify intermediate section */
-	ep = (FuSmbiosStructureEntryPoint32 *) buf;
-	if (memcmp (ep->intermediate_anchor_str, "_DMI_", 5) != 0) {
-		g_autofree gchar *tmp = g_strndup (ep->intermediate_anchor_str, 5);
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "intermediate anchor signature invalid, got %s", tmp);
+	intermediate_anchor_str = fu_struct_smbios_ep32_get_intermediate_anchor_str(st_ep32);
+	if (g_strcmp0(intermediate_anchor_str, "_DMI_") != 0) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "intermediate anchor signature invalid, got %s",
+			    intermediate_anchor_str);
 		return FALSE;
 	}
-	for (guint i = 10; i < sz; i++)
+	for (guint i = 10; i < bufsz; i++)
 		csum += buf[i];
 	if (csum != 0x00) {
-		g_set_error_literal (error,
-				     FWUPD_ERROR,
-				     FWUPD_ERROR_INVALID_FILE,
-				     "intermediate checksum invalid");
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_FILE,
+				    "intermediate checksum invalid");
 		return FALSE;
 	}
-	self->structure_table_len = GUINT16_FROM_LE (ep->structure_table_len);
-	version_str = g_strdup_printf ("%u.%u",
-				       ep->smbios_major_ver,
-				       ep->smbios_minor_ver);
-	fu_firmware_set_version (FU_FIRMWARE (self), version_str);
-	fu_firmware_set_version_raw (FU_FIRMWARE (self),
-				     (((guint16) ep->smbios_major_ver) << 8) +
-				     ep->smbios_minor_ver);
+	self->structure_table_len = fu_struct_smbios_ep32_get_structure_table_len(st_ep32);
+	version_str = g_strdup_printf("%u.%u",
+				      fu_struct_smbios_ep32_get_smbios_major_ver(st_ep32),
+				      fu_struct_smbios_ep32_get_smbios_minor_ver(st_ep32));
+	fu_firmware_set_version(FU_FIRMWARE(self), version_str); /* nocheck:set-version */
+	fu_firmware_set_version_raw(
+	    FU_FIRMWARE(self),
+	    (((guint16)fu_struct_smbios_ep32_get_smbios_major_ver(st_ep32)) << 8) +
+		fu_struct_smbios_ep32_get_smbios_minor_ver(st_ep32));
 	return TRUE;
 }
 
 static gboolean
-fu_smbios_parse_ep64 (FuSmbios *self, const gchar *buf, gsize sz, GError **error)
+fu_smbios_parse_ep64(FuSmbios *self, const guint8 *buf, gsize bufsz, GError **error)
 {
-	FuSmbiosStructureEntryPoint64 *ep;
 	guint8 csum = 0;
 	g_autofree gchar *version_str = NULL;
-
-	/* verify size */
-	if (sz != sizeof(FuSmbiosStructureEntryPoint64)) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "invalid smbios3 entry point got %" G_GSIZE_FORMAT
-			     " bytes, expected %" G_GSIZE_FORMAT,
-			     sz, sizeof(FuSmbiosStructureEntryPoint32));
-		return FALSE;
-	}
+	g_autoptr(FuStructSmbiosEp64) st_ep64 = NULL;
 
 	/* verify checksum */
-	for (guint i = 0; i < sz; i++)
+	st_ep64 = fu_struct_smbios_ep64_parse(buf, bufsz, 0x0, error);
+	if (st_ep64 == NULL)
+		return FALSE;
+	for (guint i = 0; i < bufsz; i++)
 		csum += buf[i];
 	if (csum != 0x00) {
-		g_set_error_literal (error,
-				     FWUPD_ERROR,
-				     FWUPD_ERROR_INVALID_FILE,
-				     "entry point checksum invalid");
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_FILE,
+				    "entry point checksum invalid");
 		return FALSE;
 	}
-	ep = (FuSmbiosStructureEntryPoint64 *) buf;
-	self->structure_table_len = GUINT32_FROM_LE (ep->structure_table_len);
-	version_str = g_strdup_printf ("%u.%u",
-				       ep->smbios_major_ver,
-				       ep->smbios_minor_ver);
-	fu_firmware_set_version (FU_FIRMWARE (self), version_str);
+	self->structure_table_len = fu_struct_smbios_ep64_get_structure_table_len(st_ep64);
+	version_str = g_strdup_printf("%u.%u",
+				      fu_struct_smbios_ep64_get_smbios_major_ver(st_ep64),
+				      fu_struct_smbios_ep64_get_smbios_minor_ver(st_ep64));
+	fu_firmware_set_version(FU_FIRMWARE(self), version_str); /* nocheck:set-version */
 	return TRUE;
-}
-
-static gboolean
-fu_smbios_setup_from_path_dmi (FuSmbios *self, const gchar *path, GError **error)
-{
-	gsize sz = 0;
-	g_autofree gchar *dmi_fn = NULL;
-	g_autofree gchar *dmi_raw = NULL;
-	g_autofree gchar *ep_fn = NULL;
-	g_autofree gchar *ep_raw = NULL;
-
-	g_return_val_if_fail (FU_IS_SMBIOS (self), FALSE);
-
-	/* get the smbios entry point */
-	ep_fn = g_build_filename (path, "smbios_entry_point", NULL);
-	if (!g_file_get_contents (ep_fn, &ep_raw, &sz, error))
-		return FALSE;
-
-	/* check we got enough data to read the signature */
-	if (sz < 5) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "invalid smbios entry point got %" G_GSIZE_FORMAT
-			     " bytes, expected %" G_GSIZE_FORMAT
-			     " or %" G_GSIZE_FORMAT, sz,
-			     sizeof(FuSmbiosStructureEntryPoint32),
-			     sizeof(FuSmbiosStructureEntryPoint64));
-		return FALSE;
-	}
-
-	/* parse 32 bit structure */
-	if (memcmp (ep_raw, "_SM_", 4) == 0) {
-		if (!fu_smbios_parse_ep32 (self, ep_raw, sz, error))
-			return FALSE;
-	} else if (memcmp (ep_raw, "_SM3_", 5) == 0) {
-		if (!fu_smbios_parse_ep64 (self, ep_raw, sz, error))
-			return FALSE;
-	} else {
-		g_autofree gchar *tmp = g_strndup (ep_raw, 4);
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "SMBIOS signature invalid, got %s", tmp);
-		return FALSE;
-	}
-
-	/* get the DMI data */
-	dmi_fn = g_build_filename (path, "DMI", NULL);
-	if (!g_file_get_contents (dmi_fn, &dmi_raw, &sz, error))
-		return FALSE;
-	if (sz != self->structure_table_len) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "invalid DMI data size, got %" G_GSIZE_FORMAT
-			     " bytes, expected %" G_GUINT32_FORMAT,
-			     sz, self->structure_table_len);
-		return FALSE;
-	}
-
-	/* parse blob */
-	return fu_smbios_setup_from_data (self, (guint8 *) dmi_raw, sz, error);
-}
-
-static gboolean
-fu_smbios_parse (FuFirmware *firmware,
-		 GBytes *fw,
-		 guint64 addr_start,
-		 guint64 addr_end,
-		 FwupdInstallFlags flags,
-		 GError **error)
-{
-	FuSmbios *self = FU_SMBIOS (firmware);
-	gsize bufsz = 0;
-	const guint8 *buf = g_bytes_get_data (fw, &bufsz);
-	return fu_smbios_setup_from_data (self, buf, bufsz, error);
 }
 
 /**
  * fu_smbios_setup_from_path:
- * @self: A #FuSmbios
- * @path: A path, e.g. `/sys/firmware/dmi/tables`
- * @error: A #GError or %NULL
+ * @self: a #FuSmbios
+ * @path: a path, e.g. `/sys/firmware/dmi/tables`
+ * @error: (nullable): optional return location for an error
  *
  * Reads all the SMBIOS values from a specific path.
  *
@@ -421,25 +262,102 @@ fu_smbios_parse (FuFirmware *firmware,
  * Since: 1.0.0
  **/
 gboolean
-fu_smbios_setup_from_path (FuSmbios *self, const gchar *path, GError **error)
+fu_smbios_setup_from_path(FuSmbios *self, const gchar *path, GError **error)
 {
-	g_autofree gchar *basename = NULL;
+	gsize sz = 0;
+	g_autofree gchar *dmi_fn = NULL;
+	g_autofree gchar *dmi_raw = NULL;
+	g_autofree gchar *ep_fn = NULL;
+	g_autofree gchar *ep_raw = NULL;
 
-	g_return_val_if_fail (FU_IS_SMBIOS (self), FALSE);
-	g_return_val_if_fail (path != NULL, FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+	g_return_val_if_fail(FU_IS_SMBIOS(self), FALSE);
+	g_return_val_if_fail(path != NULL, FALSE);
+	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
-	/* use a heuristic */
-	basename = g_path_get_basename (path);
-	if (g_strcmp0 (basename, "base") == 0)
-		return fu_smbios_setup_from_path_dt (self, path, error);
-	return fu_smbios_setup_from_path_dmi (self, path, error);
+	/* get the smbios entry point */
+	ep_fn = g_build_filename(path, "smbios_entry_point", NULL);
+	if (!g_file_get_contents(ep_fn, &ep_raw, &sz, error)) {
+		fwupd_error_convert(error);
+		return FALSE;
+	}
+
+	/* check we got enough data to read the signature */
+	if (sz < 5) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "invalid smbios entry point got 0x%x bytes, expected 0x%x or 0x%x",
+			    (guint)sz,
+			    (guint)FU_STRUCT_SMBIOS_EP32_SIZE,
+			    (guint)FU_STRUCT_SMBIOS_EP64_SIZE);
+		return FALSE;
+	}
+
+	/* parse 32 bit structure */
+	if (memcmp(ep_raw, "_SM_", 4) == 0) {
+		if (!fu_smbios_parse_ep32(self, (const guint8 *)ep_raw, sz, error))
+			return FALSE;
+	} else if (memcmp(ep_raw, "_SM3_", 5) == 0) {
+		if (!fu_smbios_parse_ep64(self, (const guint8 *)ep_raw, sz, error))
+			return FALSE;
+	} else {
+		g_autofree gchar *tmp = g_strndup(ep_raw, 4);
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "SMBIOS signature invalid, got %s",
+			    tmp);
+		return FALSE;
+	}
+
+	/* get the DMI data */
+	dmi_fn = g_build_filename(path, "DMI", NULL);
+	if (!g_file_get_contents(dmi_fn, &dmi_raw, &sz, error)) {
+		fwupd_error_convert(error);
+		return FALSE;
+	}
+	if (sz > self->structure_table_len) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "invalid DMI data size, got 0x%x bytes, expected 0x%x",
+			    (guint)sz,
+			    self->structure_table_len);
+		return FALSE;
+	}
+
+	/* parse blob */
+	return fu_smbios_setup_from_data(self, (guint8 *)dmi_raw, sz, error);
 }
+
+static gboolean
+fu_smbios_parse(FuFirmware *firmware,
+		GInputStream *stream,
+		FuFirmwareParseFlags flags,
+		GError **error)
+{
+	FuSmbios *self = FU_SMBIOS(firmware);
+	g_autoptr(GBytes) fw = NULL;
+	fw = fu_input_stream_read_bytes(stream, 0x0, G_MAXSIZE, NULL, error);
+	if (fw == NULL)
+		return FALSE;
+	return fu_smbios_setup_from_data(self,
+					 g_bytes_get_data(fw, NULL),
+					 g_bytes_get_size(fw),
+					 error);
+}
+
+#ifdef _WIN32
+#define FU_SMBIOS_FT_SIG_ACPI	0x41435049
+#define FU_SMBIOS_FT_SIG_FIRM	0x4649524D
+#define FU_SMBIOS_FT_SIG_RSMB	0x52534D42
+#define FU_SMBIOS_FT_RAW_OFFSET 0x08
+#endif
 
 /**
  * fu_smbios_setup:
- * @self: A #FuSmbios
- * @error: A #GError or %NULL
+ * @self: a #FuSmbios
+ * @error: (nullable): optional return location for an error
  *
  * Reads all the SMBIOS values from the hardware.
  *
@@ -448,119 +366,145 @@ fu_smbios_setup_from_path (FuSmbios *self, const gchar *path, GError **error)
  * Since: 1.0.0
  **/
 gboolean
-fu_smbios_setup (FuSmbios *self, GError **error)
+fu_smbios_setup(FuSmbios *self, GError **error)
 {
+#ifdef _WIN32
+	gsize bufsz;
+	guint rc;
+	g_autofree guint8 *buf = NULL;
+
+	rc = GetSystemFirmwareTable(FU_SMBIOS_FT_SIG_RSMB, 0, 0, 0);
+	if (rc <= 0) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "failed to access RSMB [%u]",
+			    (guint)GetLastError());
+		return FALSE;
+	}
+	if (rc < FU_SMBIOS_FT_RAW_OFFSET || rc > 0x1000000) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_FILE,
+				    "RSMB impossible size");
+		return FALSE;
+	}
+	bufsz = rc;
+	buf = g_malloc0(bufsz);
+	rc = GetSystemFirmwareTable(FU_SMBIOS_FT_SIG_RSMB, 0, buf, (DWORD)bufsz);
+	if (rc <= 0) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "failed to read RSMB [%u]",
+			    (guint)GetLastError());
+		return FALSE;
+	}
+	return fu_smbios_setup_from_data(self,
+					 buf + FU_SMBIOS_FT_RAW_OFFSET,
+					 bufsz - FU_SMBIOS_FT_RAW_OFFSET,
+					 error);
+#else
 	g_autofree gchar *path = NULL;
-	g_autofree gchar *path_dt = NULL;
-	g_autofree gchar *sysfsfwdir = NULL;
+	g_autoptr(GError) error_local = NULL;
 
-	g_return_val_if_fail (FU_IS_SMBIOS (self), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	sysfsfwdir = fu_common_get_path (FU_PATH_KIND_SYSFSDIR_FW);
+	g_return_val_if_fail(FU_IS_SMBIOS(self), FALSE);
+	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
 	/* DMI */
-	path = g_build_filename (sysfsfwdir, "dmi", "tables", NULL);
-	if (g_file_test (path, G_FILE_TEST_EXISTS))
-		return fu_smbios_setup_from_path (self, path, error);
+	path = fu_path_build(FU_PATH_KIND_SYSFSDIR_FW, "dmi", "tables", NULL);
+	if (!g_file_test(path, G_FILE_TEST_EXISTS)) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_NOT_SUPPORTED,
+			    "SMBIOS tables not found at %s",
+			    path);
+		return FALSE;
+	}
+	if (!fu_smbios_setup_from_path(self, path, &error_local)) {
+		if (!g_error_matches(error_local, FWUPD_ERROR, FWUPD_ERROR_INVALID_FILE)) {
+			g_propagate_error(error, g_steal_pointer(&error_local));
+			return FALSE;
+		}
+		g_debug("ignoring %s", error_local->message);
+	}
 
-	/* DT */
-	path_dt = g_build_filename (sysfsfwdir, "devicetree", "base", NULL);
-	if (g_file_test (path_dt, G_FILE_TEST_EXISTS))
-		return fu_smbios_setup_from_path (self, path_dt, error);
-
-	/* neither found */
-	g_set_error_literal (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "neither SMBIOS or DT found");
-	return FALSE;
-
+	/* success */
+	return TRUE;
+#endif
 }
 
 static void
-fu_smbios_to_string_internal (FuFirmware *firmware, guint idt, GString *str)
+fu_smbios_export(FuFirmware *firmware, FuFirmwareExportFlags flags, XbBuilderNode *bn)
 {
-	FuSmbios *self = FU_SMBIOS (firmware);
+	FuSmbios *self = FU_SMBIOS(firmware);
+
 	for (guint i = 0; i < self->items->len; i++) {
-		FuSmbiosItem *item = g_ptr_array_index (self->items, i);
-		fu_common_string_append_kx (str, idt + 0, "Type", item->type);
-		fu_common_string_append_kx (str, idt + 1, "Length", item->buf->len);
-		fu_common_string_append_kx (str, idt + 1, "Handle", item->handle);
+		FuSmbiosItem *item = g_ptr_array_index(self->items, i);
+		g_autoptr(XbBuilderNode) bc = xb_builder_node_insert(bn, "item", NULL);
+		g_autofree gchar *buf = fu_byte_array_to_string(item->buf);
+		fu_xmlb_builder_insert_kx(bc, "type", item->type);
+		fu_xmlb_builder_insert_kx(bc, "length", item->buf->len);
+		fu_xmlb_builder_insert_kx(bc, "handle", item->handle);
+		fu_xmlb_builder_insert_kv(bc, "buf", buf);
 		for (guint j = 0; j < item->strings->len; j++) {
-			const gchar *tmp = g_ptr_array_index (item->strings, j);
-			g_autofree gchar *title = g_strdup_printf ("String[%02u]", j);
-			g_autofree gchar *value = fu_common_strsafe (tmp, 20);
-			fu_common_string_append_kv (str, idt + 2, title, value);
+			const gchar *tmp = g_ptr_array_index(item->strings, j);
+			g_autofree gchar *title = g_strdup_printf("%02u", j);
+			g_autofree gchar *value = fu_strsafe(tmp, 40);
+			xb_builder_node_insert_text(bc, "string", value, "idx", title, NULL);
 		}
 	}
 }
 
 /**
- * fu_smbios_to_string:
- * @self: A #FuSmbios
- *
- * Dumps the parsed SMBIOS data to a string.
- *
- * Returns: a UTF-8 string
- *
- * Since: 1.0.0
- **/
-gchar *
-fu_smbios_to_string (FuSmbios *self)
-{
-	g_return_val_if_fail (FU_IS_SMBIOS (self), NULL);
-	return fu_firmware_to_string (FU_FIRMWARE (self));
-}
-
-static FuSmbiosItem *
-fu_smbios_get_item_for_type (FuSmbios *self, guint8 type)
-{
-	for (guint i = 0; i < self->items->len; i++) {
-		FuSmbiosItem *item = g_ptr_array_index (self->items, i);
-		if (item->type == type)
-			return item;
-	}
-	return NULL;
-}
-
-/**
  * fu_smbios_get_data:
- * @self: A #FuSmbios
- * @type: A structure type, e.g. %FU_SMBIOS_STRUCTURE_TYPE_BIOS
- * @error: A #GError or %NULL
+ * @self: a #FuSmbios
+ * @type: a structure type, e.g. %FU_SMBIOS_STRUCTURE_TYPE_BIOS
+ * @length: expected length of the structure, or %FU_SMBIOS_STRUCTURE_LENGTH_ANY
+ * @error: (nullable): optional return location for an error
  *
- * Reads a SMBIOS data blob, which includes the SMBIOS section header.
+ * Reads all the SMBIOS data blobs of a specified type.
  *
- * Returns: (transfer full): a #GBytes, or %NULL if invalid or not found
+ * Returns: (transfer container) (element-type GBytes): a #GBytes, or %NULL if invalid or not found
  *
- * Since: 1.0.0
+ * Since: 2.0.7
  **/
-GBytes *
-fu_smbios_get_data (FuSmbios *self, guint8 type, GError **error)
+GPtrArray *
+fu_smbios_get_data(FuSmbios *self, guint8 type, guint8 length, GError **error)
 {
-	FuSmbiosItem *item;
+	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func((GDestroyNotify)g_bytes_unref);
 
-	g_return_val_if_fail (FU_IS_SMBIOS (self), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+	g_return_val_if_fail(FU_IS_SMBIOS(self), NULL);
+	g_return_val_if_fail(error == NULL || *error == NULL, NULL);
 
-	item = fu_smbios_get_item_for_type (self, type);
-	if (item == NULL) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "no structure with type %02x", type);
+	for (guint i = 0; i < self->items->len; i++) {
+		FuSmbiosItem *item = g_ptr_array_index(self->items, i);
+		if (item->type != type)
+			continue;
+		if (length != FU_SMBIOS_STRUCTURE_LENGTH_ANY && length != item->buf->len)
+			continue;
+		if (item->buf->len == 0)
+			continue;
+		g_ptr_array_add(array, g_bytes_new(item->buf->data, item->buf->len));
+	}
+	if (array->len == 0) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "no structures with type %02x",
+			    type);
 		return NULL;
 	}
-	return g_bytes_new (item->buf->data, item->buf->len);
+	return g_steal_pointer(&array);
 }
 
 /**
  * fu_smbios_get_integer:
- * @self: A #FuSmbios
- * @type: A structure type, e.g. %FU_SMBIOS_STRUCTURE_TYPE_BIOS
- * @offset: A structure offset
- * @error: A #GError or %NULL
+ * @self: a #FuSmbios
+ * @type: a structure type, e.g. %FU_SMBIOS_STRUCTURE_TYPE_BIOS
+ * @length: expected length of the structure, or %FU_SMBIOS_STRUCTURE_LENGTH_ANY
+ * @offset: a structure offset
+ * @error: (nullable): optional return location for an error
  *
  * Reads an integer value from the SMBIOS string table of a specific structure.
  *
@@ -569,33 +513,34 @@ fu_smbios_get_data (FuSmbios *self, guint8 type, GError **error)
  *
  * Returns: an integer, or %G_MAXUINT if invalid or not found
  *
- * Since: 1.5.0
+ * Since: 2.0.7
  **/
 guint
-fu_smbios_get_integer (FuSmbios *self, guint8 type, guint8 offset, GError **error)
+fu_smbios_get_integer(FuSmbios *self, guint8 type, guint8 length, guint8 offset, GError **error)
 {
 	FuSmbiosItem *item;
 
-	g_return_val_if_fail (FU_IS_SMBIOS (self), 0);
-	g_return_val_if_fail (error == NULL || *error == NULL, 0);
+	g_return_val_if_fail(FU_IS_SMBIOS(self), 0);
+	g_return_val_if_fail(error == NULL || *error == NULL, 0);
 
 	/* get item */
-	item = fu_smbios_get_item_for_type (self, type);
+	item = fu_smbios_get_item_for_type_length(self, type, length);
 	if (item == NULL) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "no structure with type %02x", type);
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "no structure with type %02x",
+			    type);
 		return G_MAXUINT;
 	}
 
 	/* check offset valid */
 	if (offset >= item->buf->len) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "offset bigger than size %u",
-			     item->buf->len);
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "offset bigger than size %u",
+			    item->buf->len);
 		return G_MAXUINT;
 	}
 
@@ -605,10 +550,11 @@ fu_smbios_get_integer (FuSmbios *self, guint8 type, guint8 offset, GError **erro
 
 /**
  * fu_smbios_get_string:
- * @self: A #FuSmbios
- * @type: A structure type, e.g. %FU_SMBIOS_STRUCTURE_TYPE_BIOS
- * @offset: A structure offset
- * @error: A #GError or %NULL
+ * @self: a #FuSmbios
+ * @type: a structure type, e.g. %FU_SMBIOS_STRUCTURE_TYPE_BIOS
+ * @length: expected length of the structure, or %FU_SMBIOS_STRUCTURE_LENGTH_ANY
+ * @offset: a structure offset
+ * @error: (nullable): optional return location for an error
  *
  * Reads a string from the SMBIOS string table of a specific structure.
  *
@@ -617,85 +563,83 @@ fu_smbios_get_integer (FuSmbios *self, guint8 type, guint8 offset, GError **erro
  *
  * Returns: a string, or %NULL if invalid or not found
  *
- * Since: 1.0.0
+ * Since: 2.0.7
  **/
 const gchar *
-fu_smbios_get_string (FuSmbios *self, guint8 type, guint8 offset, GError **error)
+fu_smbios_get_string(FuSmbios *self, guint8 type, guint8 length, guint8 offset, GError **error)
 {
 	FuSmbiosItem *item;
 
-	g_return_val_if_fail (FU_IS_SMBIOS (self), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+	g_return_val_if_fail(FU_IS_SMBIOS(self), NULL);
+	g_return_val_if_fail(error == NULL || *error == NULL, NULL);
 
 	/* get item */
-	item = fu_smbios_get_item_for_type (self, type);
+	item = fu_smbios_get_item_for_type_length(self, type, length);
 	if (item == NULL) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "no structure with type %02x", type);
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "no structure with type %02x",
+			    type);
 		return NULL;
 	}
 
 	/* check offset valid */
 	if (offset >= item->buf->len) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "offset bigger than size %u",
-			     item->buf->len);
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "offset bigger than size %u",
+			    item->buf->len);
 		return NULL;
 	}
 	if (item->buf->data[offset] == 0x00) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_NOT_FOUND,
-			     "no data available");
+		g_set_error_literal(error, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND, "no data available");
 		return NULL;
 	}
 
 	/* check string index valid */
 	if (item->buf->data[offset] > item->strings->len) {
-		g_set_error (error,
-			     FWUPD_ERROR,
-			     FWUPD_ERROR_INVALID_FILE,
-			     "index larger than string table %u",
-			     item->strings->len);
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "index larger than string table %u",
+			    item->strings->len);
 		return NULL;
 	}
-	return g_ptr_array_index (item->strings, item->buf->data[offset] - 1);
+	return g_ptr_array_index(item->strings, item->buf->data[offset] - 1);
 }
 
 static void
-fu_smbios_item_free (FuSmbiosItem *item)
+fu_smbios_item_free(FuSmbiosItem *item)
 {
-	g_byte_array_unref (item->buf);
-	g_ptr_array_unref (item->strings);
-	g_free (item);
+	g_byte_array_unref(item->buf);
+	g_ptr_array_unref(item->strings);
+	g_free(item);
 }
 
 static void
-fu_smbios_finalize (GObject *object)
+fu_smbios_finalize(GObject *object)
 {
-	FuSmbios *self = FU_SMBIOS (object);
-	g_ptr_array_unref (self->items);
-	G_OBJECT_CLASS (fu_smbios_parent_class)->finalize (object);
+	FuSmbios *self = FU_SMBIOS(object);
+	g_ptr_array_unref(self->items);
+	G_OBJECT_CLASS(fu_smbios_parent_class)->finalize(object);
 }
 
 static void
-fu_smbios_class_init (FuSmbiosClass *klass)
+fu_smbios_class_init(FuSmbiosClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	FuFirmwareClass *klass_firmware = FU_FIRMWARE_CLASS (klass);
+	GObjectClass *object_class = G_OBJECT_CLASS(klass);
+	FuFirmwareClass *firmware_class = FU_FIRMWARE_CLASS(klass);
 	object_class->finalize = fu_smbios_finalize;
-	klass_firmware->parse = fu_smbios_parse;
-	klass_firmware->to_string = fu_smbios_to_string_internal;
+	firmware_class->parse = fu_smbios_parse;
+	firmware_class->export = fu_smbios_export;
 }
 
 static void
-fu_smbios_init (FuSmbios *self)
+fu_smbios_init(FuSmbios *self)
 {
-	self->items = g_ptr_array_new_with_free_func ((GDestroyNotify) fu_smbios_item_free);
+	self->items = g_ptr_array_new_with_free_func((GDestroyNotify)fu_smbios_item_free);
 }
 
 /**
@@ -708,9 +652,9 @@ fu_smbios_init (FuSmbios *self)
  * Since: 1.0.0
  **/
 FuSmbios *
-fu_smbios_new (void)
+fu_smbios_new(void)
 {
 	FuSmbios *self;
-	self = g_object_new (FU_TYPE_SMBIOS, NULL);
-	return FU_SMBIOS (self);
+	self = g_object_new(FU_TYPE_SMBIOS, NULL);
+	return FU_SMBIOS(self);
 }

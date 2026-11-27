@@ -1,0 +1,641 @@
+/**
+ * {{obj.c_method('Ref')}}: (skip):
+ **/
+{{obj.name}} *
+{{obj.c_method('Ref')}}({{obj.name}} *st)
+{
+    g_return_val_if_fail(st != NULL, NULL);
+    st->refcount++;
+    return st;
+}
+/**
+ * {{obj.c_method('Unref')}}: (skip):
+ **/
+void
+{{obj.c_method('Unref')}}({{obj.name}} *st)
+{
+    g_return_if_fail(st != NULL);
+    if (st->refcount == 0) {
+        g_critical("{{obj.name}} refcount already zero");
+        return;
+    }
+    if (--st->refcount > 0)
+        return;
+    if (st->buf != NULL)
+        g_byte_array_unref(st->buf);
+    g_free(st);
+}
+
+{%- set export = obj.export('NewInternal') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('NewInternal')}}: (skip):
+ **/
+{{export.value}}{{obj.name}} *
+{{obj.c_method('NewInternal')}}(void)
+{
+    {{obj.name}} *st = g_new0({{obj.name}}, 1);
+    st->refcount = 1;
+    return st;
+}
+{%- endif %}
+
+/* getters */
+{%- for item in obj.items | selectattr('enabled') %}
+{%- set export = item.export('Getters') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{item.c_getter}}: (skip):
+ **/
+{%- if item.type == Type.STRING %}
+{{export.value}}gchar *
+{{item.c_getter}}(const {{obj.name}} *st)
+{
+    g_return_val_if_fail(st != NULL, NULL);
+    return fu_memstrsafe(st->buf->data, st->buf->len, {{item.offset}}, {{item.size}}, NULL);
+}
+
+{%- elif item.struct_obj %}
+{%- if item.n_elements %}
+{{export.value}}{{item.struct_obj.name}} *
+{{item.c_getter}}(const {{obj.name}} *st, guint idx)
+{
+    g_autoptr({{item.struct_obj.name}}) st_tmp = {{item.struct_obj.c_method('NewInternal')}}();
+    g_return_val_if_fail(st != NULL, NULL);
+    g_return_val_if_fail(idx < {{item.n_elements}}, NULL);
+    st_tmp->buf = g_byte_array_new();
+    g_byte_array_append(st_tmp->buf,
+                        st->buf->data
+                            + {{item.c_define('OFFSET')}}
+                            + ({{item.struct_obj.c_define('SIZE')}} * idx),
+                        {{item.struct_obj.size}});
+    return g_steal_pointer(&st_tmp);
+}
+{%- else %}
+{{export.value}}{{item.struct_obj.name}} *
+{{item.c_getter}}(const {{obj.name}} *st)
+{
+    g_autoptr({{item.struct_obj.name}}) st_tmp = {{item.struct_obj.c_method('NewInternal')}}();
+    g_return_val_if_fail(st != NULL, NULL);
+    st_tmp->buf = g_byte_array_new();
+    g_byte_array_append(st_tmp->buf, st->buf->data + {{item.c_define('OFFSET')}}, {{item.size}});
+    return g_steal_pointer(&st_tmp);
+}
+{%- endif %}
+
+{%- elif item.type == Type.U8 and item.n_elements %}
+{{export.value}}const guint8 *
+{{item.c_getter}}(const {{obj.name}} *st, gsize *bufsz)
+{
+    g_return_val_if_fail(st != NULL, NULL);
+    if (bufsz != NULL)
+        *bufsz = {{item.size}};
+    return st->buf->data + {{item.offset}};
+}
+
+{%- elif item.type == Type.GUID %}
+{{export.value}}const fwupd_guid_t *
+{{item.c_getter}}(const {{obj.name}} *st)
+{
+    g_return_val_if_fail(st != NULL, NULL);
+    return (const fwupd_guid_t *) (st->buf->data + {{item.offset}});
+}
+
+{%- elif item.type == Type.U8 %}
+{{export.value}}{{item.type_glib}}
+{{item.c_getter}}(const {{obj.name}} *st)
+{
+    g_return_val_if_fail(st != NULL, 0x0);
+    return st->buf->data[{{item.offset}}];
+}
+
+{%- elif item.type in [Type.U16, Type.U24, Type.U32, Type.U64, Type.I8, Type.I16, Type.I32, Type.I64] %}
+{%- if item.n_elements %}
+{{export.value}}{{item.type_glib}}
+{{item.c_getter}}(const {{obj.name}} *st, guint idx)
+{
+    g_return_val_if_fail(st != NULL, 0x0);
+    return fu_memread_{{item.type_mem}}(st->buf->data + {{item.offset}} + (sizeof({{item.type_glib}}) * idx),
+                                        {{item.endian_glib}});
+}
+{%- else %}
+{{export.value}}{{item.type_glib}}
+{{item.c_getter}}(const {{obj.name}} *st)
+{
+    g_return_val_if_fail(st != NULL, 0x0);
+    return fu_memread_{{item.type_mem}}(st->buf->data + {{item.offset}}, {{item.endian_glib}});
+}
+{%- endif %}
+
+{%- elif item.type in [Type.B32] %}
+{{export.value}}{{item.type_glib}}
+{{item.c_getter}}(const {{obj.name}} *st)
+{
+    guint32 val;
+    g_return_val_if_fail(st != NULL, 0x0);
+    g_return_val_if_fail(st->buf->len >= sizeof({{item.type_glib}}), 0x0);
+    val = fu_memread_{{item.type_mem}}(st->buf->data + {{item.offset}}, {{item.endian_glib}});
+    return (val >> {{item.bits_offset}}) & {{item.bits_mask}};
+}
+{%- endif %}
+{%- endif %}
+{%- endfor %}
+
+/* setters */
+{%- for item in obj.items | selectattr('enabled') %}
+{%- set export = item.export('Setters') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{item.c_setter}}: (skip):
+ **/
+{%- if item.type == Type.STRING %}
+{{export.value}}gboolean
+{{item.c_setter}}({{obj.name}} *st, const gchar *value, GError **error)
+{
+    gsize len;
+    g_return_val_if_fail(st != NULL, FALSE);
+    g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+    if (value == NULL) {
+        memset(st->buf->data + {{item.offset}}, 0x0, {{item.size}});
+        return TRUE;
+    }
+    len = strlen(value);
+    if (len > {{item.size}}) {
+        g_set_error(error,
+                    FWUPD_ERROR,
+                    FWUPD_ERROR_INVALID_DATA,
+                    "string '%s' (0x%x bytes) does not fit in {{obj.name}}.{{item.element_id}} (0x%x bytes)",
+                    value, (guint) len, (guint) {{item.size}});
+        return FALSE;
+    }
+    return fu_memcpy_safe(st->buf->data, st->buf->len, {{item.offset}}, (const guint8 *)value, len, 0x0, len, error);
+}
+
+{%- elif item.struct_obj %}
+{%- if item.n_elements %}
+{{export.value}}gboolean
+{{item.c_setter}}({{obj.name}} *st, guint idx, const {{item.struct_obj.name}} *st_donor, GError **error)
+{
+    g_return_val_if_fail(st != NULL, FALSE);
+    g_return_val_if_fail(st_donor != NULL, FALSE);
+    g_return_val_if_fail(idx < {{item.n_elements}}, FALSE);
+    g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+
+    if (st_donor->buf->len > {{item.struct_obj.c_define('SIZE')}}) {
+        g_set_error(error,
+                    FWUPD_ERROR,
+                    FWUPD_ERROR_INVALID_DATA,
+                    "donor '{{item.struct_obj.name}}' (0x%x bytes) does not fit in "
+                    "{{obj.name}}.{{item.element_id}} (0x%x bytes)",
+                    (guint) st_donor->buf->len,
+                    (guint) {{item.struct_obj.c_define('SIZE')}});
+        return FALSE;
+    }
+    memcpy(st->buf->data
+            + {{item.c_define('OFFSET')}}
+            + ({{item.struct_obj.c_define('SIZE')}} * idx),
+           st_donor->buf->data,
+           st_donor->buf->len);
+    return TRUE;
+}
+{%- else %}
+{{export.value}}gboolean
+{{item.c_setter}}({{obj.name}} *st, const {{item.struct_obj.name}} *st_donor, GError **error)
+{
+    g_return_val_if_fail(st != NULL, FALSE);
+    g_return_val_if_fail(st_donor != NULL, FALSE);
+    g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+
+    if (st_donor->buf->len > {{item.struct_obj.c_define('SIZE')}}) {
+        g_set_error(error,
+                    FWUPD_ERROR,
+                    FWUPD_ERROR_INVALID_DATA,
+                    "donor '{{item.struct_obj.name}}' (0x%x bytes) does not fit in "
+                    "{{obj.name}}.{{item.element_id}} (0x%x bytes)",
+                    (guint) st_donor->buf->len,
+                    (guint) {{item.struct_obj.c_define('SIZE')}});
+        return FALSE;
+    }
+    memcpy(st->buf->data + {{item.c_define('OFFSET')}}, st_donor->buf->data, st_donor->buf->len);
+    return TRUE;
+}
+{%- endif %}
+
+{%- elif item.type == Type.U8 and item.n_elements %}
+{{export.value}}gboolean
+{{item.c_setter}}({{obj.name}} *st, const guint8 *buf, gsize bufsz, GError **error)
+{
+    g_return_val_if_fail(st != NULL, FALSE);
+    g_return_val_if_fail(buf != NULL, FALSE);
+    g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+    return fu_memcpy_safe(st->buf->data, st->buf->len, {{item.offset}}, buf, bufsz, 0x0, bufsz, error);
+}
+
+{%- elif item.type == Type.GUID %}
+{{export.value}}void
+{{item.c_setter}}({{obj.name}} *st, const fwupd_guid_t *value)
+{
+    g_return_if_fail(st != NULL);
+    g_return_if_fail(value != NULL);
+    memcpy(st->buf->data + {{item.offset}}, value, sizeof(*value)); /* nocheck:blocked */
+}
+
+{%- elif item.type == Type.U8 %}
+{{export.value}}void
+{{item.c_setter}}({{obj.name}} *st, {{item.type_glib}} value)
+{
+    g_return_if_fail(st != NULL);
+    st->buf->data[{{item.offset}}] = value;
+}
+
+{%- elif item.type == Type.B32 %}
+{{export.value}}void
+{{item.c_setter}}({{obj.name}} *st, {{item.type_glib}} value)
+{
+    guint32 tmp;
+    g_return_if_fail(st != NULL);
+    g_return_if_fail(st->buf->len >= sizeof({{item.type_glib}}));
+    tmp = fu_memread_{{item.type_mem}}(st->buf->data + {{item.offset}}, {{item.endian_glib}});
+    tmp &= ~({{item.bits_mask}} << {{item.bits_offset}});
+    tmp |= (value & {{item.bits_mask}}) << {{item.bits_offset}};
+    fu_memwrite_{{item.type_mem}}(st->buf->data + {{item.offset}}, tmp, {{item.endian_glib}});
+}
+
+{%- elif item.type in [Type.U16, Type.U24, Type.U32, Type.U64, Type.I8, Type.I16, Type.I32, Type.I64] %}
+{%- if item.n_elements %}
+{{export.value}}void
+{{item.c_setter}}({{obj.name}} *st, guint idx, {{item.type_glib}} value)
+{
+    g_return_if_fail(st != NULL);
+    g_return_if_fail(idx < {{item.n_elements}});
+    fu_memwrite_{{item.type_mem}}(st->buf->data + {{item.offset}} + (sizeof({{item.type_glib}}) * idx),
+                                  value,
+                                  {{item.endian_glib}});
+}
+
+{%- else %}
+{{export.value}}void
+{{item.c_setter}}({{obj.name}} *st, {{item.type_glib}} value)
+{
+    g_return_if_fail(st != NULL);
+    fu_memwrite_{{item.type_mem}}(st->buf->data + {{item.offset}}, value, {{item.endian_glib}});
+}
+{%- endif %}
+{%- endif %}
+{%- endif %}
+{%- endfor %}
+
+{%- set export = obj.export('New') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('New')}}: (skip):
+ **/
+{{export.value}}{{obj.name}} *
+{{obj.c_method('New')}}(void)
+{
+    {{obj.name}} *st = {{obj.c_method('NewInternal')}}();
+    st->buf = g_byte_array_sized_new({{obj.size}});
+    fu_byte_array_set_size(st->buf, {{obj.size}}, 0x0);
+{%- for item in obj.items | selectattr('padding') %}
+    memset(st->buf->data + {{item.offset}}, {{item.padding}}, {{item.size}});
+{%- endfor %}
+{%- for item in obj.items | selectattr('struct_obj') %}
+    {
+        g_autoptr({{item.struct_obj.name}}) st_donor = {{item.struct_obj.c_method('New')}}();
+        memcpy(st->buf->data + 0x{{'{:X}'.format(item.offset)}}, st_donor->buf->data, st_donor->buf->len); /* nocheck:blocked */
+    }
+{%- endfor %}
+{%- for item in obj.items | selectattr('default') %}
+{%- if item.type == Type.STRING %}
+    {{item.c_setter}}(st, "{{item.default}}", NULL);
+{%- elif item.type == Type.GUID %}
+    {{item.c_setter}}(st, (fwupd_guid_t *) "{{item.default}}");
+{%- elif item.type == Type.U8 and item.n_elements %}
+    memcpy(st->buf->data + 0x{{'{:X}'.format(item.offset)}}, "{{item.default}}", {{item.size}}); /* nocheck:blocked */
+{%- else %}
+    {{item.c_setter}}(st, {{item.default}});
+{%- endif %}
+{%- endfor %}
+    return st;
+}
+{%- endif %}
+
+{%- set export = obj.export('ToString') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('ToString')}}: (skip):
+ **/
+{{export.value}}gchar *
+{{obj.c_method('ToString')}}(const {{obj.name}} *st)
+{
+    g_autoptr(GString) str = g_string_new("{{obj.name}}:\n");
+    g_return_val_if_fail(st != NULL, NULL);
+{%- for item in obj.items | selectattr('enabled') | rejectattr('constant') %}
+
+{%- if item.enum_obj %}
+    {
+{%- if item.enum_obj.is_bitfield %}
+        g_autofree gchar *tmp = {{item.enum_obj.c_method('ToString')}}({{item.c_getter}}(st));
+{%- else %}
+        const gchar *tmp = {{item.enum_obj.c_method('ToString')}}({{item.c_getter}}(st));
+{%- endif %}
+        if (tmp != NULL) {
+            g_string_append_printf(str, "  {{item.element_id}}: 0x%x [%s]\n", (guint) {{item.c_getter}}(st), tmp);
+        } else {
+            g_string_append_printf(str, "  {{item.element_id}}: 0x%x\n", (guint) {{item.c_getter}}(st));
+        }
+    }
+
+{%- elif item.type == Type.U8 %}
+{%- if item.n_elements %}
+    {
+        gsize bufsz = 0;
+        const guint8 *buf = {{item.c_getter}}(st, &bufsz);
+        g_autoptr(GString) tmp = g_string_new(NULL);
+        for (gsize i = 0; i < bufsz; i++)
+            g_string_append_printf(tmp, "%02X", buf[i]);
+        g_string_append_printf(str, "  {{item.element_id}}: 0x%s\n", tmp->str);
+    }
+{%- else %}
+    g_string_append_printf(str, "  {{item.element_id}}: 0x%x\n",
+                           (guint) {{item.c_getter}}(st));
+{%- endif %}
+
+{%- elif item.type in [Type.U16, Type.U24, Type.U32, Type.U64, Type.I8, Type.I16, Type.I32, Type.I64, Type.B32] %}
+{%- if item.n_elements %}
+    for (guint i = 0; i < {{item.n_elements}}; i++) {
+        g_string_append_printf(str, "  {{item.element_id}}[%u]: 0x%x\n",
+                               i, (guint) {{item.c_getter}}(st, i));
+    }
+{%- else %}
+    g_string_append_printf(str, "  {{item.element_id}}: 0x%x\n",
+                           (guint) {{item.c_getter}}(st));
+{%- endif %}
+
+{%- elif item.type == Type.GUID %}
+    {
+        g_autofree gchar *tmp = fwupd_guid_to_string({{item.c_getter}}(st), FWUPD_GUID_FLAG_MIXED_ENDIAN);
+        g_string_append_printf(str, "  {{item.element_id}}: %s\n", tmp);
+    }
+
+{%- elif item.type == Type.STRING %}
+    {
+        g_autofree gchar *tmp = {{item.c_getter}}(st);
+        if (tmp != NULL)
+            g_string_append_printf(str, "  {{item.element_id}}: %s\n", tmp);
+    }
+
+{%- elif item.struct_obj %}
+{%- if item.n_elements %}
+    for (guint i = 0; i < {{item.n_elements}}; i++) {
+        g_autoptr({{item.struct_obj.name}}) st_tmp = {{item.c_getter}}(st, i);
+        g_autofree gchar *tmp = {{item.struct_obj.c_method('ToString')}}(st_tmp);
+        g_string_append_printf(str, "  {{item.element_id}}[%u]: %s\n", i, tmp);
+    }
+{%- else %}
+    {
+        g_autoptr({{item.struct_obj.name}}) st_tmp = {{item.c_getter}}(st);
+        g_autofree gchar *tmp = {{item.struct_obj.c_method('ToString')}}(st_tmp);
+        g_string_append_printf(str, "  {{item.element_id}}: %s\n", tmp);
+    }
+{%- endif %}
+
+{%- endif %}
+
+{%- endfor %}
+    if (str->len > 0)
+        g_string_set_size(str, str->len - 1);
+    return g_string_free(g_steal_pointer(&str), FALSE);
+}
+{%- endif %}
+
+{%- set export = obj.export('ToBytes') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('ToBytes')}}: (skip):
+ **/
+{{export.value}}GBytes *
+{{obj.c_method('ToBytes')}}(const {{obj.name}} *st)
+{
+    g_return_val_if_fail(st != NULL, NULL);
+    return g_bytes_new(st->buf->data, st->buf->len);
+}
+{%- endif %}
+
+{%- set export = obj.export('ValidateInternal') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+{{export.value}}gboolean
+{{obj.c_method('ValidateInternal')}}({{obj.name}} *st, GError **error)
+{
+    g_return_val_if_fail(st != NULL, FALSE);
+{%- for item in obj.items | selectattr('constant') %}
+{%- if item.type == Type.STRING %}
+    if (strncmp((const gchar *) (st->buf->data + {{item.offset}}), "{{item.constant}}", {{item.size}}) != 0) {
+{%- elif item.type == Type.GUID %}
+    if (memcmp({{item.c_getter}}(st), "{{item.constant}}", {{item.size}}) != 0) {
+{%- elif item.type == Type.U8 and item.n_elements %}
+    if (memcmp(st->buf->data + {{item.offset}}, "{{item.constant}}", {{item.size}}) != 0) {
+{%- else %}
+    if ({{item.c_getter}}(st) != {{item.constant}}) {
+{%- endif %}
+{%- if item.type == Type.STRING %}
+        g_autofree gchar *str = {{item.c_getter}}(st);
+        g_set_error(error,
+                    FWUPD_ERROR,
+                    FWUPD_ERROR_INVALID_DATA,
+                    "constant {{obj.name}}.{{item.element_id}} was not valid, "
+                    "expected '{{item.constant}}' and got '%s'",
+                    str);
+        return FALSE;
+{%- elif item.enum_obj %}
+        g_set_error(error,
+                    FWUPD_ERROR,
+                    FWUPD_ERROR_INVALID_DATA,
+                    "constant {{obj.name}}.{{item.element_id}} was not valid, "
+                    "expected '{{item.enum_obj.name}}' and got '%s'",
+                    {{item.enum_obj.c_method('ToString')}}({{item.c_getter}}(st)));
+        return FALSE;
+{%- elif item.type in [Type.U16, Type.U24, Type.U32, Type.U64, Type.I8, Type.I16, Type.I32, Type.I64] %}
+        g_set_error(error,
+                    FWUPD_ERROR,
+                    FWUPD_ERROR_INVALID_DATA,
+                    "constant {{obj.name}}.{{item.element_id}} was not valid, "
+                    "expected 0x%x and got 0x%x",
+                    (guint) {{item.constant}},
+                    (guint) {{item.c_getter}}(st));
+        return FALSE;
+{%- else %}
+        g_set_error_literal(error,
+                            FWUPD_ERROR,
+                            FWUPD_ERROR_INVALID_DATA,
+                            "constant {{obj.name}}.{{item.element_id}} was not valid");
+        return FALSE;
+{%- endif %}
+    }
+{%- endfor %}
+{%- for item in obj.items | selectattr('struct_obj') %}
+    {
+        GByteArray buf_tmp = {
+            .data = (guint8*) st->buf->data + 0x{{'{:X}'.format(item.offset)}},
+            .len = {{item.size}},
+        };
+        {{item.struct_obj.name}} st_tmp = { .buf = &buf_tmp };
+        if (!{{item.struct_obj.c_method('ValidateInternal')}}(&st_tmp, error))
+            return FALSE;
+    }
+{%- endfor %}
+    return TRUE;
+}
+
+{%- endif %}
+
+{%- set export = obj.export('Validate') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('Validate')}}: (skip):
+ **/
+{{export.value}}gboolean
+{{obj.c_method('Validate')}}(const guint8 *buf, gsize bufsz, gsize offset, GError **error)
+{
+    GByteArray st_buf = {.data = (guint8 *) buf + offset, .len = bufsz - offset, };
+    {{obj.name}} st_tmp = {.buf = &st_buf };
+    g_return_val_if_fail(buf != NULL, FALSE);
+    g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+    if (!fu_memchk_read(bufsz, offset, {{obj.size}}, error)) {
+        g_prefix_error_literal(error, "invalid struct {{obj.name}}: ");
+        return FALSE;
+    }
+    if (!{{obj.c_method('ValidateInternal')}}(&st_tmp, error))
+        return FALSE;
+    return TRUE;
+}
+{%- endif %}
+
+{%- set export = obj.export('ValidateStream') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('ValidateStream')}}: (skip):
+ **/
+{{export.value}}gboolean
+{{obj.c_method('ValidateStream')}}(GInputStream *stream, gsize offset, GError **error)
+{
+    g_autoptr({{obj.name}}) st = {{obj.c_method('NewInternal')}}();
+    g_return_val_if_fail(G_IS_INPUT_STREAM(stream), FALSE);
+    g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+    st->buf = fu_input_stream_read_byte_array(stream, offset, {{obj.size}}, NULL, error);
+    if (st->buf == NULL) {
+        g_prefix_error(error, "{{obj.name}} failed read of 0x%x: ", (guint) {{obj.size}});
+        return FALSE;
+    }
+    if (st->buf->len != {{obj.size}}) {
+        g_set_error(error,
+                    FWUPD_ERROR,
+                    FWUPD_ERROR_INVALID_DATA,
+                    "{{obj.name}} requested 0x%x and got 0x%x",
+                    (guint) {{obj.size}},
+                    (guint) st->buf->len);
+        return FALSE;
+    }
+    return {{obj.c_method('ValidateInternal')}}(st, error);
+}
+{%- endif %}
+
+{%- set export = obj.export('ValidateBytes') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('ValidateBytes')}}: (skip):
+ **/
+{{export.value}}gboolean
+{{obj.c_method('ValidateBytes')}}(GBytes *blob, gsize offset, GError **error)
+{
+    gsize bufsz = 0;
+    const guint8 *buf = fu_bytes_get_data_safe(blob, &bufsz, error);
+    if (buf == NULL)
+        return FALSE;
+    return {{obj.c_method('Validate')}}(buf, bufsz, offset, error);
+}
+{%- endif %}
+
+{%- set export = obj.export('ParseInternal') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+{{export.value}}gboolean
+{{obj.c_method('ParseInternal')}}({{obj.name}} *st, GError **error)
+{
+    if (g_getenv("FWUPD_VERBOSE") != NULL) {
+        g_autofree gchar *str = {{obj.c_method('ToString')}}(st);
+        g_debug("%s", str);
+    }
+    if (!{{obj.c_method('ValidateInternal')}}(st, error))
+        return FALSE;
+    return TRUE;
+}
+{%- endif %}
+
+{%- set export = obj.export('Parse') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+
+/**
+ * {{obj.c_method('Parse')}}: (skip):
+ **/
+{{export.value}}{{obj.name}} *
+{{obj.c_method('Parse')}}(const guint8 *buf, gsize bufsz, gsize offset, GError **error)
+{
+    g_autoptr({{obj.name}}) st = {{obj.c_method('NewInternal')}}();
+    g_return_val_if_fail(buf != NULL, NULL);
+    g_return_val_if_fail(error == NULL || *error == NULL, NULL);
+    if (!fu_memchk_read(bufsz, offset, {{obj.size}}, error)) {
+        g_prefix_error_literal(error, "invalid struct {{obj.name}}: ");
+        return NULL;
+    }
+    st->buf = g_byte_array_new();
+    g_byte_array_append(st->buf, buf + offset, {{obj.size}});
+    if (!{{obj.c_method('ParseInternal')}}(st, error))
+        return NULL;
+    return g_steal_pointer(&st);
+}
+{%- endif %}
+
+{%- set export = obj.export('ParseBytes') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('ParseBytes')}}: (skip):
+ **/
+{{export.value}}{{obj.name}} *
+{{obj.c_method('ParseBytes')}}(GBytes *blob, gsize offset, GError **error)
+{
+    gsize bufsz = 0;
+    const guint8 *buf = fu_bytes_get_data_safe(blob, &bufsz, error);
+    if (buf == NULL)
+        return NULL;
+    return {{obj.c_method('Parse')}}(buf, bufsz, offset, error);
+}
+{%- endif %}
+
+{%- set export = obj.export('ParseStream') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('ParseStream')}}: (skip):
+ **/
+{{export.value}}{{obj.name}} *
+{{obj.c_method('ParseStream')}}(GInputStream *stream, gsize offset, GError **error)
+{
+    g_autoptr({{obj.name}}) st = {{obj.c_method('NewInternal')}}();
+    st->buf = fu_input_stream_read_byte_array(stream, offset, {{obj.size}}, NULL, error);
+    if (st->buf == NULL) {
+        g_prefix_error(error, "{{obj.name}} failed read of 0x%x: ", (guint) {{obj.size}});
+        return NULL;
+    }
+    if (st->buf->len != {{obj.size}}) {
+        g_set_error(error,
+                    FWUPD_ERROR,
+                    FWUPD_ERROR_INVALID_DATA,
+                    "{{obj.name}} requested 0x%x and got 0x%x",
+                    (guint) {{obj.size}},
+                    (guint) st->buf->len);
+        return NULL;
+    }
+    if (!{{obj.c_method('ParseInternal')}}(st, error))
+        return NULL;
+    return g_steal_pointer(&st);
+}
+{%- endif %}

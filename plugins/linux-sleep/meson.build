@@ -1,25 +1,16 @@
-if host_machine.system() == 'linux'
-cargs = ['-DG_LOG_DOMAIN="FuPluginLinuxSleep"']
+host_machine.system() == 'linux' or subdir_done()
+hsi or subdir_done()
+host_cpu in ['x86', 'x86_64'] or subdir_done()
 
-shared_module('fu_plugin_linux_sleep',
-  fu_hash,
-  sources : [
-    'fu-plugin-linux-sleep.c',
+cargs = ['-DG_LOG_DOMAIN="FuPluginLinuxSleep"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
+
+plugin_builtins += static_library('fu_plugin_linux_sleep',
+  sources: [
+    'fu-linux-sleep-plugin.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
-endif

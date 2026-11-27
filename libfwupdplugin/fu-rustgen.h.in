@@ -1,0 +1,14 @@
+/* auto-generated, do not modify */
+#pragma once
+
+{%- if struct_objs %}
+#include <fu-input-stream.h>
+{%- else %}
+{%- for include in includes %}
+#include <{{include}}>
+{%- endfor %}
+{%- endif %}
+
+{%- for header_basename in import_headers %}
+#include "{{header_basename}}"
+{%- endfor %}

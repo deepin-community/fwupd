@@ -1,11 +1,18 @@
 /*
- * Copyright (C) 2018 Richard Hughes <richard@hughsie.com>
+ * Copyright 2018 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
+#include <libusb.h>
+
 #include "fu-usb-device.h"
 
-const gchar	*fu_usb_device_get_platform_id		(FuUsbDevice	*self);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(libusb_context, libusb_exit)
+
+FuUsbDevice *
+fu_usb_device_new(FuContext *ctx, libusb_device *usb_device) G_GNUC_NON_NULL(1);
+libusb_device *
+fu_usb_device_get_dev(FuUsbDevice *self);

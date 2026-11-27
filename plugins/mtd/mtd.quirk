@@ -1,0 +1,31 @@
+[MTD\VENDOR_PINE64&PRODUCT_PinePhone-Pro&NAME_spi1.0]
+Name = Tow-Boot platform firmware
+FirmwareGType = FuUswidFirmware
+
+# Intel GPUs
+[MTD\NAME_i915.spi.1024.DAM]
+Flags = no-probe
+[MTD\NAME_i915.spi.1024.DESCRIPTOR]
+Flags = no-probe
+[MTD\NAME_i915.spi.1024.GSC]
+Flags = no-probe
+[MTD\NAME_i915.spi.1024.OptionROM]
+Flags = no-probe
+
+# Intel SPI Controller
+[MTD\NAME_BIOS]
+Name = Internal SPI Controller
+FirmwareGType = FuIfdFirmware
+Flags = smbios-version-fallback
+
+[MTD\NAME_0000:00:1f.5]
+Name = PCH SPI Controller
+
+# B&R Industrial Automation GmbH 5ACCIFM0.FCAN-000
+[MTD\VEN_1677&DEV_28A4]
+Flags = ~needs-reboot,needs-shutdown,usable-during-update,unsigned-payload
+VersionFormat = number
+
+# Intel GPUs
+[MTD\DRIVER_xe]
+Flags = no-probe

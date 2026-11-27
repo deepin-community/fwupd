@@ -1,19 +1,12 @@
 /*
- * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
+ * Copyright 2017 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
-#include <glib.h>
+#include <fwupd.h>
 
-gboolean	 fu_systemd_unit_check_exists	(const gchar	*unit,
-						 GError		**error);
-gboolean	 fu_systemd_unit_stop		(const gchar	*unit,
-						 GError		**error);
-gboolean	 fu_systemd_unit_enable		(const gchar	*unit,
-						 GError		**error);
-gboolean	 fu_systemd_unit_disable	(const gchar	*unit,
-						 GError		**error);
-gchar		*fu_systemd_get_default_target	(GError		**error);
+gboolean
+fu_systemd_unit_stop(const gchar *unit, GError **error) G_GNUC_NON_NULL(1);
