@@ -1,0 +1,90 @@
+/*
+ * Copyright 2024 Mario Limonciello <superm1@gmail.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#include "config.h"
+
+#include "fu-legion-hid2-firmware.h"
+#include "fu-legion-hid2-struct.h"
+
+#define VERSION_OFFSET 0x1e0
+
+struct _FuLegionHid2Firmware {
+	FuFirmware parent_instance;
+};
+
+G_DEFINE_TYPE(FuLegionHid2Firmware, fu_legion_hid2_firmware, FU_TYPE_FIRMWARE)
+
+static gboolean
+fu_legion_hid2_firmware_parse(FuFirmware *firmware,
+			      GInputStream *stream,
+			      FuFirmwareParseFlags flags,
+			      GError **error)
+{
+	g_autoptr(FuFirmware) img_payload = fu_firmware_new();
+	g_autoptr(FuFirmware) img_sig = fu_firmware_new();
+	g_autoptr(GInputStream) stream_payload = NULL;
+	g_autoptr(GInputStream) stream_sig = NULL;
+	g_autoptr(FuStructLegionHid2Header) st_header = NULL;
+	g_autoptr(FuStructLegionHid2Version) st_version = NULL;
+
+	st_header = fu_struct_legion_hid2_header_parse_stream(stream, 0x0, error);
+	if (st_header == NULL)
+		return FALSE;
+
+	stream_sig =
+	    fu_partial_input_stream_new(stream,
+					fu_struct_legion_hid2_header_get_sig_add(st_header),
+					fu_struct_legion_hid2_header_get_sig_len(st_header),
+					error);
+	if (stream_sig == NULL)
+		return FALSE;
+	if (!fu_firmware_parse_stream(img_sig, stream_sig, 0x0, flags, error))
+		return FALSE;
+	fu_firmware_set_id(img_sig, FU_FIRMWARE_ID_SIGNATURE);
+	if (!fu_firmware_add_image(firmware, img_sig, error))
+		return FALSE;
+
+	stream_payload =
+	    fu_partial_input_stream_new(stream,
+					fu_struct_legion_hid2_header_get_data_add(st_header),
+					fu_struct_legion_hid2_header_get_data_len(st_header),
+					error);
+	if (stream_payload == NULL)
+		return FALSE;
+	if (!fu_firmware_parse_stream(img_payload, stream_payload, 0x0, flags, error))
+		return FALSE;
+	fu_firmware_set_id(img_payload, FU_FIRMWARE_ID_PAYLOAD);
+	if (!fu_firmware_add_image(firmware, img_payload, error))
+		return FALSE;
+
+	st_version = fu_struct_legion_hid2_version_parse_stream(stream, VERSION_OFFSET, error);
+	if (st_version == NULL)
+		return FALSE;
+	fu_firmware_set_version_raw(firmware,
+				    fu_struct_legion_hid2_version_get_version(st_version));
+
+	return TRUE;
+}
+
+static void
+fu_legion_hid2_firmware_init(FuLegionHid2Firmware *self)
+{
+	fu_firmware_set_version_format(FU_FIRMWARE(self), FWUPD_VERSION_FORMAT_QUAD);
+}
+
+static gchar *
+fu_legion_hid2_firmware_convert_version(FuFirmware *firmware, guint64 version_raw)
+{
+	return fu_version_from_uint32(version_raw, fu_firmware_get_version_format(firmware));
+}
+
+static void
+fu_legion_hid2_firmware_class_init(FuLegionHid2FirmwareClass *klass)
+{
+	FuFirmwareClass *firmware_class = FU_FIRMWARE_CLASS(klass);
+	firmware_class->parse = fu_legion_hid2_firmware_parse;
+	firmware_class->convert_version = fu_legion_hid2_firmware_convert_version;
+}

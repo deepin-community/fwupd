@@ -1,0 +1,52 @@
+// Copyright 2024 Richard Hughes <richard@hughsie.com>
+// SPDX-License-Identifier: LGPL-2.1-or-later
+
+enum FuHughskiColorhugCmd {
+    GetFirmwareVersion = 0x07,
+    Reset = 0x24,
+    ReadFlash = 0x25,
+    WriteFlash = 0x26,
+    BootFlash = 0x27,
+    SetFlashSuccess = 0x28,
+    EraseFlash = 0x29,
+}
+
+#[derive(ToString)]
+enum FuHughskiColorhugError {
+    None,
+    UnknownCmd,
+    WrongUnlockCode,
+    NotImplemented,
+    UnderflowSensor,
+    NoSerial,
+    Watchdog,
+    InvalidAddress,
+    InvalidLength,
+    InvalidChecksum,
+    InvalidValue,
+    UnknownCmdForBootloader,
+    NoCalibration,
+    OverflowMultiply,
+    OverflowAddition,
+    OverflowSensor,
+    OverflowStack,
+    DeviceDeactivated,
+    IncompleteRequest,
+    SelfTestSensor,
+    SelfTestRed,
+    SelfTestGreen,
+    SelfTestBlue,
+    SelfTestColorSelect,
+    SelfTestMultiplier,
+    InvalidCalibration,
+    SramFailed,
+    OutOfMemory,
+    SelfTestTemperature,
+    SelfTestI2c,
+    SelfTestAdcVdd,
+    SelfTestAdcVss,
+    SelfTestAdcVref,
+    I2cTargetAddress,
+    I2cTargetConfig,
+    SelfTestEeprom,
+}

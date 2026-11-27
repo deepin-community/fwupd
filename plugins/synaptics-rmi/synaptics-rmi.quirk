@@ -1,17 +1,33 @@
 # Dell K12A kbd-dock
-[DeviceInstanceId=HIDRAW\VEN_06CB&DEV_2819]
+[HIDRAW\VEN_06CB&DEV_2819]
 Plugin = synaptics_rmi
 GType = FuSynapticsRmiHidDevice
-Vendor = Synaptics
 Flags = only-supported
 
 # LENOVO X1 Nano
-[DeviceInstanceId=SERIO\FWID_LEN0305-PNP0F13]
+[SERIO\FWID_LEN0305-PNP0F13]
 Plugin = synaptics_rmi
 GType = FuSynapticsRmiPs2Device
 
 # LENOVO X1 Panther
-[DeviceInstanceId=SERIO\FWID_LEN0306-PNP0F13]
+[SERIO\FWID_LEN0306-PNP0F13]
 Plugin = synaptics_rmi
 GType = FuSynapticsRmiPs2Device
 InstallDuration = 236
+
+# ALSO
+[HIDRAW\VEN_06CB&DEV_96E7]
+Plugin = synaptics_rmi
+GType = FuSynapticsRmiHidDevice
+Vendor = Synaptics
+
+[HIDRAW\VEN_06CB&DEV_D014]
+Plugin = synaptics_rmi
+GType = FuSynapticsRmiHidDevice
+Vendor = Synaptics
+
+# HP Lapaz14N
+[HIDRAW\VEN_06CB&DEV_CFE2]
+Plugin = synaptics_rmi
+GType = FuSynapticsRmiHidDevice
+Vendor = Synaptics

@@ -4,16 +4,20 @@
 #
 # Translators:
 # Dušan Kazik <prescott66@gmail.com>, 2015-2017
+# Richard Hughes <hughsient@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: fwupd\n"
 "Report-Msgid-Bugs-To: \n"
-"Language-Team: Slovak (http://www.transifex.com/freedesktop/fwupd/language/sk/)\n"
+"PO-Revision-Date: 2025-10-24 10:33+0000\n"
+"Last-Translator: Richard Hughes <hughsient@gmail.com>\n"
+"Language-Team: Slovak <https://hosted.weblate.org/projects/fwupd/fwupd/sk/>\n"
+"Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sk\n"
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 5.14.1-dev\n"
 
 #. TRANSLATORS: this is a command alias, e.g. 'get-devices'
 #, c-format
@@ -38,13 +42,14 @@ msgstr "Na odomknutie zariadenia sa vyžaduje overenie totožnosti"
 
 #. TRANSLATORS: this is the PolicyKit modal dialog
 msgid "Authentication is required to update the firmware on a removable device"
-msgstr "Vyžaduje sa overenie totožnosti na aktualizovanie firmvéru vymeniteľného zariadenia "
+msgstr "Vyžaduje sa overenie totožnosti na aktualizovanie firmvéru vymeniteľného zariadenia"
 
 #. TRANSLATORS: this is the PolicyKit modal dialog
 msgid "Authentication is required to update the firmware on this machine"
 msgstr "Na aktualizovanie firmvéru v tomto počítači je potrebné overenie totožnosti"
 
 #. TRANSLATORS: this is when a device ctrl+c's a watch
+#. TRANSLATORS: this is from ctrl+c
 msgid "Cancelled"
 msgstr "Zrušené"
 
@@ -52,6 +57,7 @@ msgstr "Zrušené"
 msgid "Changed"
 msgstr "Zmenené"
 
+#. TRANSLATORS: hash to that exact firmware archive
 #. TRANSLATORS: remote checksum
 msgid "Checksum"
 msgstr "Kontrolný medzisúčet"
@@ -64,14 +70,11 @@ msgstr "Vymaže výsledky z poslednej aktualizácie"
 msgid "Command not found"
 msgstr "Príkaz nenájdený"
 
-#. TRANSLATORS: DFU stands for device firmware update
-msgid "DFU Utility"
-msgstr "Nástroj pre DFU"
-
 #. TRANSLATORS: for the --verbose arg
 msgid "Debugging Options"
 msgstr "Voľby ladenia"
 
+#. TRANSLATORS: description of BIOS setting
 #. TRANSLATORS: multiline description of device
 msgid "Description"
 msgstr "Popis"
@@ -89,16 +92,8 @@ msgid "Device removed:"
 msgstr "Odstránené zariadenie:"
 
 #. TRANSLATORS: success
-#. success
 msgid "Done!"
 msgstr "Hotovo!"
-
-#. TRANSLATORS: the first replacement is a display name
-#. * e.g. "ColorHugALS" and the second and third are
-#. * version numbers e.g. "1.2.3"
-#, c-format
-msgid "Downgrading %s from %s to %s... "
-msgstr "Vracia sa %s z verzie %s na verziu %s... "
 
 #. TRANSLATORS: exit after we've started up, used for user profiling
 msgid "Exit after a small delay"
@@ -129,7 +124,7 @@ msgid "Found"
 msgstr "Nájdené"
 
 #. TRANSLATORS: command argument: uppercase, spaces->dashes
-msgctxt "A single GUID"
+msgctxt "command-argument"
 msgid "GUID"
 msgstr "GUID"
 
@@ -142,19 +137,8 @@ msgid "Gets details about a firmware file"
 msgstr "Získa podrobnosti o súbore firmvéru"
 
 #. TRANSLATORS: command description
-msgid "Gets the list of updates for connected hardware"
-msgstr "Získa zoznam aktualizácií pre pripojený hardvér"
-
-#. TRANSLATORS: command description
 msgid "Gets the results from the last update"
 msgstr "Získa výsledky z poslednej aktualizácie"
-
-#. TRANSLATORS: command description
-msgid "Install a firmware file on this hardware"
-msgstr "Nainštaluje súbor firmvéru do tohoto hardvéru"
-
-msgid "Install old version of system firmware"
-msgstr "Nainštaluje staršiu verziu firmvéru systému"
 
 msgid "Install signed device firmware"
 msgstr "Nainštaluje podpísaný firmvér zariadenia"
@@ -181,23 +165,8 @@ msgid "OK"
 msgstr "OK"
 
 #. TRANSLATORS: command description
-msgid "Read firmware from device into a file"
-msgstr "Prečíta firmvér zo zariadenia do súboru"
-
-#. TRANSLATORS: command description
-msgid "Read firmware from one partition into a file"
-msgstr "Prečíta firmvér z jedného oddielu do súboru"
-
-#. TRANSLATORS: command description
 msgid "Refresh metadata from remote server"
 msgstr "Obnoví metaúdaje zo vzdialeného servera"
-
-#. TRANSLATORS: the first replacement is a display name
-#. * e.g. "ColorHugALS" and the second is a version number
-#. * e.g. "1.2.3"
-#, c-format
-msgid "Reinstalling %s with %s... "
-msgstr "Preinštalováva sa %s verziou %s... "
 
 #. TRANSLATORS: for the --verbose arg
 msgid "Show debugging options"
@@ -214,25 +183,6 @@ msgstr "Odomknúť zariadenie na umožnenie prístupu"
 msgid "Unlocks the device for firmware access"
 msgstr "Odomkne zariadenie pre prístup k firmvéru"
 
-#. TRANSLATORS: command description
-msgid "Updates all firmware to latest versions available"
-msgstr "Aktualizuje všetok firmvér na najnovšiu dostupnú verziu"
-
-#. TRANSLATORS: the first replacement is a display name
-#. * e.g. "ColorHugALS" and the second and third are
-#. * version numbers e.g. "1.2.3"
-#, c-format
-msgid "Updating %s from %s to %s... "
-msgstr "Aktualizuje sa %s z verzie %s na verziu %s... "
-
 #. TRANSLATORS: the detected version number of the dbx
 msgid "Version"
 msgstr "Verzia"
-
-#. TRANSLATORS: command description
-msgid "Write firmware from file into device"
-msgstr "Zapíše firmvér zo súboru do zariadenia"
-
-#. TRANSLATORS: command description
-msgid "Write firmware from file into one partition"
-msgstr "Zapíše firmvér zo súboru do jedného oddielu"

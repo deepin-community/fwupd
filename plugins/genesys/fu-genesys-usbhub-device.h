@@ -1,0 +1,19 @@
+/*
+ * Copyright 2021 Ricardo Cañuelo <ricardo.canuelo@collabora.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#pragma once
+
+#include <fwupdplugin.h>
+
+#define FU_TYPE_GENESYS_USBHUB_DEVICE (fu_genesys_usbhub_device_get_type())
+G_DECLARE_FINAL_TYPE(FuGenesysUsbhubDevice,
+		     fu_genesys_usbhub_device,
+		     FU,
+		     GENESYS_USBHUB_DEVICE,
+		     FuUsbDevice)
+
+void
+fu_genesys_usbhub_device_set_hid_channel(FuGenesysUsbhubDevice *self, FuDevice *channel);

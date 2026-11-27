@@ -1,0 +1,19 @@
+/*
+ * Copyright {{Year}} {{Author}} <{{Email}}>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#pragma once
+
+#include <fwupdplugin.h>
+
+#define FU_TYPE_{{VENDOR_EXAMPLE}}_DEVICE (fu_{{vendor_example}}_device_get_type())
+G_DECLARE_FINAL_TYPE(Fu{{VendorExample}}Device,
+		     fu_{{vendor_example}}_device,
+		     FU,
+		     {{VENDOR_EXAMPLE}}_DEVICE,
+		     Fu{{Parent}}Device)
+
+guint16
+fu_{{vendor_example}}_device_get_start_addr(Fu{{VendorExample}}Device *self);

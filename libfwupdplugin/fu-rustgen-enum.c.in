@@ -1,0 +1,99 @@
+{%- set export = obj.export('ToString') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+{%- if obj.is_bitfield %}
+/**
+ * {{obj.c_method('ToString')}}:
+ * @val: value, e.g. %{{obj.items[1].c_define}}
+ *
+ * Converts an enumerated value to a string.
+ *
+ * Returns: identifier string
+ *
+{%- if obj.since('ToString') %}
+ *
+ * Since: {{obj.since('ToString')}}
+{%- endif %}
+ **/
+{{export.value}}gchar *
+{{obj.c_method('ToString')}}({{obj.c_type}} val)
+{
+    const gchar *data[{{obj.items|length}}] = {0};
+    guint idx = 0;
+    if (val == {{obj.items[0].c_define}})
+        return g_strdup("{{obj.items[0].value}}");
+{%- for item in obj.items[1:] %}
+    if (val & {{item.c_define}})
+        data[idx++] = "{{item.value}}";
+{%- endfor %}
+    return g_strjoinv(",", (gchar **)data);
+}
+{%- else %}
+/**
+ * {{obj.c_method('ToString')}}:
+ * @val: value{%- if obj.items|length > 1 %}, e.g. %{{obj.items[1].c_define}}{%- endif %}
+ *
+ * Converts an enumerated value to a string.
+ *
+ * Returns: identifier string
+{%- if obj.since('ToString') %}
+ *
+ * Since: {{obj.since('ToString')}}
+{%- endif %}
+ **/
+{{export.value}}const gchar *
+{{obj.c_method('ToString')}}({{obj.c_type}} val)
+{
+{%- for item in obj.items|rejectattr('name', 'equalto', 'Unknown') %}
+    if (val == {{item.c_define}})
+        return "{{item.value}}";
+{%- endfor %}
+    return NULL;
+}
+{%- endif %}
+{%- endif %}
+
+{%- set export = obj.export('FromString') %}
+{%- if export in [Export.PUBLIC, Export.PRIVATE] %}
+/**
+ * {{obj.c_method('FromString')}}:
+ * @val: (nullable): a string{%- if obj.items|length > 1 %}, e.g. `{{obj.items[1].value}}`{%- endif %}
+ *
+ * Converts a string to an enumerated value.
+ *
+ * Returns: enumerated value
+{%- if obj.since('FromString') %}
+ *
+ * Since: {{obj.since('FromString')}}
+{%- endif %}
+ **/
+{{export.value}}{{obj.c_type}}
+{{obj.c_method('FromString')}}(const gchar *val)
+{
+{%- if obj.is_bitfield %}
+    {{obj.c_type}} value = 0;
+    g_auto(GStrv) split = NULL;
+    g_return_val_if_fail(val != NULL, 0);
+    split = g_strsplit(val, ",", -1);
+    for (guint i = 0; split[i] != NULL; i++) {
+{%- for item in obj.items %}
+        if (g_strcmp0(split[i], "{{item.value}}") == 0) {
+            value |= {{item.c_define}};
+            continue;
+        }
+{%- endfor %}
+    }
+    return value;
+{%- else %}
+{%- for item in obj.items|rejectattr('name', 'equalto', 'Unknown') %}
+    if (g_strcmp0(val, "{{item.value}}") == 0)
+        return {{item.c_define}};
+{%- endfor %}
+{%- set item_unknown = obj.item('Unknown') %}
+{%- if item_unknown %}
+    return {{item_unknown.c_define}};
+{%- else %}
+    return {{obj.items[0].c_define}};
+{%- endif %}
+{%- endif %}
+}
+{%- endif %}

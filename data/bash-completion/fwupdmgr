@@ -1,0 +1,506 @@
+_fwupdmgr_cmd_list=(
+	'activate'
+	'block-firmware'
+	'check-reboot-needed'
+	'clean-remote'
+	'clear-results'
+	'disable-remote'
+	'device-test'
+	'device-emulate'
+	'device-wait'
+	'downgrade'
+	'download'
+	'enable-remote'
+	'emulation-tag'
+	'emulation-untag'
+	'emulation-load'
+	'emulation-save'
+	'get-approved-firmware'
+	'get-bios-setting'
+	'get-blocked-firmware'
+	'get-details'
+	'get-devices'
+	'get-history'
+	'get-plugins'
+	'get-releases'
+	'get-remotes'
+	'get-results'
+	'get-topology'
+	'get-updates'
+	'get-upgrades'
+	'get-plugins'
+	'hwids'
+	'inhibit'
+	'uninhibit'
+	'install'
+	'local-install'
+	'modify-config'
+	'modify-remote'
+	'quit'
+	'reinstall'
+	'refresh'
+	'report-devices'
+	'report-history'
+	'report-export'
+	'search'
+	'security'
+	'security-fix'
+	'security-undo'
+	'set-approved-firmware'
+	'set-bios-setting'
+	'switch-branch'
+	'sync'
+	'unlock'
+	'unblock-firmware'
+	'update'
+	'upgrade'
+	'verify'
+	'verify-update'
+	'--version'
+)
+
+_fwupdmgr_opts=(
+	'--verbose'
+	'--allow-reinstall'
+	'--allow-older'
+	'--allow-branch-switch'
+	'--force'
+	'--assume-yes'
+	'--no-history'
+	'--no-unreported-check'
+	'--no-metadata-check'
+	'--no-reboot-check'
+	'--no-safety-check'
+	'--no-remote-check'
+	'--no-security-fix'
+	'--only-emulated'
+	'--show-all'
+	'--sign'
+	'--filter'
+	'--filter-release'
+	'--disable-ssl-strict'
+	'--p2p'
+	'--json'
+	'--download-retries'
+)
+
+bios_get_opts=(
+	'--no-authenticate'
+	'--json'
+	'--verbose'
+)
+
+bios_set_opts=(
+	'--no-reboot-check'
+	'--json'
+	'--verbose'
+)
+
+fwupd_modify_config_sections=(
+	'fwupd'
+	'msr'
+	'redfish'
+	'test'
+	'thunderbolt'
+	'uefi_capsule'
+	'dell_kestrel'
+)
+
+fwupd_modify_config_opts=(
+	'ArchiveSizeMax'
+	'ApprovedFirmware'
+	'BlockedFirmware'
+	'DisabledDevices'
+	'DisabledPlugins'
+	'EspLocation'
+	'EnumerateAllDevices'
+	'HostBkc'
+	'IdleTimeout'
+	'IgnorePower'
+	'OnlyTrusted'
+	'P2pPolicy'
+	'ReleaseDedupe'
+	'ReleasePriority'
+	'RequireImmutableEnumeration'
+	'ShowDevicePrivate'
+	'TestDevices'
+	'TrustedReports'
+	'TrustedUids'
+	'UpdateMotd'
+	'UriSchemes'
+	'VerboseDomains'
+)
+
+test_modify_config_opts=(
+	'AnotherWriteRequired'
+	'CompositeChild'
+	'DecompressDelay'
+	'NeedsActivation'
+	'NeedsReboot'
+	'RegistrationSupported'
+	'RequestDelay'
+	'RequestSupported'
+	'VerifyDelay'
+	'WriteDelay'
+	'WriteSupported'
+)
+
+redfish_modify_config_opts=(
+	'CACheck'
+	'IpmiDisableCreateUser'
+	'ManagerResetTimeout'
+	'Password'
+	'Uri'
+	'Username'
+	'UserUri'
+)
+
+uefi_capsule_modify_config_opts=(
+	'DisableCapsuleUpdateOnDisk'
+	'DisableShimForSecureBoot'
+	'EnableEfiDebugging'
+	'EnableGrubChainLoad'
+	'OverrideESPMountPoint'
+	'RebootCleanup'
+	'RequireESPFreeSpace'
+	'ScreenWidth'
+	'ScreenHeight'
+)
+
+dell_kestrel_modify_config_opts=(
+	'UpdateOnDisconnect'
+)
+
+reset_config_opts=(
+	'fwupd'
+	'msr'
+	'redfish'
+	'test'
+	'thunderbolt'
+	'uefi_capsule'
+)
+
+_show_file_in_dir()
+{
+	local files
+	files="$(ls 2>/dev/null)"
+	COMPREPLY+=( $(compgen -W "${files}" -- "$cur") )
+}
+
+_show_bios_get_modifiers()
+{
+	COMPREPLY+=( $(compgen -W '${bios_get_opts[@]}' -- "$cur") )
+}
+
+_show_bios_set_modifiers()
+{
+	COMPREPLY+=( $(compgen -W '${bios_set_opts[@]}' -- "$cur") )
+}
+
+_show_filters()
+{
+	local flags
+	flags="$(command fwupdtool get-device-flags 2>/dev/null)"
+	COMPREPLY+=( $(compgen -W "${flags}" -- "$cur") )
+}
+
+_show_modifiers()
+{
+	COMPREPLY+=( $(compgen -W '${_fwupdmgr_opts[@]}' -- "$cur") )
+}
+
+_show_bios_settings()
+{
+	if ! command -v jq &> /dev/null; then
+		return 0
+	fi
+	local attr
+	attr="$(command fwupdmgr get-bios-setting --json --no-authenticate 2>/dev/null | jq '.BiosSettings | .[] | .Name')"
+	COMPREPLY+=( $(compgen -W "${attr}" -- "$cur") )
+}
+
+_show_bios_settings_possible()
+{
+	if ! command -v jq &> /dev/null; then
+		return 0
+	fi
+	local attr
+	attr="$(command fwupdmgr get-bios-setting "$1" --json --no-authenticate 2>/dev/null | jq '.BiosSettings | .[] | .BiosSettingPossibleValues | .[]')"
+	COMPREPLY+=( $(compgen -W "${attr}" -- "$cur") )
+}
+
+_show_device_ids()
+{
+	if ! command -v jq &> /dev/null; then
+		return 0
+	fi
+	local description
+	description="$(command fwupdmgr get-devices --json 2>/dev/null | jq '.Devices | .[] | .DeviceId')"
+	COMPREPLY+=( $(compgen -W "${description}" -- "$cur") )
+}
+
+_show_plugins()
+{
+	if ! command -v jq &> /dev/null; then
+		return 0
+	fi
+	local plugins
+	plugins="$(command fwupdmgr get-plugins --json 2>/dev/null | jq '.Plugins | .[] | .Name')"
+	COMPREPLY+=( $(compgen -W "${plugins}" -- "$cur") )
+}
+
+_show_release_versions()
+{
+	if ! command -v jq &> /dev/null; then
+		return 0
+	fi
+	local description
+	description="$(command fwupdmgr get-releases "$1" --json 2>/dev/null | jq '.Releases[].Version')"
+	COMPREPLY+=( $(compgen -W "${description}" -- "$cur") )
+}
+
+_show_fwupd_modify_sections()
+{
+	COMPREPLY+=( $(compgen -W '${fwupd_modify_config_sections[@]}' -- "$cur") )
+}
+
+_show_fwupd_modify_config()
+{
+	COMPREPLY+=( $(compgen -W '${fwupd_modify_config_opts[@]}' -- "$cur") )
+}
+
+_show_test_modify_config()
+{
+	COMPREPLY+=( $(compgen -W '${test_modify_config_opts[@]}' -- "$cur") )
+}
+
+_show_redfish_modify_config()
+{
+	COMPREPLY+=( $(compgen -W '${redfish_modify_config_opts[@]}' -- "$cur") )
+}
+
+_show_uefi_capsule_modify_config()
+{
+	COMPREPLY+=( $(compgen -W '${uefi_capsule_modify_config_opts[@]}' -- "$cur") )
+}
+
+_show_dell_kestrel_modify_config()
+{
+	COMPREPLY+=( $(compgen -W '${dell_kestrel_modify_config_opts[@]}' -- "$cur") )
+}
+
+_show_reset_config()
+{
+	COMPREPLY+=( $(compgen -W '${reset_config_opts[@]}' -- "$cur") )
+}
+
+_show_remotes()
+{
+	local remotes
+	remotes="$(command fwupdmgr get-remotes --json 2>/dev/null | jq '.Remotes | .[] | .Id')"
+	COMPREPLY+=( $(compgen -W "${remotes}" -- "$cur") )
+}
+
+_fwupdmgr()
+{
+	local cur prev command arg args
+	COMPREPLY=()
+	_get_comp_words_by_ref cur prev
+	_get_first_arg
+	_count_args
+
+	case $prev in
+	--filter)
+		_show_filters
+		return 0
+		;;
+	esac
+
+	case $arg in
+	activate|check-reboot-needed|clear-results|downgrade|get-releases|get-results|unlock|verify|verify-update|get-updates|switch-branch|update|upgrade|report-export)
+		#device ID
+		if [[ "$args" = "2" ]]; then
+			_show_device_ids
+		fi
+		;;
+	get-bios-settings|get-bios-setting)
+		#bios settings (no limit)
+		_show_bios_settings
+		_show_bios_get_modifiers
+		return 0
+		;;
+	set-bios-setting)
+		if [[ "$prev" = "--json" ]]; then
+			_show_file_in_dir "$prev"
+			return 0
+		fi
+		count=$(($((args)) % 2))
+		#allow setting a single bios setting at a time
+		if [[ $count == 0 ]]; then
+			_show_bios_settings
+		fi
+		#possible values (only works for enumeration though)
+		if [[ $count == 1 ]]; then
+			_show_bios_settings_possible "$prev"
+			return 0
+		fi
+		_show_bios_set_modifiers
+		return 0
+		;;
+	get-plugins)
+		return 0
+		;;
+	get-details)
+		#find files
+		if [[ "$args" = "2" ]]; then
+			_filedir
+		fi
+		;;
+	device-test)
+		#find files
+		if [[ "$args" = "2" ]]; then
+			_filedir
+		fi
+		;;
+	install)
+		#device ID
+		if [[ "$args" = "2" ]]; then
+			_show_device_ids
+		#version
+		elif [[ "$args" = "3" ]]; then
+			_show_release_versions "$prev"
+		fi
+		;;
+	local-install)
+		#find files
+		if [[ "$args" = "2" ]]; then
+			_filedir
+		#device ID or modifiers
+		elif [[ "$args" = "3" ]]; then
+			_show_device_ids
+			_show_modifiers
+		fi
+		;;
+	modify-remote)
+		#find remotes
+		if [[ "$args" = "2" ]]; then
+			_show_remotes
+		#add key
+		elif [[ "$args" = "3" ]]; then
+			local keys
+			keys="$(command fwupdmgr get-remotes | command awk -v pattern="Remote ID:.*${prev}$" '$0~pattern{show=1; next}/Remote/{show=0}{gsub(/:.*/,"")}show')"
+			COMPREPLY+=( $(compgen -W "${keys}" -- "$cur") )
+		fi
+		;;
+	enable-remote)
+		#find remotes
+		if [[ "$args" = "2" ]]; then
+			_show_remotes
+		fi
+		;;
+	disable-remote)
+		#find remotes
+		if [[ "$args" = "2" ]]; then
+			_show_remotes
+		fi
+		;;
+	modify-config)
+		if [[ "$args" = "2" ]]; then
+			_show_fwupd_modify_sections
+			return 0
+		elif [[ "$args" = "3" ]]; then
+			case $prev in
+			test)
+				_show_test_modify_config
+				;;
+			msr)
+				COMPREPLY+=( $(compgen -W 'DelayedActivation MinimumSmeKernelVersion' -- "$cur") )
+				;;
+			thunderbolt)
+				COMPREPLY+=( $(compgen -W 'DelayedActivation MinimumKernelVersion' -- "$cur") )
+				;;
+			fwupd)
+				_show_fwupd_modify_config
+				;;
+			redfish)
+				_show_redfish_modify_config
+				;;
+			uefi_capsule)
+				_show_uefi_capsule_modify_config
+				;;
+			dell_kestrel)
+				_show_dell_kestrel_modify_config
+				;;
+			esac
+			return 0
+		elif [[ "$args" = "4" ]]; then
+			case $prev in
+			EnumerateAllDevices|OnlyTrusted|IgnorePower|UpdateMotd|ShowDevicePrivate|ReleaseDedupe|TestDevices)
+				COMPREPLY=( $(compgen -W "True False" -- "$cur") )
+				;;
+			AnotherWriteRequired|NeedsActivation|NeedsReboot|RegistrationSupported|RequestSupported|WriteSupported)
+				COMPREPLY=( $(compgen -W "True False" -- "$cur") )
+				;;
+			ReleasePriority)
+				COMPREPLY=( $(compgen -W "local remote" -- "$cur") )
+				;;
+			UriSchemes)
+				COMPREPLY=( $(compgen -W "file https http ipfs file;https;http;ipfs file;https;http https;http" -- "$cur") )
+				;;
+			P2pPolicy)
+				COMPREPLY=( $(compgen -W "none metadata firmware metadata,firmware" -- "$cur") )
+				;;
+			IdleTimeout|ArchiveSizeMax|HostBkc|TrustedUids)
+				;;
+			ApprovedFirmware|BlockedFirmware)
+				;;
+			DisabledDevices)
+				_show_device_ids
+				;;
+			DisabledPlugins)
+				_show_plugins
+				;;
+			EspLocation)
+				;;
+			TrustedReports)
+				;;
+			VerboseDomains)
+				;;
+			esac
+			return 0
+		fi
+		;;
+	reset-config)
+		#find files
+		if [[ "$args" = "2" ]]; then
+			_show_reset_config
+			return 0
+		fi
+		;;
+	refresh)
+		#find first file
+		if [[ "$args" = "2" ]]; then
+			_filedir
+		#find second file
+		elif [[ "$args" = "3" ]]; then
+			_filedir
+		#find remote ID
+		elif [[ "$args" = "4" ]]; then
+			_show_remotes
+		fi
+		;;
+	*)
+		#find first command
+		if [[ "$args" = "1" ]]; then
+			COMPREPLY=( $(compgen -W '${_fwupdmgr_cmd_list[@]}' -- "$cur") )
+		fi
+		;;
+	esac
+
+	#modifiers
+	_show_modifiers
+
+	return 0
+}
+
+complete -F _fwupdmgr fwupdmgr

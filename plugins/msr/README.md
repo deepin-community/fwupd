@@ -1,8 +1,8 @@
-MSR
-===
+---
+title: Plugin: MSR
+---
 
-Introduction
-------------
+## Introduction
 
 This plugin checks if the Model-specific registers (MSRs) indicate the
 Direct Connect Interface (DCI) is enabled.
@@ -13,6 +13,10 @@ attacker to disable other firmware protection methods.
 
 The result will be stored in a security attribute for HSI.
 
-External interface access
--------------------------
+## External Interface Access
+
 This plugin requires read access to `/sys/class/msr`.
+
+## Version Considerations
+
+This plugin has been available since fwupd version `1.5.0`.

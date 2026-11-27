@@ -1,0 +1,106 @@
+/*
+ * Copyright 2020 Mario Limonciello <mario.limonciello@dell.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#include "config.h"
+
+#include "fu-bios-plugin.h"
+
+struct _FuBiosPlugin {
+	FuPlugin parent_instance;
+};
+
+G_DEFINE_TYPE(FuBiosPlugin, fu_bios_plugin, FU_TYPE_PLUGIN)
+
+static gboolean
+fu_bios_plugin_startup(FuPlugin *plugin, FuProgress *progress, GError **error)
+{
+	FuContext *ctx = fu_plugin_get_context(plugin);
+	const gchar *vendor;
+
+	vendor = fu_context_get_hwid_value(ctx, FU_HWIDS_KEY_BIOS_VENDOR);
+	if (g_strcmp0(vendor, "coreboot") == 0) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_NOT_FOUND,
+				    "system uses coreboot");
+		return FALSE;
+	}
+
+	/* check if UEFI is supported by the hardware */
+	if (!fu_context_has_flag(ctx, FU_CONTEXT_FLAG_SMBIOS_UEFI_ENABLED)) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_NOT_SUPPORTED,
+				    "system does not support UEFI");
+		return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
+static gboolean
+fu_bios_plugin_coldplug(FuPlugin *plugin, FuProgress *progress, GError **error)
+{
+	FuContext *ctx = fu_plugin_get_context(plugin);
+	FuEfivars *efivars = fu_context_get_efivars(ctx);
+	g_autofree gchar *esrt_path = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	/* are the EFI dirs set up so we can update each device */
+	if (!fu_efivars_supported(efivars, &error_local)) {
+		fu_plugin_add_flag(plugin, FWUPD_PLUGIN_FLAG_LEGACY_BIOS);
+		fu_plugin_add_flag(plugin, FWUPD_PLUGIN_FLAG_USER_WARNING);
+		return TRUE;
+	}
+
+	/* get the directory of ESRT entries */
+	esrt_path = fu_path_build(FU_PATH_KIND_SYSFSDIR_FW, "efi", "esrt", NULL);
+	if (!g_file_test(esrt_path, G_FILE_TEST_IS_DIR)) {
+		/* don't show the warning in a hypervisor as capsule updates are not expected */
+		if (!fu_context_has_flag(ctx, FU_CONTEXT_FLAG_IS_HYPERVISOR)) {
+			fu_plugin_add_flag(plugin, FWUPD_PLUGIN_FLAG_CAPSULES_UNSUPPORTED);
+			fu_plugin_add_flag(plugin, FWUPD_PLUGIN_FLAG_USER_WARNING);
+		}
+		return TRUE;
+	}
+
+	/* we appear to have UEFI capsule updates */
+	fu_plugin_add_flag(plugin, FWUPD_PLUGIN_FLAG_DISABLED);
+	return TRUE;
+}
+
+static void
+fu_bios_plugin_add_security_attrs(FuPlugin *plugin, FuSecurityAttrs *attrs)
+{
+	g_autoptr(FwupdSecurityAttr) attr = NULL;
+
+	if (!fu_plugin_has_flag(plugin, FWUPD_PLUGIN_FLAG_LEGACY_BIOS))
+		return;
+
+	/* create attr */
+	attr = fu_plugin_security_attr_new(plugin, FWUPD_SECURITY_ATTR_ID_UEFI_SECUREBOOT);
+	fwupd_security_attr_set_result_success(attr, FWUPD_SECURITY_ATTR_RESULT_ENABLED);
+	fu_security_attrs_append(attrs, attr);
+
+	fwupd_security_attr_add_flag(attr, FWUPD_SECURITY_ATTR_FLAG_RUNTIME_ISSUE);
+	fwupd_security_attr_add_flag(attr, FWUPD_SECURITY_ATTR_FLAG_ACTION_CONFIG_FW);
+	fwupd_security_attr_set_result(attr, FWUPD_SECURITY_ATTR_RESULT_NOT_ENABLED);
+}
+
+static void
+fu_bios_plugin_init(FuBiosPlugin *self)
+{
+}
+
+static void
+fu_bios_plugin_class_init(FuBiosPluginClass *klass)
+{
+	FuPluginClass *plugin_class = FU_PLUGIN_CLASS(klass);
+	plugin_class->startup = fu_bios_plugin_startup;
+	plugin_class->coldplug = fu_bios_plugin_coldplug;
+	plugin_class->add_security_attrs = fu_bios_plugin_add_security_attrs;
+}

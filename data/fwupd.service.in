@@ -1,21 +1,37 @@
 [Unit]
 Description=Firmware update daemon
 Documentation=https://fwupd.org/
-After=dbus.service
+Wants=modprobe@sd_mod.service
+After=modprobe@sd_mod.service dbus.service
 Before=display-manager.service
+ConditionVirtualization=!container
 
 [Service]
 Type=dbus
+TimeoutSec=180
 RuntimeDirectory=@motd_dir@
 RuntimeDirectoryPreserve=yes
 BusName=org.freedesktop.fwupd
 ExecStart=@libexecdir@/fwupd/fwupd
-StateDirectory=@package_name@
-CacheDirectory=@package_name@
-ConfigurationDirectory=@package_name@
-PrivateTmp=yes
+KeyringMode=private
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=no
+PrivateDevices=no
+PrivateTmp=true
+ProtectClock=yes
+ProtectControlGroups=yes
 ProtectHome=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectProc=invisible
 ProtectSystem=full
-RestrictAddressFamilies=AF_NETLINK AF_UNIX
-SystemCallFilter=~@mount
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native
+Environment="GLIBC_TUNABLES=glibc.cpu.hwcaps=SHSTK"
+RestrictAddressFamilies=AF_NETLINK AF_UNIX AF_INET AF_INET6
 @dynamic_options@

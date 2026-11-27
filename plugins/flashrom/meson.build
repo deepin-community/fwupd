@@ -1,34 +1,27 @@
-if get_option('plugin_flashrom')
-cargs = ['-DG_LOG_DOMAIN="FuPluginFlashrom"']
+allow_flashrom or subdir_done()
 
-install_data(['flashrom.quirk'],
-  install_dir: join_paths(get_option('datadir'), 'fwupd', 'quirks.d')
-)
+cargs = ['-DG_LOG_DOMAIN="FuPluginFlashrom"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
+
+plugin_quirks += files('flashrom.quirk')
 
 shared_module('fu_plugin_flashrom',
-  fu_hash,
-  sources : [
+  sources: [
     'fu-flashrom-device.c',
-    'fu-plugin-flashrom.c',
+    'fu-flashrom-plugin.c',
+    'fu-flashrom-cmos.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : [
+  include_directories: plugin_incdirs,
+  install: true,
+  install_rpath: libdir_pkg,
+  install_dir: libdir_pkg,
+  link_with: plugin_libs,
+  c_args: [
     cargs,
     '-DLOCALSTATEDIR="' + localstatedir + '"',
   ],
-  dependencies : [
+  dependencies: [
     plugin_deps,
     libflashrom,
   ],
 )
-endif

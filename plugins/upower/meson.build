@@ -1,29 +1,14 @@
-if host_machine.system() == 'linux'
+host_machine.system() == 'linux' or subdir_done()
+
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 cargs = ['-DG_LOG_DOMAIN="FuPluginUpower"']
 
-shared_module('fu_plugin_upower',
-  fu_hash,
-  sources : [
-    'fu-plugin-upower.c',
+plugin_builtins += static_library('fu_plugin_upower',
+  sources: [
+    'fu-upower-plugin.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
-
-install_data(['upower.conf'],
-  install_dir:  join_paths(sysconfdir, 'fwupd')
-)
-endif

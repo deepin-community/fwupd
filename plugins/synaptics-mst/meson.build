@@ -1,76 +1,68 @@
-if get_option('plugin_synaptics_mst')
-if not get_option('gudev')
-  error('gudev is required for plugin_synaptics_mst')
-endif
+host_machine.system() == 'linux' or subdir_done()
+
 cargs = ['-DG_LOG_DOMAIN="FuPluginSynapticsMST"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 
-install_data(['synaptics-mst.quirk'],
-  install_dir: join_paths(datadir, 'fwupd', 'quirks.d')
-)
+plugin_quirks += files('synaptics-mst.quirk')
 
-shared_module('fu_plugin_synaptics_mst',
-  fu_hash,
-  sources : [
-    'fu-plugin-synaptics-mst.c',
+plugin_builtin_synaptics_mst = static_library('fu_plugin_synaptics_mst',
+  rustgen.process(
+    'fu-synaptics-mst.rs', # fuzzing
+  ),
+  sources: [
+    'fu-synaptics-mst-plugin.c',
     'fu-synaptics-mst-common.c',
-    'fu-synaptics-mst-connection.c',
     'fu-synaptics-mst-device.c',
     'fu-synaptics-mst-firmware.c',      # fuzzing
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : [
+  include_directories: plugin_incdirs,
+  c_args: [
     cargs,
   ],
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  dependencies : [
-    plugin_deps,
-  ],
+  link_with: plugin_libs,
+  dependencies: plugin_deps,
+)
+plugin_builtins += plugin_builtin_synaptics_mst
+
+device_tests += files(
+  'tests/synaptics-panamera.json',
+)
+enumeration_data += files(
+  'tests/synaptics-panamera-setup.json',
 )
 
 if get_option('tests')
-  testdatadirs = environment()
-  testdatadirs.set('G_TEST_SRCDIR', meson.current_source_dir())
-  testdatadirs.set('G_TEST_BUILDDIR', meson.current_build_dir())
-  testdatadirs.set('FWUPD_LOCALSTATEDIR', '/tmp/fwupd-self-test/var')
+  install_data(['tests/synaptics-mst.builder.xml'],
+    install_dir: join_paths(installed_test_datadir, 'tests'))
+  env = environment()
+  env.set('G_TEST_SRCDIR', meson.current_source_dir())
+  env.set('G_TEST_BUILDDIR', meson.current_build_dir())
+  env.set('FWUPD_LOCALSTATEDIR', '/tmp/fwupd-self-test/var')
+  env.set('FWUPD_DATADIR_QUIRKS', meson.current_source_dir())
   e = executable(
     'synaptics-mst-self-test',
-    fu_hash,
-    sources : [
+    rustgen.process('fu-synaptics-mst.rs'),
+    sources: [
       'fu-self-test.c',
-      'fu-synaptics-mst-common.c',
-      'fu-synaptics-mst-connection.c',
-      'fu-synaptics-mst-device.c',
-      'fu-synaptics-mst-firmware.c',
     ],
-    include_directories : [
-      root_incdir,
-      fwupd_incdir,
-      fwupdplugin_incdir,
-    ],
-    dependencies : [
+    include_directories: plugin_incdirs,
+    dependencies: [
       plugin_deps,
-      sqlite,
       valgrind,
     ],
-    link_with : [
+    link_with: [
       fwupd,
       fwupdplugin,
+      plugin_builtin_synaptics_mst,
     ],
-    c_args : [
+    install: true,
+    install_rpath: libdir_pkg,
+    install_tag: 'tests',
+    install_dir: installed_test_bindir,
+    c_args: [
       cargs,
+      '-DSRCDIR="' + meson.current_source_dir() + '"',
     ],
-    install : true,
-    install_dir : installed_test_bindir,
   )
-  test('synaptics-mst-self-test', e, env: testdatadirs)
-endif
+  test('synaptics-mst-self-test', e, env: env)
 endif

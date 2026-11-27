@@ -1,0 +1,677 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the fwupd package.
+#
+# Translators:
+# A S Alam, 2021
+# A S Alam, 2025
+# Aman Alam <aalam@users.noreply.hosted.weblate.org>, 2025.
+# Richard Hughes <hughsient@gmail.com>, 2025.
+msgid ""
+msgstr ""
+"Project-Id-Version: fwupd\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-10-24 10:23+0000\n"
+"Last-Translator: Aman Alam <aalam@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Punjabi <https://hosted.weblate.org/projects/fwupd/fwupd/pa/>\n"
+"Language: pa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.14.1-dev\n"
+
+#. TRANSLATORS: more than a minute
+#, c-format
+msgid "%.0f minute remaining"
+msgid_plural "%.0f minutes remaining"
+msgstr[0] "%.0f ਮਿੰਟ ਬਾਕੀ"
+msgstr[1] "%.0f ਮਿੰਟ ਬਾਕੀ"
+
+#. TRANSLATORS: a specific part of hardware,
+#. * the first %s is the device name, e.g. 'Secure Boot`
+#, c-format
+msgid "%s Configuration Update"
+msgstr "%s ਸੰਰਚਨਾ ਅੱਪਡੇਟ"
+
+#. TRANSLATORS: a specific part of hardware,
+#. * the first %s is the device name, e.g. 'Unifying Receiver`
+#, c-format
+msgid "%s Device Update"
+msgstr "%s ਡਿਵਾਈਸ ਅੱਪਡੇਟ"
+
+#. TRANSLATORS: the entire system, e.g. all internal devices,
+#. * the first %s is the device name, e.g. 'ThinkPad P50`
+#, c-format
+msgid "%s System Update"
+msgstr "%s ਸਿਸਟਮ ਅੱਪਡੇਟ"
+
+#. TRANSLATORS: this is the fallback where we don't know if the release
+#. * is updating the system, the device, or a device class, or something else
+#. --
+#. * the first %s is the device name, e.g. 'ThinkPad P50`
+#, c-format
+msgid "%s Update"
+msgstr "%s ਅੱਪਡੇਟ"
+
+#. TRANSLATORS: the device has a reason it can't update, e.g. laptop lid
+#. closed
+#, c-format
+msgid "%s is not currently updatable"
+msgstr "%s ਇਸ ਵੇਲੇ ਅੱਪਡੇਟ ਕਰਨ ਯੋਗ ਨਹੀਂ ਹੈ"
+
+#. TRANSLATORS: Title: %s is ME kind, e.g. CSME/TXT
+#, c-format
+msgid "%s version"
+msgstr "%s ਵਰਜ਼ਨ"
+
+#. TRANSLATORS: this is shown in the MOTD
+#, c-format
+msgid "%u device has a firmware upgrade available."
+msgid_plural "%u devices have a firmware upgrade available."
+msgstr[0] "%u ਡਿਵਾਈਸ ਲਈ ਇੱਕ ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਮੌਜੂਦ ਹੈ।"
+msgstr[1] "%u ਡਿਵਾਈਸਾਂ ਲਈ ਇੱਕ ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਮੌਜੂਦ ਹੈ।"
+
+#. TRANSLATORS: duration in minutes
+#, c-format
+msgid "%u minute"
+msgid_plural "%u minutes"
+msgstr[0] "%u ਮਿੰਟ"
+msgstr[1] "%uਮਿੰਟ"
+
+#. TRANSLATORS: duration in seconds
+#, c-format
+msgid "%u second"
+msgid_plural "%u seconds"
+msgstr[0] "%u ਸਕਿੰਟ"
+msgstr[1] "%u ਸਕਿੰਟ"
+
+#. TRANSLATORS: this is shown as a suffix for obsoleted tests
+msgid "(obsoleted)"
+msgstr "(ਬਰਤਰਫ਼ ਕੀਤਾ)"
+
+#. TRANSLATORS: Title: if hardware enforces control of SPI replays
+msgid "AMD Firmware Replay Protection"
+msgstr "AMD ਫਿਰਮਵੇਅਰ ਰੀਪਲੇਅ ਸੁਰੱਖਿਆ"
+
+#. TRANSLATORS: Title: if hardware enforces control of SPI writes
+msgid "AMD Firmware Write Protection"
+msgstr "AMD ਫਿਰਮਵੇਅਰ ਲਿਖਣ ਸੁਰੱਖਿਆ"
+
+#. TRANSLATORS: Title: if firmware enforces rollback protection
+msgid "AMD Secure Processor Rollback Protection"
+msgstr "AMD ਸਕਿਉਰ ਪ੍ਰੋਸੈਸਰ ਰੋਲਬੈਕ ਸੁਰੱਖਿਆ"
+
+#. TRANSLATORS: the user needs to do something, e.g. remove the device
+msgid "Action Required:"
+msgstr "ਧਿਆਨ ਦੇਣ ਦੀ ਲੋੜ ਹੈ:"
+
+msgid "Activate the new firmware on the device"
+msgstr "ਡਿਵਾਈਸ ਉੱਤੇ ਨਵਾਂ ਫਿਰਮਵੇਅਰ ਸਰਗਰਮ ਕਰੋ"
+
+#. TRANSLATORS: should the remote still be enabled
+msgid "Agree and enable the remote?"
+msgstr "ਸਹਿਮਤ ਹੋ ਅਤੇ ਰਿਮੋਟ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਹੈ?"
+
+#. TRANSLATORS: command line option
+msgid "Apply update files"
+msgstr "ਅੱਪਡੇਟ ਫ਼ਾਇਲਾਂ ਨੂੰ ਲਾਗੂ ਕਰੋ"
+
+#. TRANSLATORS: actually sending the update to the hardware
+msgid "Applying update…"
+msgstr "…ਅੱਪਡੇਟ ਨੂੰ ਲਾਗੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: waiting for user to authenticate
+msgid "Authenticating…"
+msgstr "…ਪਰਮਾਣਿਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to downgrade the firmware on a removable device"
+msgstr "ਹਟਾਉਣਯੋਗ ਡਿਵਾਈਸ ਉੱਤੇ ਫਿਰਮਵੇਅਰ ਡਾਊਨਗਰੇਡ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to downgrade the firmware on this machine"
+msgstr "ਇਸ ਮਸ਼ੀਨ ਉੱਤੇ ਫਿਰਮਵੇਅਰ ਨੂੰ ਡਾਊਨਗਰੇਡ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to modify BIOS settings"
+msgstr "BIOS ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੋਧਣ ਲਈ ਪਰਮਾਣਿਤ ਹੋਣ ਦੀ ਲੋੜ ਹੈ"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to read BIOS settings"
+msgstr "BIOS ਸੈਟਿੰਗਾਂ ਨੂੰ ਪੜ੍ਹਨ ਲਈ ਪਰਮਾਣਿਤ ਹੋਣ ਦੀ ਲੋੜ ਹੈ"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to stop the firmware update service"
+msgstr "ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਸੇਵਾ ਨੂੰ ਰੋਕਣ ਲਈ ਪਰਮਾਣਿਤ ਹੋਣ ਦੀ ਲੋੜ ਹੈ"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to unlock a device"
+msgstr "ਡਿਵਾਈਸ ਨੂੰ ਅਣ-ਲਾਕ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to update the firmware on a removable device"
+msgstr "ਹਟਾਉਣਯੋਗ ਡਿਵਾਈਸ ਉੱਤੇ ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ"
+
+#. TRANSLATORS: this is the PolicyKit modal dialog
+msgid "Authentication is required to update the firmware on this machine"
+msgstr "ਇਸ ਮਸ਼ੀਨ ਉੱਤੇ ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ"
+
+#. TRANSLATORS: Title: Whether BIOS Firmware updates is enabled
+msgid "BIOS Firmware Updates"
+msgstr "BIOS ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ"
+
+#. TRANSLATORS: Title: Whether BIOS Firmware updates is enabled
+msgid "BIOS firmware updates"
+msgstr "BIOS ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ"
+
+#. TRANSLATORS: description of a BIOS setting
+msgid "BIOS updates delivered via LVFS or Windows Update"
+msgstr "BIOS ਅੱਪਡੇਟਾਂ ਨੂੰ LVFS ਜਾਂ ਵਿੰਡੋਜ਼ ਅੱਪਡੇਟ ਰਾਹੀਂ ਲਾਗੂ ਕੀਤੇ ਗਏ ਹਨ"
+
+#. TRANSLATORS: this is to abort the interactive prompt
+msgid "Cancel"
+msgstr "ਰੱਦ ਕਰੋ"
+
+#. TRANSLATORS: this is when a device ctrl+c's a watch
+#. TRANSLATORS: this is from ctrl+c
+msgid "Cancelled"
+msgstr "ਰੱਦ ਕੀਤਾ"
+
+#. TRANSLATORS: get interactive prompt
+msgid "Choose device"
+msgstr "ਡਿਵਾਈਸ ਨੂੰ ਚੁਣੋ"
+
+#. TRANSLATORS: error message
+msgid "Command not found"
+msgstr "ਕਮਾਂਡ ਨਹੀਂ ਲੱਭੀ"
+
+#. TRANSLATORS: when the update was built
+msgid "Created"
+msgstr "ਬਣਾਇਆ"
+
+#. TRANSLATORS: the release urgency
+msgid "Critical"
+msgstr "ਗੰਭੀਰ"
+
+#. TRANSLATORS: decompressing the firmware file
+msgid "Decompressing…"
+msgstr "…ਡਿ-ਕੰਪਰੈਸ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: description of BIOS setting
+#. TRANSLATORS: multiline description of device
+msgid "Description"
+msgstr "ਵਰਣਨ"
+
+#. TRANSLATORS: more details about the update link
+msgid "Details"
+msgstr "ਵੇਰਵੇ"
+
+#. TRANSLATORS: ID for hardware, typically a SHA1 sum
+msgid "Device ID"
+msgstr "ਡਿਵਾਈਸ ID"
+
+#. TRANSLATORS: this is when a device is hotplugged
+msgid "Device added:"
+msgstr "ਡਿਵਾਈਸ ਜੋੜਿਆ:"
+
+#. TRANSLATORS: this is when a device has been updated
+msgid "Device changed:"
+msgstr "ਡਿਵਾਈਸ ਨੂੰ ਬਦਲਿਆ:"
+
+#. TRANSLATORS: this is when a device is hotplugged
+msgid "Device removed:"
+msgstr "ਡਿਵਾਈਸ ਨੂੰ ਹਟਾਇਆ:"
+
+#. TRANSLATORS: success
+msgid "Done!"
+msgstr "ਮੁਕੰਮਲ!"
+
+#. TRANSLATORS: downloading from a remote server
+msgid "Downloading…"
+msgstr "…ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: length of time the update takes to apply
+msgid "Duration"
+msgstr "ਲੱਗਣਾ ਸਮਾਂ"
+
+msgid "Enable"
+msgstr "ਸਮਰੱਥ"
+
+#. TRANSLATORS: a remote here is like a 'repo' or software source
+msgid "Enable new remote?"
+msgstr "ਨਵੇਂ ਰਿਮੋਟ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਹੈ?"
+
+#. TRANSLATORS: if the remote is enabled
+#. TRANSLATORS: Suffix: the HSI result
+msgid "Enabled"
+msgstr "ਸਮਰੱਥ ਹੈ"
+
+msgid "Enabling this functionality is done at your own risk, which means you have to contact your original equipment manufacturer regarding any problems caused by these updates. Only problems with the update process itself should be filed at $OS_RELEASE:BUG_REPORT_URL$."
+msgstr "ਇਹ ਸਹੂਲਤ ਨੂੰ ਆਪਣੇ ਖਤਰੇ ਉੱਤੇ ਹੀ ਸਮਰੱਥ ਕਰੋ, ਜਿਸ ਦਾ ਅਰਥ ਹੋਵੇਗਾ ਕਿ ਇਹਨਾਂ ਅੱਪਡੇਟਾਂ ਨਾਲ ਆਈ ਕਿਸੇ ਵੀ ਸਮੱਸਿਆ ਵਾਸਤੇ ਤੁਸੀਂ ਅਸਲ ਡਿਵਾਈਸ ਨਿਰਮਾਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋਗੇ। ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕਾਰਵਾਈ ਸੰਬੰਧੀ ਕਿਸੇ ਵੀ ਸਮੱਸਿਆ ਬਾਰੇ $OS_RELEASE:BUG_REPORT_URL$ ਉੱਤੇ ਰਿਪੋਰਟ ਕਰੋ।"
+
+#. TRANSLATORS: erasing contents of the flash chips
+msgid "Erasing…"
+msgstr "…ਮਿਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: command argument: uppercase, spaces->dashes
+msgid "FILENAME"
+msgstr "ਫਾਇਲ-ਨਾਂ"
+
+#. TRANSLATORS: dbx file failed to be applied as an update
+msgid "Failed to apply update"
+msgstr "ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
+
+#. TRANSLATORS: another fwupdtool instance is already running
+msgid "Failed to lock"
+msgstr "ਲਾਕ ਕਰਨ ਲਈ ਅਸਫ਼ਲ ਹੈ"
+
+#. TRANSLATORS: filename of the local file
+msgid "Filename"
+msgstr "ਫਾਇਲ-ਦਾ-ਨਾਂ"
+
+#. TRANSLATORS: user did not include a filename parameter
+msgid "Filename required"
+msgstr "ਫਾਇਲ-ਨਾਂ ਚਾਹੀਦਾ ਹੈ"
+
+#. TRANSLATORS: Title: SPI refers to the flash chip in the computer
+msgid "Firmware BIOS Region"
+msgstr "ਫਿਰਮਵੇਅਰ BIOS ਖੇਤਰ"
+
+#. TRANSLATORS: program summary
+msgid "Firmware Update D-Bus Service"
+msgstr "ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਡੀ-ਬੱਸ ਸਰਵਿਸ"
+
+#. TRANSLATORS: program name
+msgid "Firmware Update Daemon"
+msgstr "ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਡੈਮਨ"
+
+#. TRANSLATORS: Title: if the fwupd plugins are all present and correct
+msgid "Firmware Updater Verification"
+msgstr "ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟਰ ਤਸਦੀਕ"
+
+#. TRANSLATORS: Title: if firmware updates are available
+msgid "Firmware Updates"
+msgstr "ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ"
+
+#. TRANSLATORS: Title: firmware refers to the flash chip in the computer
+msgid "Firmware Write Protection"
+msgstr "ਫਿਰਮਵੇਅਰ ਲਿਖਣ ਸੁਰੱਖਿਆ"
+
+#. TRANSLATORS: Title: firmware refers to the flash chip in the computer
+msgid "Firmware Write Protection Lock"
+msgstr "ਫਿਰਮਵੇਅਰ ਲਿਖਣ ਸੁਰੱਖਿਆ ਲਾਕ"
+
+#. TRANSLATORS: Title: if firmware updates are available
+msgid "Firmware updates"
+msgstr "ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ"
+
+msgid "Get BIOS settings"
+msgstr "BIOS ਸੈਟਿੰਗਾਂ ਉੱਤੇ ਜਾਓ"
+
+#. TRANSLATORS: the release urgency
+msgid "High"
+msgstr "ਵੱਧ"
+
+#. TRANSLATORS: Title:
+#. * https://en.wikipedia.org/wiki/Input%E2%80%93output_memory_management_unit
+msgid "IOMMU"
+msgstr "IOMMU"
+
+#. TRANSLATORS: Title:
+#. * https://en.wikipedia.org/wiki/Input%E2%80%93output_memory_management_unit
+msgid "IOMMU Protection"
+msgstr "IOMMU ਸੁਰੱਖਿਆ"
+
+msgid "Install old version of signed system firmware"
+msgstr "ਸਾਈਨ ਕੀਤੇ ਸਿਸਟਮ ਫਿਰਮਵੇਅਰ ਦਾ ਪੁਰਾਣਾ ਵਰਜ਼ਨ ਇੰਸਟਾਲ ਕਰੋ"
+
+msgid "Install old version of unsigned system firmware"
+msgstr "ਬਿਨ-ਸਾਈਨ ਕੀਤੇ ਸਿਸਟਮ ਫਿਰਮਵੇਅਰ ਦਾ ਪੁਰਾਣਾ ਵਰਜ਼ਨ ਇੰਸਟਾਲ ਕਰੋ"
+
+msgid "Install signed device firmware"
+msgstr "ਸਾਈਨ ਕੀਤਾ ਡਿਵਾਈਸ ਫਿਰਮਵੇਅਰ ਇੰਸਟਾਲ ਕਰੋ"
+
+msgid "Install signed system firmware"
+msgstr "ਸਾਈਨ ਕੀਤਾ ਸਿਸਟਮ ਫਿਰਮਵੇਅਰ ਇੰਸਟਾਲ ਕਰੋ"
+
+msgid "Install unsigned device firmware"
+msgstr "ਬਿਨ-ਸਾਈਨ ਕੀਤਾ ਡਿਵਾਈਸ ਫਿਰਮਵੇਅਰ ਇੰਸਟਾਲ ਕਰੋ"
+
+msgid "Install unsigned system firmware"
+msgstr "ਬਿਨਾਂ-ਸਾਈਨ ਕੀਤਾ ਸਿਸਟਮ ਫਿਰਮਵੇਅਰ ਇੰਸਟਾਲ ਕਰੋ"
+
+#. TRANSLATORS: this is shown when updating the firmware after the reboot
+msgid "Installing firmware update…"
+msgstr "ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…"
+
+#. TRANSLATORS: %1 is a device name
+#, c-format
+msgid "Installing on %s…"
+msgstr "…%s ਉੱਤੇ ਇੰਸਟਾਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: issue fixed with the release, e.g. CVE
+msgid "Issue"
+msgid_plural "Issues"
+msgstr[0] "ਮਸਲਾ"
+msgstr[1] "ਮਸਲੇ"
+
+#. TRANSLATORS: time remaining for completing firmware flash
+msgid "Less than one minute remaining"
+msgstr "ਇੱਕ ਮਿੰਟ ਤੋਂ ਘੱਟ ਬਾਕੀ ਰਹਿੰਦਾ ਹੈ"
+
+#. TRANSLATORS: e.g. GPLv2+, Proprietary etc
+msgid "License"
+msgstr "ਲਸੰਸ"
+
+#. TRANSLATORS: Title: lockdown is a security mode of the kernel
+msgid "Linux Kernel Lockdown"
+msgstr "ਲੀਨਕਸ ਕਰਨਲ ਲਾਕ-ਡਾਊਨ"
+
+#. TRANSLATORS: Title: if it's tainted or not
+msgid "Linux Kernel Verification"
+msgstr "ਲੀਨਕਸ ਕਰਨਲ ਤਸਦੀਕ"
+
+#. TRANSLATORS: Title: swap space or swap partition
+msgid "Linux Swap"
+msgstr "ਲੀਨਕਸ ਸਵੈਪ"
+
+msgid "Linux Vendor Firmware Service (stable firmware)"
+msgstr "ਲੀਨਕਸ ਵੇਂਡਰ ਫਿਰਮਵੇਅਰ ਸਰਵਿਸ (ਸਟੇਬਲ ਫਿਰਮਵੇਅਰ)"
+
+msgid "Linux Vendor Firmware Service (testing firmware)"
+msgstr "ਲੀਨਕਸ ਵੇਂਡਰ ਫਿਰਮਵੇਅਰ ਸਰਵਿਸ (ਟੈਸਟਿੰਗ ਫਿਰਮਵੇਅਰ)"
+
+#. TRANSLATORS: Title: if it's tainted or not
+msgid "Linux kernel"
+msgstr "ਲੀਨਕਸ ਕਰਨਲ"
+
+#. TRANSLATORS: Title: lockdown is a security mode of the kernel
+msgid "Linux kernel lockdown"
+msgstr "ਲੀਨਕਸ ਕਰਨਲ ਲਾਕ-ਡਾਊਨ"
+
+#. TRANSLATORS: Title: swap space or swap partition
+msgid "Linux swap"
+msgstr "ਲੀਨਕਸ ਸਵੈਪ"
+
+#. TRANSLATORS: parsing the firmware information
+msgid "Loading…"
+msgstr "…ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: the release urgency
+msgid "Low"
+msgstr "ਘੱਟ"
+
+msgid "MEI version"
+msgstr "MEI ਵਰਜ਼ਨ"
+
+#. TRANSLATORS: the release urgency
+msgid "Medium"
+msgstr "ਠੀਕ-ਠਾਕ"
+
+msgid "Modify a configured remote"
+msgstr "ਸੰਰਚਿਤ ਰਿਮੋਟ ਨੂੰ ਸੋਧੋ"
+
+msgid "Modify daemon configuration"
+msgstr "ਡੈਮਨ ਸੰਰਚਨਾ ਸੋਧੋ"
+
+#. TRANSLATORS: the update state of the specific device
+msgid "Needs reboot"
+msgstr "ਮੁੜ-ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ"
+
+#. TRANSLATORS: version number of new firmware
+msgid "New version"
+msgstr "ਨਵਾਂ ਵਰਜ਼ਨ"
+
+#. TRANSLATORS: user did not tell the tool what to do
+msgid "No action specified!"
+msgstr "ਕੋਈ ਕਾਰਵਾਈ ਨਹੀਂ ਦਿੱਤੀ ਗਈ!"
+
+#. TRANSLATORS: Suffix: the HSI result
+msgid "Not found"
+msgstr "ਨਹੀ ਲੱਭਿਆ"
+
+#. TRANSLATORS: Suffix: the HSI result
+msgid "OK"
+msgstr "ਠੀਕ ਹੈ"
+
+#. TRANSLATORS: command argument: uppercase, spaces->dashes
+msgid "PATH"
+msgstr "ਪਾਥ"
+
+#. TRANSLATORS: remote filename base
+msgid "Password"
+msgstr "ਪਾਸਵਰਡ"
+
+#. TRANSLATORS: the user isn't reading the question
+#, c-format
+msgid "Please enter a number from 0 to %u: "
+msgstr "0 ਤੋਂ ਲੈ ਕੇ %u ਤੱਕ ਕੋਈ ਨੰਬਰ ਦਿਓ ਜੀ:"
+
+#. TRANSLATORS: the user isn't reading the question -- %1 is 'Y' and %2 is
+#. * 'N'
+#, c-format
+msgid "Please enter either %s or %s: "
+msgstr "%s ਜਾਂ %s ਵਿੱਚੋਂ ਕੋਈ ਇੱਕ ਦਿਓ ਜੀ:"
+
+#. TRANSLATORS: a non-free software license
+msgid "Proprietary"
+msgstr "ਪ੍ਰੋਪ੍ਰੇਟਰੀ"
+
+#. TRANSLATORS: %1 is a device name
+#, c-format
+msgid "Reading from %s…"
+msgstr "…%s ਤੋਂ ਪੜ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: reading from the flash chips
+msgid "Reading…"
+msgstr "…ਪੜ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: Plugin is active and in use
+msgid "Ready"
+msgstr "ਤਿਆਰ"
+
+msgid "Reset daemon configuration"
+msgstr "ਡੈਮਨ ਸੰਰਚਨਾ ਨੂੰ ਮੁੜ-ਸੈੱਟ ਕਰੋ"
+
+#. TRANSLATORS: reboot to apply the update
+msgid "Restart now?"
+msgstr "ਹੁਣੇ ਮੁੜ-ਚਾਲੂ ਕਰਨਾ ਹੈ?"
+
+#. TRANSLATORS: restarting the device to pick up new F/W
+msgid "Restarting device…"
+msgstr "…ਡਿਵਾਈਸ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: this is shown in the MOTD -- %1 is the
+#. * command name, e.g. `fwupdmgr get-upgrades`
+#, c-format
+msgid "Run `%s` for more information."
+msgstr "ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ `%s` ਨੂੰ ਚਲਾਓ"
+
+#. TRANSLATORS: Title: SMAP = Supervisor Mode Access Prevention
+msgid "SMAP"
+msgstr "SMAP"
+
+#. TRANSLATORS: Title: SPI refers to the flash chip in the computer
+msgid "SPI lock"
+msgstr "SPI ਲਾਕ"
+
+#. TRANSLATORS: Title: SPI refers to the flash chip in the computer
+msgid "SPI write"
+msgstr "SPI ਲਿਖਣ"
+
+#. TRANSLATORS: scheduling an update to be done on the next boot
+msgid "Scheduling…"
+msgstr "…ਸੈਡਿਊਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: HSI event title
+msgid "Secure Boot disabled"
+msgstr "ਸੁਰੱਖਿਅਤ ਬੂਟ ਅਸਮਰੱਥ ਹੈ"
+
+#. TRANSLATORS: HSI event title
+msgid "Secure Boot enabled"
+msgstr "ਸੁਰੱਖਿਅਤ ਬੂਟ ਸਮਰੱਥ ਹੈ"
+
+#. TRANSLATORS: %s is a link to a website
+#, c-format
+msgid "See %s for more information."
+msgstr "ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ %s ਨੂੰ ਵੇਖੋ।"
+
+#. TRANSLATORS: device has been chosen by the daemon for the user
+msgid "Selected device"
+msgstr "ਡਿਵਾਈਸ ਨੂੰ ਚੁਣੋ"
+
+msgid "Set one or more BIOS settings"
+msgstr "ਇੱਕ ਜਾਂ ਵੱਧ BIOS ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੈੱਟ ਕਰੋ"
+
+#. TRANSLATORS: description of a BIOS setting
+msgid "Settings will apply after system reboots"
+msgstr "ਸੈਟਿੰਗਾਂ ਸਿਸਟਮ ਦੇ ਮੁੜ-ਚਾਲੂ ਹੋਣ ਦੇ ਬਾਅਦ ਲਾਗੂ ਹੋਣਗੀਆਂ"
+
+#. TRANSLATORS: file size of the download
+msgid "Size"
+msgstr "ਆਕਾਰ"
+
+#. TRANSLATORS: source (as in code) link
+msgid "Source"
+msgstr "ਸਰੋਤ"
+
+msgid "Stop the fwupd service"
+msgstr "fwupd ਸੇਵਾ ਨੂੰ ਰੋਕੋ"
+
+#. TRANSLATORS: the update state of the specific device
+msgid "Success"
+msgstr "ਸਫ਼ਲ"
+
+#. TRANSLATORS: one line summary of device
+msgid "Summary"
+msgstr "ਸਾਰ"
+
+#. TRANSLATORS: Suffix: the HSI result
+msgid "Supported"
+msgstr "ਸਹਾਇਕ ਹੈ"
+
+#. TRANSLATORS: Title: if fwupd supports HSI on this chip
+msgid "Supported CPU"
+msgstr "ਸਹਾਇਕ CPU"
+
+#. TRANSLATORS: Title: sleep state
+msgid "Suspend To RAM"
+msgstr "ਰੈਮ ਉੱਤੇ ਸਸਪੈਂਡ ਕਰੋ"
+
+#. TRANSLATORS: Must be plugged into an outlet
+msgid "System requires external power source"
+msgstr "ਸਿਸਟਮ ਨੂੰ ਬਾਹਰੀ ਪਾਵਰ ਸਰੋਤ ਚਾਹੀਦਾ ਹੈ"
+
+#. TRANSLATORS: Title: PCRs (Platform Configuration Registers) shouldn't be
+#. empty
+msgid "TPM Platform Configuration"
+msgstr "TPM ਪਲੇਟਫਾਰਮ ਸੰਰਚਨਾ"
+
+#. TRANSLATORS: Title: TPM = Trusted Platform Module
+msgid "TPM v2.0"
+msgstr "TPM v2.0"
+
+#. TRANSLATORS: release tag set for release, e.g. lenovo-2021q3
+msgid "Tag"
+msgid_plural "Tags"
+msgstr[0] "ਟੈਗ"
+msgstr[1] "ਟੈਗ"
+
+#. TRANSLATORS: do not translate the variables marked using $
+msgid "The LVFS is a free service that operates as an independent legal entity and has no connection with $OS_RELEASE:NAME$. Your distributor may not have verified any of the firmware updates for compatibility with your system or connected devices. All firmware is provided only by the original equipment manufacturer."
+msgstr "LVFS ਮੁਫ਼ਤ ਸਰਵਿਸ ਹੈ, ਜੋ ਕਿ ਆਜ਼ਾਦ ਕਨੂੰਨੀ ਸੰਸਥਾ ਵਜੋਂ ਕੰਮ ਕਰਦੀ ਹੈ ਅਤੇ $OS_RELEASE:NAME$ ਨਾਲ ਕੋਈ ਸੰਬੰਧ ਨਹੀਂ ਹੈ। ਤੁਹਾਡੇ ਡਿਸਟਰੀਬਿਊਟਰ ਨੇ ਤੁਹਾਡੇ ਸਿਸਟਮ ਜਾਂ ਕਨੈਕਟ ਹੋਏ ਡਿਵਾਈਸਾਂ ਲਈ ਅਨੁਕੂਲਤਾ ਵਾਸਤੇ ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟਾਂ ਨੂੰ ਤਸਦੀਕ ਨਹੀਂ ਕੀਤੇ ਹਨ। ਸਾਰੇ ਫਿਰਮਵੇਅਰ ਅਸਲ ਡਿਵਾਈਸ ਨਿਮਰਾਤਾਵਾਂ ਵਲੋਂ ਹੀ ਦਿੱਤੇ ਜਾ ਗਏ ਹਨ।"
+
+#. TRANSLATORS: remote type, e.g. remote or local
+msgid "Type"
+msgstr "ਕਿਸਮ"
+
+#. TRANSLATORS: Title: is UEFI early-boot memory protection turned on
+msgid "UEFI Memory Protection"
+msgstr "UEFI ਮੈਮੋਰੀ ਸੁਰੱਖਿਆ"
+
+#. TRANSLATORS: Title: PK is the 'platform key' for the machine
+msgid "UEFI Platform Key"
+msgstr "UEFI ਪਲੇਟਫਾਰਮ ਕੀ"
+
+#. TRANSLATORS: Title: SB is a way of locking down UEFI
+msgid "UEFI Secure Boot"
+msgstr "UEFI ਸਕਿਉਰ ਬੂਟ"
+
+#. TRANSLATORS: Title: is UEFI db up-to-date
+msgid "UEFI db"
+msgstr "UEFI ਡਾਟਾਬੇਸ"
+
+#. TRANSLATORS: Title: is UEFI early-boot memory protection turned on
+msgid "UEFI memory protection"
+msgstr "UEFI ਮੈਮੋਰੀ ਸੁਰੱਖਿਆ"
+
+#. TRANSLATORS: Title: PK is the 'platform key' for the machine
+msgid "UEFI platform key"
+msgstr "UEFI ਪਲੇਟਫਾਰਮ ਕੀ"
+
+#. TRANSLATORS: Title: SB is a way of locking down UEFI
+msgid "UEFI secure boot"
+msgstr "UEFI ਸਕਿਉਰ ਬੂਟ"
+
+#. TRANSLATORS: current daemon status is unknown
+#. TRANSLATORS: we don't know the license of the update
+#. TRANSLATORS: unknown release urgency
+#. TRANSLATORS: Suffix: the fallback HSI result
+msgid "Unknown"
+msgstr "ਅਣਪਛਾਤਾ"
+
+#. TRANSLATORS: Name of hardware
+msgid "Unknown Device"
+msgstr "ਅਣਪਛਾਤਾ ਡਿਵਾਈਸ"
+
+msgid "Unlock the device to allow access"
+msgstr "ਪਹੁੰਚ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ ਡਿਵਾਈਸ ਅਣ-ਲਾਕ ਕਰੋ"
+
+msgid "Update the stored device verification information"
+msgstr "ਸਟੋਰ ਕੀਤੀ ਡਿਵਾਈਸ ਤਸਦੀਕ ਜਾਣਕਾਰੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ"
+
+#. TRANSLATORS: %1 is a device name
+#, c-format
+msgid "Updating %s…"
+msgstr "…%s ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: how important the release is
+msgid "Urgency"
+msgstr "ਜ਼ਰੂਰਤ"
+
+#. TRANSLATORS: remote filename base
+msgid "Username"
+msgstr "ਵਰਤੋਂਕਾਰ-ਨਾਂ"
+
+#. TRANSLATORS: manufacturer of hardware
+msgid "Vendor"
+msgstr "ਵੇਂਡਰ"
+
+#. TRANSLATORS: verifying we wrote the firmware correctly
+msgid "Verifying…"
+msgstr "…ਜਾਂਚਿਆ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: the detected version number of the dbx
+msgid "Version"
+msgstr "ਵਰਜ਼ਨ"
+
+#. TRANSLATORS: this is a prefix on the console
+msgid "WARNING"
+msgstr "ਸਾਵਧਾਨ"
+
+#. TRANSLATORS: waiting for device to do something
+msgid "Waiting…"
+msgstr "…ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
+
+#. TRANSLATORS: writing to the flash chips
+msgid "Writing…"
+msgstr "…ਲਿਖਿਆ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: this is the default branch name when unset
+msgid "default"
+msgstr "ਮੂਲ"
+
+#. TRANSLATORS: Title: if the fwupd plugins are all present and correct
+msgid "fwupd plugins"
+msgstr "fwupd ਪਲੱਗਇਨ"

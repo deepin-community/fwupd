@@ -1,52 +1,137 @@
 /*
- * Copyright (C) 2015 Richard Hughes <richard@hughsie.com>
+ * Copyright 2015 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once
 
-/**
- * SECTION:fwupdplugin
- * @short_description: Helper objects for plugins interacting with fwupd daemon
- */
-
 #define __FWUPDPLUGIN_H_INSIDE__
 
+#include <fwupd.h>
+#include <libfwupdplugin/fu-acpi-table.h>
+#include <libfwupdplugin/fu-archive-firmware.h>
 #include <libfwupdplugin/fu-archive.h>
+#include <libfwupdplugin/fu-backend.h>
+#include <libfwupdplugin/fu-bios-settings.h>
+#include <libfwupdplugin/fu-block-device.h>
+#include <libfwupdplugin/fu-block-partition.h>
 #include <libfwupdplugin/fu-bluez-device.h>
+#include <libfwupdplugin/fu-byte-array.h>
+#include <libfwupdplugin/fu-bytes.h>
+#include <libfwupdplugin/fu-cab-firmware.h>
+#include <libfwupdplugin/fu-cab-image.h>
+#include <libfwupdplugin/fu-cfi-device.h>
+#include <libfwupdplugin/fu-cfu-offer.h>
+#include <libfwupdplugin/fu-cfu-payload.h>
+#include <libfwupdplugin/fu-chunk-array.h>
 #include <libfwupdplugin/fu-chunk.h>
-#include <libfwupdplugin/fu-common.h>
-#include <libfwupdplugin/fu-common-cab.h>
 #include <libfwupdplugin/fu-common-guid.h>
-#include <libfwupdplugin/fu-common-version.h>
-#include <libfwupdplugin/fu-device.h>
+#include <libfwupdplugin/fu-common.h>
+#include <libfwupdplugin/fu-composite-input-stream.h>
+#include <libfwupdplugin/fu-config.h>
+#include <libfwupdplugin/fu-context-helper.h>
+#include <libfwupdplugin/fu-context.h>
+#include <libfwupdplugin/fu-coswid-firmware.h>
+#include <libfwupdplugin/fu-crc.h>
+#include <libfwupdplugin/fu-csv-entry.h>
+#include <libfwupdplugin/fu-csv-firmware.h>
+#include <libfwupdplugin/fu-device-event.h>
 #include <libfwupdplugin/fu-device-locker.h>
 #include <libfwupdplugin/fu-device-metadata.h>
+#include <libfwupdplugin/fu-device-poll-locker.h>
+#include <libfwupdplugin/fu-device.h>
 #include <libfwupdplugin/fu-dfu-firmware.h>
 #include <libfwupdplugin/fu-dfuse-firmware.h>
-#include <libfwupdplugin/fu-firmware.h>
+#include <libfwupdplugin/fu-dpaux-device.h>
+#include <libfwupdplugin/fu-drm-device.h>
+#include <libfwupdplugin/fu-dump.h>
+#include <libfwupdplugin/fu-edid.h>
+#include <libfwupdplugin/fu-efi-device-path-list.h>
+#include <libfwupdplugin/fu-efi-device-path.h>
+#include <libfwupdplugin/fu-efi-file-path-device-path.h>
+#include <libfwupdplugin/fu-efi-file.h>
+#include <libfwupdplugin/fu-efi-filesystem.h>
+#include <libfwupdplugin/fu-efi-ftw-store.h>
+#include <libfwupdplugin/fu-efi-hard-drive-device-path.h>
+#include <libfwupdplugin/fu-efi-load-option.h>
+#include <libfwupdplugin/fu-efi-section.h>
+#include <libfwupdplugin/fu-efi-signature-list.h>
+#include <libfwupdplugin/fu-efi-signature.h>
+#include <libfwupdplugin/fu-efi-variable-authentication2.h>
+#include <libfwupdplugin/fu-efi-volume.h>
+#include <libfwupdplugin/fu-efi-vss-auth-variable.h>
+#include <libfwupdplugin/fu-efi-vss2-variable-store.h>
+#include <libfwupdplugin/fu-efi-x509-device.h>
+#include <libfwupdplugin/fu-efi-x509-signature.h>
+#include <libfwupdplugin/fu-efivars.h>
+#include <libfwupdplugin/fu-elf-firmware.h>
+#include <libfwupdplugin/fu-endian.h>
+#include <libfwupdplugin/fu-fdt-firmware.h>
+#include <libfwupdplugin/fu-fdt-image.h>
 #include <libfwupdplugin/fu-firmware-common.h>
-#include <libfwupdplugin/fu-firmware-image.h>
+#include <libfwupdplugin/fu-firmware.h>
+#include <libfwupdplugin/fu-fit-firmware.h>
 #include <libfwupdplugin/fu-fmap-firmware.h>
+#include <libfwupdplugin/fu-heci-device.h>
+#include <libfwupdplugin/fu-hid-descriptor.h>
+#include <libfwupdplugin/fu-hid-device.h>
+#include <libfwupdplugin/fu-hid-report-item.h>
+#include <libfwupdplugin/fu-hid-report.h>
+#include <libfwupdplugin/fu-hidraw-device.h>
 #include <libfwupdplugin/fu-hwids.h>
+#include <libfwupdplugin/fu-i2c-device.h>
+#include <libfwupdplugin/fu-ifd-bios.h>
+#include <libfwupdplugin/fu-ifd-firmware.h>
+#include <libfwupdplugin/fu-ifd-image.h>
+#include <libfwupdplugin/fu-ifwi-cpd-firmware.h>
+#include <libfwupdplugin/fu-ifwi-fpt-firmware.h>
 #include <libfwupdplugin/fu-ihex-firmware.h>
+#include <libfwupdplugin/fu-input-stream.h>
+#include <libfwupdplugin/fu-intel-thunderbolt-firmware.h>
+#include <libfwupdplugin/fu-intel-thunderbolt-nvm.h>
 #include <libfwupdplugin/fu-io-channel.h>
-#include <libfwupdplugin/fu-plugin.h>
+#include <libfwupdplugin/fu-ioctl.h>
+#include <libfwupdplugin/fu-json-firmware.h>
+#include <libfwupdplugin/fu-kenv.h>
+#include <libfwupdplugin/fu-kernel-search-path.h>
+#include <libfwupdplugin/fu-kernel.h>
+#include <libfwupdplugin/fu-linear-firmware.h>
+#include <libfwupdplugin/fu-mei-device.h>
+#include <libfwupdplugin/fu-mem.h>
+#include <libfwupdplugin/fu-msgpack-item.h>
+#include <libfwupdplugin/fu-msgpack.h>
+#include <libfwupdplugin/fu-oprom-device.h>
+#include <libfwupdplugin/fu-oprom-firmware.h>
+#include <libfwupdplugin/fu-output-stream.h>
+#include <libfwupdplugin/fu-partial-input-stream.h>
+#include <libfwupdplugin/fu-path.h>
+#include <libfwupdplugin/fu-pci-device.h>
+#include <libfwupdplugin/fu-pefile-firmware.h>
+#include <libfwupdplugin/fu-pkcs7.h>
 #include <libfwupdplugin/fu-plugin-vfuncs.h>
-#include <libfwupdplugin/fu-quirks.h>
+#include <libfwupdplugin/fu-plugin.h>
+#include <libfwupdplugin/fu-progress.h>
+#include <libfwupdplugin/fu-sbatlevel-section.h>
+#include <libfwupdplugin/fu-security-attr.h>
 #include <libfwupdplugin/fu-security-attrs.h>
+#include <libfwupdplugin/fu-serio-device.h>
 #include <libfwupdplugin/fu-smbios.h>
 #include <libfwupdplugin/fu-srec-firmware.h>
-#include <libfwupdplugin/fu-efi-signature.h>
-#include <libfwupdplugin/fu-efi-signature-list.h>
-#include <libfwupdplugin/fu-efivar.h>
+#include <libfwupdplugin/fu-string.h>
+#include <libfwupdplugin/fu-sum.h>
 #include <libfwupdplugin/fu-udev-device.h>
+#include <libfwupdplugin/fu-usb-bos-descriptor.h>
+#include <libfwupdplugin/fu-v4l-device.h>
+#include <libfwupdplugin/fu-volume-locker.h>
+#include <libfwupdplugin/fu-x509-certificate.h>
+// #include <libfwupdplugin/fu-usb-common.h>
+#include <libfwupdplugin/fu-uefi-device.h>
 #include <libfwupdplugin/fu-usb-device.h>
+#include <libfwupdplugin/fu-usb-endpoint.h>
+#include <libfwupdplugin/fu-usb-interface.h>
+#include <libfwupdplugin/fu-uswid-firmware.h>
+#include <libfwupdplugin/fu-version-common.h>
 #include <libfwupdplugin/fu-volume.h>
-
-#ifndef FWUPD_DISABLE_DEPRECATED
-#include <libfwupdplugin/fu-deprecated.h>
-#endif
 
 #undef __FWUPDPLUGIN_H_INSIDE__

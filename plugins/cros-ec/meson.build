@@ -1,32 +1,24 @@
-if get_option('gusb')
 cargs = ['-DG_LOG_DOMAIN="FuPluginCrosEc"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 
-install_data(['cros-ec.quirk'],
-  install_dir: join_paths(datadir, 'fwupd', 'quirks.d')
-)
-
-shared_module('fu_plugin_cros_ec',
-  fu_hash,
-  sources : [
-    'fu-plugin-cros-ec.c',
+plugin_quirks += files('cros-ec.quirk')
+plugin_builtins += static_library('fu_plugin_cros_ec',
+  rustgen.process(
+    'fu-cros-ec.rs',            # fuzzing
+  ),
+  sources: [
+    'fu-cros-ec-plugin.c',
     'fu-cros-ec-usb-device.c',
     'fu-cros-ec-common.c',      # fuzzing
     'fu-cros-ec-firmware.c',    # fuzzing
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
-endif
+
+device_tests += files(
+  'tests/acer-d501.json',
+  'tests/google-servo-micro.json',
+)

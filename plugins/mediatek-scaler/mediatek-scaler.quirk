@@ -1,0 +1,12 @@
+[DRM\VEN_DEL&DEV_4340]
+Plugin = mediatek_scaler
+Flags = bank2-only
+
+[DRM\VEN_DEL&DEV_7430]
+Plugin = mediatek_scaler
+
+[DRM\VEN_DEL&DEV_9410]
+Plugin = mediatek_scaler
+
+[DRM\VEN_DEL&DEV_9411]
+Plugin = mediatek_scaler

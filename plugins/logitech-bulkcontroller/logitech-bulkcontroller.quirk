@@ -1,0 +1,22 @@
+# TODO: revisit InstallDuration
+
+[USB\VID_046D&PID_089B]
+Plugin = logitech_bulkcontroller
+InstallDuration = 1500
+
+[USB\VID_046D&PID_08D3]
+Plugin = logitech_bulkcontroller
+InstallDuration = 1500
+Flags = is-mini
+
+[USB\VID_046D&PID_087C]
+Plugin = logitech_bulkcontroller
+InstallDuration = 1500
+
+[USB\VID_046D&PID_0963]
+Plugin = logitech_bulkcontroller
+InstallDuration = 1500
+
+# Sight
+[LOGI\MODEL_VU0067]
+InstallDuration = 1500

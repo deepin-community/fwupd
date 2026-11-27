@@ -1,32 +1,14 @@
-if get_option('gusb')
 cargs = ['-DG_LOG_DOMAIN="FuPluginGoodixMoc"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 
-install_data([
-  'goodixmoc.quirk',
+plugin_quirks += files('goodix-moc.quirk')
+plugin_builtins += static_library('fu_plugin_goodix_moc',
+  sources: [
+    'fu-goodix-moc-device.c',
+    'fu-goodix-moc-plugin.c',
   ],
-  install_dir: join_paths(datadir, 'fwupd', 'quirks.d')
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: cargs,
+  dependencies: plugin_deps,
 )
-
-shared_module('fu_plugin_goodixmoc',
-  fu_hash,
-  sources : [
-    'fu-goodixmoc-device.c',
-    'fu-plugin-goodixmoc.c',
-  ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : cargs,
-  dependencies : [
-    plugin_deps,
-  ],
-)
-endif

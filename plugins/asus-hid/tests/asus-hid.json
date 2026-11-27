@@ -1,0 +1,28 @@
+{
+  "name": "ROG Ally",
+  "interactive": false,
+  "steps": [
+    {
+      "emulation-file": "@enumeration_datadir@/asus-hid-setup.json",
+      "components": [
+        {
+          "guids": [
+            "45b53fed-74ce-542f-aaca-9ba6783c89be"
+          ]
+        },
+        {
+          "version": "319",
+          "guids": [
+            "ae89f87e-0e1a-563c-afd2-f300c04676aa"
+          ]
+        },
+        {
+          "version": "319",
+          "guids": [
+            "6b00f0ca-abb2-5cc4-bb85-b7392998d51e"
+          ]
+        }
+      ]
+    }
+  ]
+}

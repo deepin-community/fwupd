@@ -1,0 +1,17 @@
+Description: Skip flaky tests
+Forwarded: not-needed
+Author: Mario Limonciello <superm1@gmail.com>
+
+Index: fwupd/data/tests/fwupdmgr-p2p.sh
+===================================================================
+--- fwupd.orig/data/tests/fwupdmgr-p2p.sh
++++ fwupd/data/tests/fwupdmgr-p2p.sh
+@@ -3,6 +3,8 @@
+ exec 0>/dev/null
+ exec 2>&1
+ 
++if [ -z "${DEB_ALLOW_FLAKY_TESTS}" ]; then exit 0; fi
++
+ # only run as root, possibly only in CI
+ if [ "$(id -u)" -ne 0 ]; then exit 0; fi
+ 

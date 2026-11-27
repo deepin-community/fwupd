@@ -1,69 +1,22 @@
-if get_option('plugin_dell')
+allow_uefi or subdir_done()
+
 cargs = ['-DG_LOG_DOMAIN="FuPluginDell"']
+plugins += {meson.current_source_dir().split('/')[-1]: true}
 
-install_data(['dell.quirk'],
-  install_dir: join_paths(datadir, 'fwupd', 'quirks.d')
-)
+plugin_quirks += files('dell.quirk')
 
-shared_module('fu_plugin_dell',
-  fu_hash,
-  sources : [
-    'fu-plugin-dell.c',
-    'fu-dell-smi.c',
+plugin_builtin_dell = static_library('fu_plugin_dell',
+  rustgen.process('fu-dell.rs'),
+  sources: [
+    'fu-dell-plugin.c',
   ],
-  include_directories : [
-    root_incdir,
-    fwupd_incdir,
-    fwupdplugin_incdir,
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  link_with : [
-    fwupd,
-    fwupdplugin,
-  ],
-  c_args : [
+  include_directories: plugin_incdirs,
+  link_with: plugin_libs,
+  c_args: [
     cargs,
   ],
-  dependencies : [
+  dependencies: [
     plugin_deps,
-    libsmbios_c,
-    tpm2tss,
   ],
 )
-
-if get_option('tests')
-  testdatadir = join_paths(meson.current_source_dir(), 'tests')
-  cargs += '-DTESTDATADIR="' + testdatadir + '"'
-  cargs += '-DPLUGINBUILDDIR="' + meson.current_build_dir() + '"'
-  e = executable(
-    'dell-self-test',
-    fu_hash,
-    sources : [
-      'fu-self-test.c',
-      'fu-dell-smi.c',
-      'fu-plugin-dell.c',
-    ],
-    include_directories : [
-      root_incdir,
-      fwupd_incdir,
-      fwupdplugin_incdir,
-    ],
-    dependencies : [
-      plugin_deps,
-      sqlite,
-      libsmbios_c,
-      valgrind,
-      tpm2tss,
-    ],
-    link_with : [
-      fwupd,
-      fwupdplugin,
-    ],
-    c_args : [
-      cargs,
-    ],
-  )
-  test('dell-self-test', e)
-endif
-endif
+plugin_builtins += plugin_builtin_dell
